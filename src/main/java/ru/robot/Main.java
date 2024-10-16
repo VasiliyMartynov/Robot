@@ -18,6 +18,7 @@ public class Main extends Application {
         stage.setTitle("JavaFX and Gradle");
         stage.setScene(scene);
         stage.show();
+        //note
 
 
     }

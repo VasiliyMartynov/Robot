@@ -4,34 +4,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BodyRotationTest {
 
-    @Test
-    void firstTest() {
-        DoubleMatrix2D matrix;
-        matrix = new DenseDoubleMatrix2D(3,3);
-        matrix.set(0,0,1);
-        matrix.set(1,1,1);
-        matrix.set(2,2,1);
+    private TestInfo testInfo;
 
-//        CoordinateSystem cs = new CoordinateSystem(
-//                "Local",
-//                getGlobalCoordinateSystem(),
-//                new Position(0,0,0),
-//                new BodyRotation(matrix)
-//        );
-
-        assertEquals(3, matrix.rows());
-        assertEquals(3, matrix.columns());
+    @BeforeEach
+    void init(TestInfo testInfo) {
+        this.testInfo = testInfo;
+        System.out.println(testInfo.getDisplayName());
     }
 
     @Test
     void BodyRotationListContractorTest(){
+        //System.out.println(testInfo.getDisplayName());
         ArrayList<Double> a  = new ArrayList<>(Arrays.asList(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0));
         var b = new BodyRotation(a);
         System.out.println(b.toString());
@@ -198,34 +190,69 @@ public class BodyRotationTest {
     }
 
     @Test
-    void getRotationAxisTest(){
+    void getRotationAxisTestCaseAifMatrixIsIdentity (){
         DoubleMatrix2D m = new DenseDoubleMatrix2D(3,3);;
         m.set(0,0,1);
-        m.set(0,1,1);
-        m.set(0,2,1);
-        m.set(1,0,1);
+        m.set(0,1,0);
+        m.set(0,2,0);
+        m.set(1,0,0);
         m.set(1,1,1);
-        m.set(1,2,1);
-        m.set(2,0,1);
-        m.set(2,1,1);
+        m.set(1,2,0);
+        m.set(2,0,0);
+        m.set(2,1,0);
         m.set(2,2,1);
-
-        DoubleMatrix2D n = new DenseDoubleMatrix2D(3,3);;
-        n.set(0,0,0.5);
-        n.set(0,1,0.5);
-        n.set(0,2,0.5);
-        n.set(1,0,0.5);
-        n.set(1,1,0.5);
-        n.set(1,2,0.5);
-        n.set(2,0,0.5);
-        n.set(2,1,0.5);
-        n.set(2,2,0.5);
         var a = new BodyRotation(m);
-        var b = new BodyRotation(n);
-        b.getRotationAxis(a);
-        System.out.println(b.getAngleTheta());
-        System.out.println(b.getVectorAxisOmega());
+        a.getRotationAxis();
+        assertEquals(0.0, a.getAxisAngle().get(3));
+        assertEquals(0.0, a.getAxisAngle().get(0));
+        assertEquals(0.0, a.getAxisAngle().get(1));
+        assertEquals(0.0, a.getAxisAngle().get(2));
+
     }
+
+    @Test
+    void getRotationAxisTestCaseBifTraceIsMinusOne(){
+        DoubleMatrix2D m = new DenseDoubleMatrix2D(3,3);;
+        m.set(0,0,-0.33366);
+        m.set(0,1,0.66682);
+        m.set(0,2,0.66682);
+        m.set(1,0,0.66682);
+        m.set(1,1,-0.33366);
+        m.set(1,2,0.66682);
+        m.set(2,0,0.66682);
+        m.set(2,1,0.66682);
+        m.set(2,2,-0.33366);
+        var a = new BodyRotation(m);
+        var b = a.getRotationAxis();
+        //0.578000 0.578000 0.578000 3.14159
+        assertEquals(.578, b.get(0));
+        assertEquals(.578, b.get(1));
+        assertEquals(.578, b.get(2));
+        assertEquals(3.142, b.get(3));
+    }
+
+    @Test
+    void getRotationAxisCaseCTest(){
+        DoubleMatrix2D m = new DenseDoubleMatrix2D(3,3);;
+        m.set(0,0,0.93435);
+        m.set(0,1,0.06565);
+        m.set(0,2,0.35000);
+        m.set(1,0,0.06565);
+        m.set(1,1,0.93435);
+        m.set(1,2,-0.35000);
+        m.set(2,0,-0.35000);
+        m.set(2,1,0.35000);
+        m.set(2,2,0.86870);
+        //axis angle 0.707 0.707 0, 0.519
+        var a = new BodyRotation(m);
+        var b = a.getRotationAxis();
+        assertEquals(.707, b.get(0));
+        assertEquals(.707, b.get(1));
+        assertEquals(0, b.get(2));
+        assertEquals(0.519, b.get(3));
+    }
+
+
 
 
 }

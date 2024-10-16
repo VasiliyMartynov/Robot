@@ -9,18 +9,23 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import static java.lang.Math.*;
+import static java.lang.StrictMath.*;
+
 
 public class BodyRotation {
 
     DenseDoubleAlgebra algebra = new DenseDoubleAlgebra();
     DoubleMatrix2D rotationMatrixData;
-    double angleTheta;
-    DoubleMatrix1D vectorAxisOmega;
+    DoubleMatrix1D axisAngle;
 
     //Constructors section start
     //**************************
+    public BodyRotation(Double i1,Double i2,Double i3,Double i4,Double i5,Double i6, Double i7,Double i8,Double i9){
+        this(new ArrayList<>(Arrays.asList(i1,i2,i3,i4,i5,i6,i7,i8,i9)));
+    }
+
     public <T> BodyRotation(ArrayList<T> a) {
         DoubleMatrix2D m = new DenseDoubleMatrix2D(3,3);
         int k = 0;
@@ -31,10 +36,6 @@ public class BodyRotation {
             }
         }
         this.rotationMatrixData = m;
-    }
-
-    public BodyRotation(Double i1,Double i2,Double i3,Double i4,Double i5,Double i6, Double i7,Double i8,Double i9){
-        this(new ArrayList<>(Arrays.asList(i1,i2,i3,i4,i5,i6,i7,i8,i9)));
     }
 
     public BodyRotation(DoubleMatrix2D m) {
@@ -161,35 +162,55 @@ public class BodyRotation {
     }
 
 //    log : R ∈ SO(3) → [ωˆ]θ ∈ so(3).
-    public BodyRotation getRotationAxis(BodyRotation rotation){
-        var I = DoubleFactory2D.dense.identity(3);
-        var r = rotation.getLocalRotationMatrix();
-        if (r.equals(I)) {
-            this.angleTheta = 0.0;
-            this.vectorAxisOmega = new DenseDoubleMatrix1D(new double[]{0.0,0.0,0.0});
-        } else if (algebra.trace(r) == -1) {
+    public DoubleMatrix1D getRotationAxis(){
+        var i = DoubleFactory2D.dense.identity(3);
+        var r = rotationMatrixData;
+        double scale = Math.pow(10, 3);
+        var trace = algebra.trace(r);
+        var traceRounded = ceil(trace * scale) / scale;
+        System.out.println("Trace is " + trace);
+        System.out.println("Trace rounded is " + traceRounded);
+        if (r.equals(i))
+        {
+            System.out.println("Case A matrix is Identity");
+            this.axisAngle = new DenseDoubleMatrix1D(new double[]{0.0, 0.0, 0.0, 0.0});
+            System.out.println("vectorAxisOmega is "+ axisAngle.toString());
+            return  axisAngle;
+        }
+        else if (traceRounded == -1)
+        {
+            System.out.println("Case B Trace is -1");
             var r13 = r.get(0,2);
             var r23 = r.get(1,2);
             var r33 = r.get(2,2);
-            var o0 = (1/sqrt(2 * (1 + r33))) * r13;
-            var o1 = (1/sqrt(2 * (1 + r33))) * r23;
-            var o2 = (1/sqrt(2 * (1 + r33))) * (1 + r23);
-            this.vectorAxisOmega = new DenseDoubleMatrix1D(new double[]{o0,o1,o2});
-            this.angleTheta = PI;
-        } else {
-            double v = cos(0.5 * (algebra.trace(r) - 1));
-            this.angleTheta = Math.pow(v, -1);
-            DoubleMatrix2D rT = algebra.transpose(r);
-            var w2 = (1.0 / 2.0 * cos(this.angleTheta)) * (r.get(0,2) - rT.get(0,2));
-            var w3 = (1.0 / 2.0 * cos(this.angleTheta)) * (r.get(1,0) - rT.get(1,0));
-            var w1 = (1.0 / 2.0 * cos(this.angleTheta)) * (r.get(2,1) - rT.get(2,1));
-            this.vectorAxisOmega = new DenseDoubleMatrix1D(new double[]{w1,w2,w3});
+            var o1 = (1/sqrt(2 * (1 + r33))) * r13;
+            var o2 = (1/sqrt(2 * (1 + r33))) * r23;
+            var o3 = (1/sqrt(2 * (1 + r33))) * r23;
+            var o4 = Math.PI;
+            var r1 = ceil(o1 * scale) / scale;
+            var r2 = ceil(o2 * scale) / scale;
+            var r3 = ceil(o3 * scale) / scale;
+            var r4 = ceil(o4 * scale) / scale;
+            this.axisAngle = new DenseDoubleMatrix1D(new double[]{r1,r2,r3,r4});
+            System.out.println("vectorAxisOmega is "+ axisAngle.toString());
+            return  axisAngle;
         }
-        return this;
+        else
+        {
+            System.out.println("Case C");
+            var a = acos((algebra.trace(r) - 1.0) / 2.0);
+            var w1 = (1 / (2.0 * sin(a))) * (r.get(2,1) - r.get(1,2));
+            var w2 = (1 / (2.0 * sin(a))) * (r.get(0,2) - r.get(2,0));
+            var w3 = (1 / (2.0 * sin(a))) * (r.get(1,0) - r.get(0,1));
+            double r1 = ceil(w1 * scale) / scale;
+            double r2 = ceil(w2 * scale) / scale;
+            double r3 = ceil(w3 * scale) / scale;
+            double angle = ceil(a * scale) / scale;
+            this.axisAngle = new DenseDoubleMatrix1D(new double[]{r1,r2,r3,angle});
+            System.out.println("vectorAxisOmega is "+ axisAngle.toString());
+            return  axisAngle;
+        }
     }
-
-
-
     public BodyRotation getSkewSymmetricFromVector(Double x1, Double x2, Double x3) {
         DoubleMatrix2D rotationMatrix = new DenseDoubleMatrix2D(3,3);
         rotationMatrix.set(0,0,0);
@@ -207,14 +228,8 @@ public class BodyRotation {
         return new BodyRotation(rotationMatrix);
     }
 
-    public double getAngleTheta(){
-        return this.angleTheta;
+    public DoubleMatrix1D getAxisAngle() {
+        return this.axisAngle;
     }
-    public DoubleMatrix1D getVectorAxisOmega(){
-        return this.vectorAxisOmega;
-    }
-
-
-
 }
 
