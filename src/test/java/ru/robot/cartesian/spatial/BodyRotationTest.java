@@ -13,11 +13,8 @@ import java.util.Arrays;
 
 public class BodyRotationTest {
 
-    private TestInfo testInfo;
-
     @BeforeEach
     void init(TestInfo testInfo) {
-        this.testInfo = testInfo;
         System.out.println(testInfo.getDisplayName());
     }
 
@@ -190,7 +187,7 @@ public class BodyRotationTest {
     }
 
     @Test
-    void getRotationAxisTestCaseAifMatrixIsIdentity (){
+    void getAxisAngleTestCaseAifMatrixIsIdentity(){
         DoubleMatrix2D m = new DenseDoubleMatrix2D(3,3);;
         m.set(0,0,1);
         m.set(0,1,0);
@@ -202,16 +199,16 @@ public class BodyRotationTest {
         m.set(2,1,0);
         m.set(2,2,1);
         var a = new BodyRotation(m);
-        a.getRotationAxis();
-        assertEquals(0.0, a.getAxisAngle().get(3));
-        assertEquals(0.0, a.getAxisAngle().get(0));
-        assertEquals(0.0, a.getAxisAngle().get(1));
-        assertEquals(0.0, a.getAxisAngle().get(2));
+        var b = a.getAxisAngle();
+        assertEquals(0.0, b.get(3));
+        assertEquals(0.0, b.get(0));
+        assertEquals(0.0, b.get(1));
+        assertEquals(0.0, b.get(2));
 
     }
 
     @Test
-    void getRotationAxisTestCaseBifTraceIsMinusOne(){
+    void getAxisAngleTestCaseBifTraceIsMinusOne(){
         DoubleMatrix2D m = new DenseDoubleMatrix2D(3,3);;
         m.set(0,0,-0.33366);
         m.set(0,1,0.66682);
@@ -223,7 +220,7 @@ public class BodyRotationTest {
         m.set(2,1,0.66682);
         m.set(2,2,-0.33366);
         var a = new BodyRotation(m);
-        var b = a.getRotationAxis();
+        var b = a.getAxisAngle();
         //0.578000 0.578000 0.578000 3.14159
         assertEquals(.578, b.get(0));
         assertEquals(.578, b.get(1));
@@ -232,7 +229,7 @@ public class BodyRotationTest {
     }
 
     @Test
-    void getRotationAxisCaseCTest(){
+    void getAxisAngleCaseCTest(){
         DoubleMatrix2D m = new DenseDoubleMatrix2D(3,3);;
         m.set(0,0,0.93435);
         m.set(0,1,0.06565);
@@ -245,7 +242,7 @@ public class BodyRotationTest {
         m.set(2,2,0.86870);
         //axis angle 0.707 0.707 0, 0.519
         var a = new BodyRotation(m);
-        var b = a.getRotationAxis();
+        var b = a.getAxisAngle();
         assertEquals(.707, b.get(0));
         assertEquals(.707, b.get(1));
         assertEquals(0, b.get(2));
