@@ -3,8 +3,10 @@ package ru.robot.cartesian.coordinates;
 import ru.robot.cartesian.spatial.BodyRotation;
 import ru.robot.cartesian.spatial.Position;
 
+import java.math.BigDecimal;
+
 public class CoordinateSystem {
-    private String name;
+    private final String name;
     private CoordinateSystem referenceCoordinateSystem;
     private Position zeroPosition;
     private BodyRotation bodyRotation;
@@ -26,7 +28,7 @@ public class CoordinateSystem {
         this.name = _name;
     }
 
-    public void setZeroPosition(double x, double y, double z) {
+    public void setZeroPosition(BigDecimal x, BigDecimal y, BigDecimal z) {
         this.zeroPosition.setCoordinates(new Coordinates(x,y,z));
     }
     @Override

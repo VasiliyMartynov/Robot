@@ -16,10 +16,14 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
-    //colt
-    // https://mvnrepository.com/artifact/net.sourceforge.parallelcolt/parallelcolt
-    implementation 'net.sourceforge.parallelcolt:parallelcolt:0.10.1'
-    //colt
+
+    // https://mvnrepository.com/artifact/ch.obermuhlner/big-math
+    implementation 'ch.obermuhlner:big-math:2.3.2'
+
+    //ujmp-core
+    implementation 'org.ujmp:ujmp-core:0.3.0'
+    //ujmp-core
+
 }
 
 //testlogger {

@@ -1,53 +1,47 @@
 package ru.robot.cartesian.coordinates;
-/**
- * Base coordinates
- */
 
-import cern.colt.matrix.tdouble.DoubleFactory2D;
-import cern.colt.matrix.tdouble.DoubleMatrix1D;
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
+
+import org.ujmp.core.DenseMatrix;
+import org.ujmp.core.DenseMatrix2D;
+import org.ujmp.core.Matrix;
+
+import java.math.BigDecimal;
 
 public class Coordinates {
-    private double x;
-    private double y;
-    private double z;
+    private final BigDecimal x;
+    private final BigDecimal y;
+    private final BigDecimal z;
 
-    public Coordinates(double _x, double _y, double _z)  {
+    public Coordinates(BigDecimal _x, BigDecimal _y, BigDecimal _z)  {
         this.x = _x;
         this.y = _y;
         this.z = _z;
     }
 
-    public double getX(){
+    public BigDecimal getX(){
         return this.x;
     }
 
-    public double getY(){
+    public BigDecimal getY(){
         return this.y;
     }
 
-    public double getZ(){
+    public BigDecimal getZ(){
         return this.z;
     }
 
-    public Coordinates(DoubleMatrix1D matrix) {
-        if (matrix.toArray().length > 3 || matrix.toArray().length <3 ) {
+    public Coordinates(Matrix matrix) {
+        if (matrix.getRowCount() > 3 || matrix.getColumnCount() <3 ) {
             throw new RuntimeException("Wrong size, ");
         }
-        this.x = matrix.get(0);
-        this.y = matrix.get(1);
-        this.z = matrix.get(2);
-
+        this.x = new BigDecimal(matrix.getAsString(0,0));
+        this.y = new BigDecimal(matrix.getAsString(0,0));
+        this.z = new BigDecimal(matrix.getAsString(0,0));
     }
 
-    public DoubleMatrix2D getCoordinatesMatrix() {
-        DoubleMatrix2D coordinates;
-        double[][] c = new double[3][1];
-        c[0][0] = this.getX();
-        c[1][0] = this.getY();
-        c[2][0] = this.getZ();
-        DoubleFactory2D factory = DoubleFactory2D.dense;
-        return coordinates = factory.make(c);
+    public Matrix  getCoordinatesMatrix() {
+        BigDecimal[] c = {this.getX(), this.getY(), this.getZ()};
+        return DenseMatrix.Factory.importFromArray(c);
     }
 
 

@@ -1,25 +1,22 @@
 package ru.robot.cartesian.coordinates;
 
-
-
-import cern.colt.matrix.tdouble.DoubleFactory2D;
-import javafx.geometry.Orientation;
 import ru.robot.cartesian.spatial.BodyRotation;
 import ru.robot.cartesian.spatial.Position;
+import ru.robot.cartesian.utils.MatrixUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.math.BigDecimal;
 
 public class Init {
-    static public CoordinateSystem getGlobalCoordinateSystem() {
+    static public CoordinateSystem getGlobalCoordinateSystem() throws InstantiationException {
         String name = "Global";
         Position zeroPosition = new Position();
-        var I = DoubleFactory2D.dense.identity(3);
+        var I = MatrixUtils.getIdentityMatrix();
         BodyRotation orientation = new BodyRotation(I);
         CoordinateSystem globalCoordinateSystem = new CoordinateSystem(name, zeroPosition, orientation);
-        globalCoordinateSystem.setZeroPosition(0,0,0);
+        var x = BigDecimal.ZERO;
+        var y = BigDecimal.ZERO;
+        var z = BigDecimal.ZERO;
+        globalCoordinateSystem.setZeroPosition(x,y,z);
         return  globalCoordinateSystem;
     }
 }

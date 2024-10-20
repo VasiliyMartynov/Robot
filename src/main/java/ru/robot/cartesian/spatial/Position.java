@@ -1,17 +1,19 @@
 package ru.robot.cartesian.spatial;
 
-import cern.colt.matrix.tdouble.DoubleMatrix1D;
+import org.ujmp.core.DenseMatrix2D;
 import ru.robot.cartesian.coordinates.Coordinates;
+
+import java.math.BigDecimal;
 
 public class Position {
 
     private Coordinates coordinates;
 
-    public Position(double x, double y, double z) {
+    public Position(BigDecimal x, BigDecimal y, BigDecimal z) {
         this(new Coordinates(x,y,z));
     }
 
-    public Position(DoubleMatrix1D m) {
+    public Position(DenseMatrix2D m) {
         this(new Coordinates(m));
     }
 
