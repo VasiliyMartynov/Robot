@@ -76,23 +76,26 @@ public class MatrixUtils {
         Matrix rounded = new DefaultDenseBigDecimalMatrix2D(3,3);
         for(int i = 0; i < m.getRowCount(); i++) {
             for(int j = 0; j < m.getColumnCount(); j++) {
-//                System.out.println(m.getAsDouble(i,j));
                 rounded.setAsBigDecimal(m.getAsBigDecimal(i,j).round(GVARS.MC6), i,j);
-//                System.out.println(rounded.getAsDouble(i,j));
             }
         }
         return  rounded;
     }
 
-    public static Matrix setValues(List<BigDecimal> arrayList){
+    public static Matrix setValues(List<BigDecimal> arrayList, int needTobeRound){
         Matrix m = new DefaultDenseBigDecimalMatrix2D(3,3);
         var index = 0;
         for(int i = 0; i < m.getRowCount(); i++) {
             for(int j = 0; j < m.getColumnCount(); j++) {
-//                System.out.println(m.getAsDouble(i,j));
-                m.setAsBigDecimal(arrayList.get(index), i,j);
+                switch (needTobeRound) {
+                    case 1 -> {
+                        m.setAsBigDecimal(arrayList.get(index), i,j);
+                    }
+                    case 0 -> {
+                        m.setAsBigDecimal(arrayList.get(index).round(GVARS.MC6), i,j);
+                    }
+                }
                 index++;
-//                System.out.println(rounded.getAsDouble(i,j));
             }
         }
         return m;

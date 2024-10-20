@@ -7,7 +7,6 @@ import org.ujmp.core.Matrix;
 import org.ujmp.core.bigdecimalmatrix.DenseBigDecimalMatrix2D;
 import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
 import ru.robot.cartesian.utils.MatrixUtils;
-
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -102,10 +101,10 @@ public class BodyRotationTest {
 
 
     @Test
-    void getNewInstanceOfRotationAroundXTest() throws InstantiationException {
+    void getNewInstanceOfRotationAroundFixedAsxix() throws InstantiationException {
         var c = new BodyRotation(MatrixUtils.getIdentityMatrix());
         var b = new BigDecimal("0.785398");
-        var a = c.getRotationAroundX(b);
+        var a = c.getRotationAroundFixedAxis(b,AXIS.X);
         System.out.println(a.toString());
         assertEquals(1.0, a.getItemAsDouble(0,0));
         assertEquals(0.0, a.getItemAsDouble(0,1));
@@ -118,46 +117,11 @@ public class BodyRotationTest {
         assertEquals(0.707107, a.getItemAsDouble(2,2));
     }
 
-    @Test
-    void getNewInstanceOfRotationAroundYTest() throws InstantiationException {
-        var c = new BodyRotation(MatrixUtils.getIdentityMatrix());
-        var b = new BigDecimal("0.785398");
-        var a = c.getRotationAroundY(b);
-        System.out.println(a.toString());
-        assertEquals(0.707107, a.getItem(0,0).doubleValue());
-        assertEquals(0.0, a.getItem(0,1).doubleValue());
-        assertEquals(0.707107, a.getItem(0,2).doubleValue());
-        assertEquals(0.0, a.getItem(1,0).doubleValue());
-        assertEquals(1.0, a.getItem(1,1).doubleValue());
-        assertEquals(0.0, a.getItem(1,2).doubleValue());
-        assertEquals(-0.707107, a.getItem(2,0).doubleValue());
-        assertEquals(0.0, a.getItem(2,1).doubleValue());
-        assertEquals(0.707107, a.getItem(2,2).doubleValue());
-    }
-
-    @Test
-    void getNewInstanceOfRotationAroundZTest() throws InstantiationException {
-        var c = new BodyRotation(MatrixUtils.getIdentityMatrix());
-        var b = new BigDecimal("0.785398");
-        var a = c.getRotationAroundZ(b);
-        System.out.println(a.toString());
-        assertEquals(0.707107, a.getItem(0,0).doubleValue());
-        assertEquals(-0.707107, a.getItem(0,1).doubleValue());
-        assertEquals(0.0, a.getItem(0,2).doubleValue());
-        assertEquals(0.707107, a.getItem(1,0).doubleValue());
-        assertEquals(0.707107, a.getItem(1,1).doubleValue());
-        assertEquals(0.0, a.getItem(1,2).doubleValue());
-        assertEquals(0.0, a.getItem(2,0).doubleValue());
-        assertEquals(0.0, a.getItem(2,1).doubleValue());
-        assertEquals(1.0, a.getItem(2,2).doubleValue());
-    }
-
 
     @Test
     void getRotationAroundVectorTest() throws InstantiationException {
-        var a = new BodyRotation(MatrixUtils.getIdentityMatrix());
-        System.out.println(a.toString());
-        var b = a.getRotationAroundVector(new BigDecimal("0.996047"), new BigDecimal("0.155150"), new BigDecimal("0.505820"), new BigDecimal("0.848572"));
+
+        var b = BodyRotation.getRotationOfAngleAxis(new BigDecimal("0.523599"), new BigDecimal("0.707107"), new BigDecimal("0.707107"), new BigDecimal("0"));
         System.out.println(b.toString());
     }
 //
