@@ -3,12 +3,10 @@ package ru.robot.cartesian.spatial;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import org.ujmp.core.Matrix;
-import org.ujmp.core.bigdecimalmatrix.DenseBigDecimalMatrix2D;
-import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
-import ru.robot.cartesian.utils.MatrixUtils;
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.robot.cartesian.spatial.BodyRotation.getRotationFromAngleAxis;
+import static ru.robot.cartesian.spatial.RMatrix.getIdentityMatrix;
 
 public class BodyRotationTest {
 
@@ -17,31 +15,31 @@ public class BodyRotationTest {
         System.out.println(testInfo.getDisplayName());
     }
 
-    private Matrix getGoodRotationMatrix(){
-        DenseBigDecimalMatrix2D a = new DefaultDenseBigDecimalMatrix2D(3, 3);
-        a.setAsBigDecimal(new BigDecimal("0.804738"), 0, 0);
-        a.setAsBigDecimal(new BigDecimal("-0.310617"), 0, 1);
-        a.setAsBigDecimal( new BigDecimal("0.505879"), 0, 2);
-        a.setAsBigDecimal(new BigDecimal("0.505879"), 1, 0);
-        a.setAsBigDecimal(new BigDecimal("0.804738"), 1, 1);
-        a.setAsBigDecimal(new BigDecimal("-0.310617"), 1, 2);
-        a.setAsBigDecimal(new BigDecimal("-0.310617"), 2, 0);
-        a.setAsBigDecimal(new BigDecimal("0.505879"), 2, 1);
-        a.setAsBigDecimal(new BigDecimal("0.804738"), 2, 2);
+    private RMatrix getGoodRotationMatrix(){
+        RMatrix a = new RMatrix(3);
+        a.set(new BigDecimal("0.804738"), 0, 0);
+        a.set(new BigDecimal("-0.310617"), 0, 1);
+        a.set(new BigDecimal("0.505879"), 0, 2);
+        a.set(new BigDecimal("0.505879"), 1, 0);
+        a.set(new BigDecimal("0.804738"), 1, 1);
+        a.set(new BigDecimal("-0.310617"), 1, 2);
+        a.set(new BigDecimal("-0.310617"), 2, 0);
+        a.set(new BigDecimal("0.505879"), 2, 1);
+        a.set(new BigDecimal("0.804738"), 2, 2);
         return a;
     }
 
-    private Matrix getBadRotationMatrix(){
-        DenseBigDecimalMatrix2D a = new DefaultDenseBigDecimalMatrix2D(3, 3);
-        a.setAsBigDecimal(new BigDecimal("0.004738"), 0, 0);
-        a.setAsBigDecimal(new BigDecimal("-0.310617"), 0, 1);
-        a.setAsBigDecimal( new BigDecimal("0.505879"), 0, 2);
-        a.setAsBigDecimal(new BigDecimal("0.505879"), 1, 0);
-        a.setAsBigDecimal(new BigDecimal("0.804738"), 1, 1);
-        a.setAsBigDecimal(new BigDecimal("-0.310617"), 1, 2);
-        a.setAsBigDecimal(new BigDecimal("-0.310617"), 2, 0);
-        a.setAsBigDecimal(new BigDecimal("0.505879"), 2, 1);
-        a.setAsBigDecimal(new BigDecimal("0.804738"), 2, 2);
+    private RMatrix getBadRotationMatrix(){
+        RMatrix a = new RMatrix(3);
+        a.set(new BigDecimal("0.004738"), 0, 0);
+        a.set(new BigDecimal("-0.310617"), 0, 1);
+        a.set( new BigDecimal("0.505879"), 0, 2);
+        a.set(new BigDecimal("0.505879"), 1, 0);
+        a.set(new BigDecimal("0.804738"), 1, 1);
+        a.set(new BigDecimal("-0.310617"), 1, 2);
+        a.set(new BigDecimal("-0.310617"), 2, 0);
+        a.set(new BigDecimal("0.505879"), 2, 1);
+        a.set(new BigDecimal("0.804738"), 2, 2);
         return a;
     }
 
@@ -51,7 +49,7 @@ public class BodyRotationTest {
         BodyRotation b = new BodyRotation(m);
         for(int i = 0; i < b.rotationMatrixData.getRowCount(); i++) {
             for(int j = 0; j < b.rotationMatrixData.getColumnCount(); j++) {
-                assertEquals(m.getAsBigDecimal(i,j), b.getItem(i, j));
+                assertEquals(m.get(i,j), b.getItem(i, j));
             }
         }
     }
@@ -101,10 +99,10 @@ public class BodyRotationTest {
 
 
     @Test
-    void getNewInstanceOfRotationAroundFixedAsxix() throws InstantiationException {
-        var c = new BodyRotation(MatrixUtils.getIdentityMatrix());
-        var b = new BigDecimal("0.785398");
-        var a = c.getRotationAroundFixedAxis(b,AXIS.X);
+    void getNewInstanceOfRotationAroundFixedAxis() throws InstantiationException {
+        var c = new BodyRotation(getIdentityMatrix());
+        var angle = new BigDecimal("0.785398");
+        var a = c.getRotationAroundFixedAxis(angle,AXIS.X);
         System.out.println(a.toString());
         assertEquals(1.0, a.getItemAsDouble(0,0));
         assertEquals(0.0, a.getItemAsDouble(0,1));
@@ -120,65 +118,50 @@ public class BodyRotationTest {
 
     @Test
     void getRotationAroundVectorTest() throws InstantiationException {
+        var angle = new BigDecimal("0.785398");
+        var x = new BigDecimal("0.577350");
+        var y = new BigDecimal("0.577350");
+        var z = new BigDecimal("0.577350");
+        var a = getRotationFromAngleAxis(angle,x,y,z);
+        System.out.println(a.toString());
+        assertEquals(0.804738, a.getItemAsDouble(0,0));
+        assertEquals(-0.310617, a.getItemAsDouble(0,1));
+        assertEquals(0.505879, a.getItemAsDouble(0,2));
+        assertEquals(0.505879, a.getItemAsDouble(1,0));
+        assertEquals(0.804738, a.getItemAsDouble(1,1));
+        assertEquals(-0.310617, a.getItemAsDouble(1,2));
+        assertEquals(-0.310617, a.getItemAsDouble(2,0));
+        assertEquals(0.505879, a.getItemAsDouble(2,1));
+        assertEquals(0.804738, a.getItemAsDouble(2,2));
 
-        var b = BodyRotation.getRotationOfAngleAxis(new BigDecimal("0.523599"), new BigDecimal("0.707107"), new BigDecimal("0.707107"), new BigDecimal("0"));
-        System.out.println(b.toString());
+    }
+
+    @Test
+    void calcAxisAngleCaseCaseAifMatrixIsIdentity() throws InstantiationException {
+        var a = new BodyRotation(getIdentityMatrix());
+        var b = a.getAngleAxisFromLocalSO3();
+        assertEquals(0.0, b.getAsDouble(0,0));
+        assertEquals(0.0, b.getAsDouble(1,0));
+        assertEquals(0.0, b.getAsDouble(2,0));
+        assertEquals(0.0, b.getAsDouble(3,0));
+
     }
 //
+    @Test
+    void calcAxisAngleCaseCifTraceIsMinusOne() throws InstantiationException {
+        var a = new BodyRotation(getGoodRotationMatrix());
+        var b = a.getAngleAxisFromLocalSO3();
+        //0.577350 0.577350 0.577350 0.785398
+        assertEquals(0.577350, b.getAsDouble(0,0));
+        assertEquals(0.577350, b.getAsDouble(1,0));
+        assertEquals(0.577350, b.getAsDouble(2,0));
+        assertEquals(0.785398, b.getAsDouble(3,0));
+    }
+
 //    @Test
-//    void getAxisAngleTestCaseAifMatrixIsIdentity() throws InstantiationException {
+//    void getAxisAngleCaseBTest() throws InstantiationException {
 //        DoubleMatrix2D m = new DenseDoubleMatrix2D(3,3);;
-//        m.set(0,0,1);
-//        m.set(0,1,0);
-//        m.set(0,2,0);
-//        m.set(1,0,0);
-//        m.set(1,1,1);
-//        m.set(1,2,0);
-//        m.set(2,0,0);
-//        m.set(2,1,0);
-//        m.set(2,2,1);
-//        var a = new BodyRotation(m);
-//        var b = a.getAxisAngle();
-//        assertEquals(0.0, b.get(3));
-//        assertEquals(0.0, b.get(0));
-//        assertEquals(0.0, b.get(1));
-//        assertEquals(0.0, b.get(2));
 //
-//    }
-//
-//    @Test
-//    void getAxisAngleTestCaseBifTraceIsMinusOne() throws InstantiationException {
-//        DoubleMatrix2D m = new DenseDoubleMatrix2D(3,3);;
-//        m.set(0,0,-0.33366);
-//        m.set(0,1,0.66682);
-//        m.set(0,2,0.66682);
-//        m.set(1,0,0.66682);
-//        m.set(1,1,-0.33366);
-//        m.set(1,2,0.66682);
-//        m.set(2,0,0.66682);
-//        m.set(2,1,0.66682);
-//        m.set(2,2,-0.33366);
-//        var a = new BodyRotation(m);
-//        var b = a.getAxisAngle();
-//        //0.578000 0.578000 0.578000 3.14159
-//        assertEquals(.578, b.get(0));
-//        assertEquals(.578, b.get(1));
-//        assertEquals(.578, b.get(2));
-//        assertEquals(3.142, b.get(3));
-//    }
-//
-//    @Test
-//    void getAxisAngleCaseCTest() throws InstantiationException {
-//        DoubleMatrix2D m = new DenseDoubleMatrix2D(3,3);;
-//        m.set(0,0,0.93435);
-//        m.set(0,1,0.06565);
-//        m.set(0,2,0.35000);
-//        m.set(1,0,0.06565);
-//        m.set(1,1,0.93435);
-//        m.set(1,2,-0.35000);
-//        m.set(2,0,-0.35000);
-//        m.set(2,1,0.35000);
-//        m.set(2,2,0.86870);
 //        //axis angle 0.707 0.707 0, 0.519
 //        var a = new BodyRotation(m);
 //        var b = a.getAxisAngle();
@@ -187,8 +170,5 @@ public class BodyRotationTest {
 //        assertEquals(0, b.get(2));
 //        assertEquals(0.519, b.get(3));
 //    }
-
-
-
 
 }

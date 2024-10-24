@@ -1,31 +1,27 @@
 package ru.robot.cartesian.spatial;
 
-import org.ujmp.core.Matrix;
-import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
-import ru.robot.cartesian.utils.GVARS;
-import ru.robot.cartesian.utils.MatrixUtils;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-
-import static ch.obermuhlner.math.big.BigDecimalMath.cos;
-import static ch.obermuhlner.math.big.BigDecimalMath.sin;
+import static ch.obermuhlner.math.big.BigDecimalMath.*;
+import static ru.robot.cartesian.spatial.RMatrix.*;
+import static ru.robot.cartesian.spatial.RVector.*;
+import static ru.robot.cartesian.spatial.YESNO.*;
+import static ru.robot.cartesian.utils.GVARS.*;
+import static ru.robot.cartesian.utils.Utils.*;
 
 public class BodyRotation {
 
-    Matrix rotationMatrixData;
-    public static final BigDecimal ONE = BigDecimal.ONE;
-    public static final BigDecimal ZERO = BigDecimal.ZERO;
+    RMatrix rotationMatrixData;
 
-    
     //Constructors section start
 
-    public BodyRotation(Matrix m) throws InstantiationException {
-        var det = MatrixUtils.getDeterminantOfx3(m);
+    public BodyRotation(RMatrix m) throws InstantiationException {
+        var det = getDeterminantOfx3(m);
         System.out.println("Determinant of input Matrix is " + det );
-        var diff = ONE.subtract(det, GVARS.MC6);
+        var diff = ONE.subtract(det, MC6);
         System.out.println("Diff is "+ diff.doubleValue());
-        if (diff.compareTo(new BigDecimal("0.000005")) < 0) {
+        if (nearZero(diff) < 0) {
             System.out.println("Body rotation instance were created");
             this.rotationMatrixData = m;
         } else {
@@ -37,16 +33,16 @@ public class BodyRotation {
     }
     //Constructors section end
 
-    public Matrix getLocalRotationMatrix() {
+    public RMatrix getLocalRotationMatrix() {
         return this.rotationMatrixData;
     }
 
     public BigDecimal getItem(int row, int column) {
-        return this.rotationMatrixData.getAsBigDecimal(row,column);
+        return this.rotationMatrixData.get(row,column);
     }
 
     public double getItemAsDouble(int row, int column) {
-        return this.rotationMatrixData.getAsBigDecimal(row,column).doubleValue();
+        return this.rotationMatrixData.get(row,column).doubleValue();
     }
     
     @Override
@@ -55,7 +51,7 @@ public class BodyRotation {
         s.append("Rotation matrix:\n");
         for(int i = 0; i < this.rotationMatrixData.getRowCount(); i++) {
             for(int j = 0; j < this.rotationMatrixData.getColumnCount(); j++) {
-                s.append(this.rotationMatrixData.getAsBigDecimal(i, j).doubleValue());
+                s.append(this.rotationMatrixData.get(i, j).doubleValue());
                 s.append(" ");
             }
             s.append("\n");
@@ -65,20 +61,20 @@ public class BodyRotation {
 
 //    MATH
     public void rotate(BodyRotation r) {
-        var m = this.rotationMatrixData.mtimes(r.rotationMatrixData);
-        this.rotationMatrixData = MatrixUtils.roundValuesOfMatrix(m);
+        var m = RMatrix.mult(r.getLocalRotationMatrix(), this.rotationMatrixData);
+        this.rotationMatrixData = roundValuesOfMatrix(m);
     }
 
     public BodyRotation getMatrixOfRotation(BodyRotation r) throws InstantiationException {
-        var m = this.rotationMatrixData.mtimes(r.rotationMatrixData);
-        var result = MatrixUtils.roundValuesOfMatrix(m);
+        var m = mult(this.rotationMatrixData, r.getLocalRotationMatrix());
+        var result = roundValuesOfMatrix(m);
         return new BodyRotation(result);
     }
 
     public BodyRotation getRotationAroundFixedAxis(BigDecimal angleInRad, AXIS axis) throws InstantiationException {
-        var c = cos(angleInRad, GVARS.MC6);
-        var s = sin(angleInRad, GVARS.MC6);
-        var minusS = s.multiply(new BigDecimal("-1"), GVARS.MC6);
+        var c = cos(angleInRad, MC6);
+        var s = sin(angleInRad, MC6);
+        var minusS = s.multiply(new BigDecimal("-1"), MC6);
         List<BigDecimal> itemList = List.of();
         switch (axis) {
             case X -> {
@@ -91,21 +87,24 @@ public class BodyRotation {
                 itemList = Arrays.asList(c, minusS, ZERO, s, c, ZERO, ZERO, ZERO, ONE);
             }
         }
-        return new BodyRotation(this.rotationMatrixData.mtimes(MatrixUtils.setValues(itemList, 1)));
+        return new BodyRotation(mult(this.rotationMatrixData, setValues3x3(itemList, YES)));
     }
 
 //    exp : [ωˆ]θ ∈ so(3) → R ∈ SO(3),
 //    Rot(ωˆ, θ) = e[ωˆ]θ = I + sin θ [ωˆ] + (1 − cos θ)[ωˆ]2 ∈ SO(3).
 //    exponential coordinates of a rotation matrix R
 
-    public static BodyRotation getRotationOfAngleAxis(BigDecimal angleRadians, BigDecimal w1, BigDecimal w2, BigDecimal w3) throws InstantiationException {
+    /**
+     * get SO3 from Angle/Axis
+     * return new BodyRotation
+     */
+    public static BodyRotation getRotationFromAngleAxis(BigDecimal angleRadians, BigDecimal w1, BigDecimal w2, BigDecimal w3) throws InstantiationException {
         if (w1.compareTo(ONE) > 0 || w2.compareTo(ONE) > 0 || w3.compareTo(ONE) > 0 ) {
             throw  new IllegalArgumentException("Illegal input, please check input parameters");
         }
-
-        var c = cos(angleRadians, GVARS.MC6);
+        var c = cos(angleRadians,MC6);
         var oneMinusCos = ONE.subtract(c);
-        var s = sin(angleRadians, GVARS.MC6);
+        var s = sin(angleRadians, MC6);
         var w1pow2 = w1.pow(2);
         var w2pow2 = w2.pow(2);
         var w3pow2 = w3.pow(2);
@@ -144,84 +143,139 @@ public class BodyRotation {
         var m22 = c.add(m22_p);
 
         var itemList = Arrays.asList(m00, m01, m02, m10, m11, m12, m20, m21, m22);
-        return new BodyRotation(MatrixUtils.setValues(itemList, 1));
+        return new BodyRotation(setValues3x3(itemList, YES));
     }
 
         //    log : R ∈ SO(3) → [ωˆ]θ ∈ so(3).
 
-    private Matrix calcAxisAngle(){
-        Matrix axisAngle;
-        var i = MatrixUtils.getIdentityMatrix();
+    /**
+     * get Angel/Axis from SO(3)
+     * input: none
+     * return Matrix 4,0 with w1,w2,w3, angle
+     *
+     */
+    public RVector getAngleAxisFromLocalSO3(){
+        RVector axisAngle;
+        var i = RMatrix.getIdentityMatrix();
         var r = rotationMatrixData;
-
-        var trace = BigDecimal.valueOf(r.trace());
-        var traceRounded = trace.round(GVARS.MC6);
+        var trace = RMatrix.trace(r);
         System.out.println("Trace is " + trace);
-        System.out.println("Trace rounded is " + traceRounded);
-        if (r.equals(i))
+        axisAngle = new RVector(4);
+
+        if (RMatrix.equalsContent(r,i))
         {
             System.out.println("Case A matrix is Identity");
-            axisAngle = new DefaultDenseBigDecimalMatrix2D(3,1);
             System.out.println("vectorAxisOmega is "+ axisAngle.toString());
             return axisAngle;
         }
-        else if (traceRounded.compareTo(new BigDecimal("-1")) < 0)
+
+        else if (trace.compareTo(minusONE) == 0)
         {
             System.out.println("Case B Trace is -1");
             var r13 = r.get(0,2);
             var r23 = r.get(1,2);
             var r33 = r.get(2,2);
-            var o1 = (1/sqrt(2 * (1 + r33))) * r13;
-            var o2 = (1/sqrt(2 * (1 + r33))) * r23;
-            var o3 = (1/sqrt(2 * (1 + r33))) * r23;
-            var o4 = Math.PI;
-            var r1 = roundValue(o1);
-            var r2 = roundValue(o2);
-            var r3 = roundValue(o3);
-            var r4 = roundValue(o4);
-            axisAngle = new DenseDoubleMatrix1D(new double[]{r1,r2,r3,r4});
+            var onePlusR33 = r33.add(ONE);
+            var TwoMultOnePlusR33 = onePlusR33.multiply(new BigDecimal("2"));
+            var sqrtFromTwoMultOnePlusR33 = TwoMultOnePlusR33.sqrt(MC6);
+            var p1 = ONE.divide(sqrtFromTwoMultOnePlusR33, MC6);
+            var w1 = p1.multiply(r13, MC6);
+            var w2 = p1.multiply(r23, MC6);
+            var w3 = p1.multiply(onePlusR33, MC6);
+            var angle = BigDecimal.valueOf(Math.PI).round(MC6);
             System.out.println("vectorAxisOmega is "+ axisAngle.toString());
-            return axisAngle;
+            return new RVector(w1,w2,w3,angle);
         }
         else
         {
             System.out.println("Case C");
-            var a = acos((algebra.trace(r) - 1.0) / 2.0);
-            var w1 = (1 / (2.0 * sin(a))) * (r.get(2,1) - r.get(1,2));
-            var w2 = (1 / (2.0 * sin(a))) * (r.get(0,2) - r.get(2,0));
-            var w3 = (1 / (2.0 * sin(a))) * (r.get(1,0) - r.get(0,1));
-            double r1 = roundValue(w1);
-            double r2 = roundValue(w2);
-            double r3 = roundValue(w3);
-            double angle = roundValue(a);
-            axisAngle = new DenseDoubleMatrix1D(new double[]{r1,r2,r3,angle});
-            System.out.println("vectorAxisOmega is "+ axisAngle.toString());
-            return axisAngle;
+            var traceMinusOne  = trace.subtract(ONE);
+            var traceMinusOneDivTWO = traceMinusOne.divide(TWO, MC6);
+            var angle = acos(traceMinusOneDivTWO, MC6);
+
+            var sinA = sin(angle, MC6);
+            var TwoSinA = sinA.multiply(TWO);
+            var OneDivTwoSinA = ONE.divide(TwoSinA, MC6);
+
+            var r21 = r.get(2,1);
+            var r12 = r.get(1,2);
+            var r02 = r.get(0,2);
+            var r20 = r.get(2,0);
+            var r10 = r.get(1,0);
+            var r01 = r.get(0,1);
+
+            var r21MinusR12 = r21.subtract(r12);
+            var r02MinusR20 = r02.subtract(r20);
+            var r10MinusR01 = r10.subtract(r01);
+
+            var w1 = OneDivTwoSinA.multiply(r21MinusR12).round(MC6);
+            var w2 = OneDivTwoSinA.multiply(r02MinusR20).round(MC6);
+            var w3 = OneDivTwoSinA.multiply(r10MinusR01).round(MC6);
+
+            return new RVector(w1,w2,w3,angle);
         }
     }
 
-//    public BodyRotation getSkewSymmetricFromVector(Double x1, Double x2, Double x3) throws InstantiationException {
-//        Matrix rotationMatrix = new DenseMatrix(3,3);
-//        rotationMatrix.set(0,0,0);
-//        rotationMatrix.set(0,1,-x3);
-//        rotationMatrix.set(0,2,x2);
-//
-//        rotationMatrix.set(1,0,x3);
-//        rotationMatrix.set(1,1,0);
-//        rotationMatrix.set(1,2,-x1);
-//
-//        rotationMatrix.set(2,0,-x2);
-//        rotationMatrix.set(2,1,x1);
-//        rotationMatrix.set(3,2,0);
-//
-//        return new BodyRotation(rotationMatrix);
-//    }
-//
-//    public DoubleMatrix1D getAxisAngle(){
-//        return  this.calcAxisAngle();
-//
-//    }
+    /**
+     * Converts a 3-vector to an so(3) representation
+     *     :param omg: A 3-vector
+     *     :return: The skew symmetric representation of omg
+     *
+     *     Example Input:
+     *         omg = np.array([1, 2, 3])
+     *     Output:
+     *         np.array([[ 0, -3,  2],
+     *                   [ 3,  0, -1],
+     *                   [-2,  1,  0]])
+     */
+    public static RMatrix VecToso3(RVector omg){
+        var v1 = omg.get(0);
+        var v2 = omg.get(1);
+        var v3 = omg.get(2);
+        List<BigDecimal> items = Arrays.asList(ZERO, minusOne(v3), v2,v3,ZERO,minusOne(v1),minusOne(v2),v1, ZERO);
+        return setValues3x3(items, NO);
+    }
 
+    /**
+     *     Converts an so(3) representation to a 3-vector
+     *
+     *     :param so3mat: A 3x3 skew-symmetric matrix
+     *     :return: The 3-vector corresponding to so3mat
+     *
+     *     Example Input:
+     *         so3mat = np.array([[ 0, -3,  2],
+     *                            [ 3,  0, -1],
+     *                            [-2,  1,  0]])
+     *     Output:
+     *         np.array([1, 2, 3])
+     */
+    public static RVector so3ToVec(RMatrix so3mat){
+        var m1 = so3mat.get(2,1);
+        var m2 = so3mat.get(0,2);
+        var m3 = so3mat.get(1,0);
+        return  new RVector(m1, m2, m3);
+    }
 
+    /**
+     *     Converts a 3-vector of exponential coordinates for rotation into
+     *     axis-angle form
+     *
+     *     :param
+     *     :return omghat: A unit rotation axis
+     *     :return theta: The corresponding rotation angle
+     *
+     *     Example Input:
+     *         expc3 = np.array([1, 2, 3])
+     *     Output:
+     *         (np.array([0.26726124, 0.53452248, 0.80178373]), 3.7416573867739413)
+     *     """
+     *     return (Normalize(expc3), np.linalg.norm(expc3))
+     * @param expc3  A 3-vector of exponential coordinates for rotation
+     * @return result
+     */
+    public static RVector AxisAng3(RVector expc3){
+        RVector normalised = normaliseVector(expc3);
+        return new RVector(normalised.get(0), normalised.get(1),normalised.get(2) , normOfVector(expc3));
+    }
 }
 
