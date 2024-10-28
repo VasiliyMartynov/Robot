@@ -1,4 +1,4 @@
-package ru.robot.cartesian.spatial;
+package ru.robot.cartesian.utils;
 
 import org.ujmp.core.Matrix;
 import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
@@ -10,23 +10,23 @@ import static ru.robot.cartesian.utils.GVARS.MC6;
 public class RVector {
     Matrix data;
 
-    RVector(int size){
+    public RVector(int size){
         this.data = new DefaultDenseBigDecimalMatrix2D(size,1);
     }
 
-    RVector(BigDecimal x1, BigDecimal x2, BigDecimal x3){
+    public RVector(BigDecimal x1, BigDecimal x2, BigDecimal x3){
         this.data = new DefaultDenseBigDecimalMatrix2D(3,1);
         this.data.setAsBigDecimal(x1, 0,0);
         this.data.setAsBigDecimal(x2, 1,0);
         this.data.setAsBigDecimal(x3, 2,0);
     }
 
-    RVector(BigDecimal x1, BigDecimal x2, BigDecimal x3, BigDecimal x4){
+    public RVector(BigDecimal x1, BigDecimal x2, BigDecimal x3, BigDecimal x4){
         this.data = new DefaultDenseBigDecimalMatrix2D(4,1);
         this.data.setAsBigDecimal(x1, 0,0);
         this.data.setAsBigDecimal(x2, 1,0);
         this.data.setAsBigDecimal(x3, 2,0);
-        this.data.setAsBigDecimal(x3, 3,0);
+        this.data.setAsBigDecimal(x4, 3,0);
     }
 
     public BigDecimal get(int item){

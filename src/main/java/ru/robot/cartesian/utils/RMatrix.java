@@ -1,14 +1,11 @@
-package ru.robot.cartesian.spatial;
+package ru.robot.cartesian.utils;
 
 import org.ujmp.core.Matrix;
 import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
-import ru.robot.cartesian.utils.GVARS;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-
-import static ru.robot.cartesian.spatial.YESNO.NO;
+import static ru.robot.cartesian.utils.YESNO.NO;
 import static ru.robot.cartesian.utils.GVARS.*;
 
 public class RMatrix {
@@ -18,7 +15,7 @@ public class RMatrix {
         this.data = m;
     }
 
-    RMatrix(int m){
+    public RMatrix(int m){
         this.data = new DefaultDenseBigDecimalMatrix2D(m,m);
     }
 
@@ -26,9 +23,18 @@ public class RMatrix {
         return this.data.getAsBigDecimal(coordinates);
     }
 
+    public double getDouble(long... coordinates){
+        return this.data.getAsBigDecimal(coordinates).doubleValue();
+    }
+
 
     public static RMatrix getIdentityMatrix(){
         List<BigDecimal> list = Arrays.asList(ONE,ZERO,ZERO,ZERO,ONE,ZERO,ZERO,ZERO,ONE);
+        return setValues3x3(list, NO);
+    }
+
+    public static RMatrix getZerosMatrix(){
+        List<BigDecimal> list = Arrays.asList(ZERO,ZERO,ZERO,ZERO,ZERO,ZERO,ZERO,ZERO,ZERO);
         return setValues3x3(list, NO);
     }
 
@@ -63,6 +69,10 @@ public class RMatrix {
             }
         }
         return  new RMatrix(rounded);
+    }
+
+    public Matrix getData() {
+        return data;
     }
 
     public static BigDecimal getDeterminantOfx3(RMatrix m){
@@ -127,11 +137,45 @@ public class RMatrix {
         return new RMatrix(m.data.mtimes(n.data));
     }
 
+    public RMatrix mult(BigDecimal scalar) {
+        return new RMatrix(this.data.times(scalar.doubleValue()));
+    }
+
+    public RMatrix mult(RMatrix m) {
+        return new RMatrix(this.data.mtimes(m.data));
+    }
+
+    public RMatrix divide(BigDecimal scalar) {
+        return new RMatrix(this.data.divide(scalar.doubleValue()));
+    }
+
+    public RMatrix plus(RMatrix m){
+        return new RMatrix(this.data.plus(m.data));
+    }
+
+    public static RMatrix divide(RMatrix m, RMatrix n) {
+        return new RMatrix(m.data.divide(n.data));
+    }
+
     public static BigDecimal trace(RMatrix m) {
         return BigDecimal.valueOf(m.data.trace());
     }
 
     public static boolean equalsContent(RMatrix m, RMatrix n) {
         return m.data.equalsContent(n.data);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append("Rotation matrix:\n");
+        for(int i = 0; i < this.data.getRowCount(); i++) {
+            for(int j = 0; j < this.data.getColumnCount(); j++) {
+                s.append(this.data.getAsDouble(i, j));
+                s.append(" ");
+            }
+            s.append("\n");
+        }
+        return s.toString();
     }
 }

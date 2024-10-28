@@ -1,4 +1,4 @@
-package ru.robot.cartesian.spatial;
+package ru.robot.cartesian.utils;
 
 public enum AXIS {
     X,

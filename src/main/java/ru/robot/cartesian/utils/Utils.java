@@ -7,7 +7,7 @@ public class Utils {
 
 
 
-    public static BigDecimal minusOne(BigDecimal x){
+    public static BigDecimal minus(BigDecimal x){
         return x.multiply(minusONE);
     }
 

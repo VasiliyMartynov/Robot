@@ -1,24 +1,24 @@
 package ru.robot.cartesian.coordinates;
 
 import ru.robot.cartesian.spatial.BodyRotation;
-import ru.robot.cartesian.spatial.Position;
+import ru.robot.cartesian.spatial.BodyPosition;
 
 import java.math.BigDecimal;
 
 public class CoordinateSystem {
     private final String name;
     private CoordinateSystem referenceCoordinateSystem;
-    private Position zeroPosition;
+    private BodyPosition zeroPosition;
     private BodyRotation bodyRotation;
 
-    public CoordinateSystem(String _name, CoordinateSystem _referenceCoordinateSystem, Position _zeroPosition, BodyRotation _Body_rotation) {
+    public CoordinateSystem(String _name, CoordinateSystem _referenceCoordinateSystem, BodyPosition _zeroPosition, BodyRotation _Body_rotation) {
         this.name = _name;
         this.referenceCoordinateSystem = _referenceCoordinateSystem;
         this.zeroPosition = _zeroPosition;
         this.bodyRotation = _Body_rotation;
     }
 
-    public CoordinateSystem(String _name, Position _zeroPosition, BodyRotation _Body_rotation) {
+    public CoordinateSystem(String _name, BodyPosition _zeroPosition, BodyRotation _Body_rotation) {
         this.name = _name;
         this.zeroPosition = _zeroPosition;
         this.bodyRotation = _Body_rotation;
@@ -72,7 +72,7 @@ public class CoordinateSystem {
         return this.bodyRotation;
     }
 
-    private Position getZeroPosition() {
+    private BodyPosition getZeroPosition() {
         return this.zeroPosition;
     }
 

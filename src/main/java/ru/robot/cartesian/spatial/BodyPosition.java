@@ -5,23 +5,23 @@ import ru.robot.cartesian.coordinates.Coordinates;
 
 import java.math.BigDecimal;
 
-public class Position {
+public class BodyPosition {
 
     private Coordinates coordinates;
 
-    public Position(BigDecimal x, BigDecimal y, BigDecimal z) {
+    public BodyPosition(BigDecimal x, BigDecimal y, BigDecimal z) {
         this(new Coordinates(x,y,z));
     }
 
-    public Position(DenseMatrix2D m) {
+    public BodyPosition(DenseMatrix2D m) {
         this(new Coordinates(m));
     }
 
-    public Position(Coordinates coordinates) {
+    public BodyPosition(Coordinates coordinates) {
         this.coordinates = coordinates;
     }
 
-    public Position() {
+    public BodyPosition() {
 
     }
 
