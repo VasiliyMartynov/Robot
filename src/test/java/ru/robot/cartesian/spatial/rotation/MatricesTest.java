@@ -3,16 +3,16 @@ package ru.robot.cartesian.spatial.rotation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import ru.robot.cartesian.spatial.BodyRotation;
-import ru.robot.cartesian.utils.AXIS;
-import ru.robot.cartesian.utils.RMatrix;
+import ru.robot.Model.Rigid.BodyRotation;
+import ru.robot.Model.CoordinateSystem.Cartesian.AXIS;
+import ru.robot.Model.DataStructure.RMatrix;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static ru.robot.cartesian.spatial.rotation.Matrices.getRotationAroundFixedAxis;
-import static ru.robot.cartesian.spatial.rotation.Matrices.rotate;
-import static ru.robot.cartesian.utils.RMatrix.getIdentityMatrix;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Matrices.getRotationAroundFixedAxis;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Matrices.rotate;
+import static ru.robot.Model.DataStructure.RMatrix.getIdentityMatrix;
 
 public class MatricesTest {
 
@@ -68,7 +68,7 @@ public class MatricesTest {
 
     @Test
     void getNewInstanceOfRotationAroundFixedAxis() throws InstantiationException {
-        var c = new BodyRotation(getIdentityMatrix());
+        var c = new BodyRotation(getIdentityMatrix(3));
         var angle = new BigDecimal("0.785398");
         var a = getRotationAroundFixedAxis(c.getLocalRotationMatrix(),angle, AXIS.X);
         System.out.println(a.toString());

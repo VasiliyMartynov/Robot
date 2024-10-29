@@ -1,23 +1,19 @@
-package ru.robot.cartesian.spatial.rotation;
+package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation;
 
-import ru.robot.cartesian.utils.RMatrix;
-import ru.robot.cartesian.utils.RVector;
+import ru.robot.Model.DataStructure.RMatrix;
+import ru.robot.Model.DataStructure.RVector;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import static ch.obermuhlner.math.big.BigDecimalMath.*;
-import static ru.robot.cartesian.utils.RMatrix.getIdentityMatrix;
-import static ru.robot.cartesian.utils.RMatrix.setValues3x3;
-import static ru.robot.cartesian.utils.RVector.normOfVector;
-import static ru.robot.cartesian.utils.RVector.normaliseVector;
-import static ru.robot.cartesian.utils.Utils.nearZero;
-import static ru.robot.cartesian.utils.YESNO.NO;
-import static ru.robot.cartesian.utils.GVARS.*;
-import static ru.robot.cartesian.utils.Utils.*;
+import static ru.robot.Model.DataStructure.RMatrix.getIdentityMatrix;
+import static ru.robot.Model.DataStructure.RVector.normOfVector;
+import static ru.robot.Model.DataStructure.RVector.normaliseVector;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
+import static ru.robot.Environment.Global.*;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.*;
 
 public class AngleAxis {
-
-
 
     /**
      * Converts a 3-vector to an so(3) representation
@@ -36,7 +32,7 @@ public class AngleAxis {
         var v2 = omg.get(1);
         var v3 = omg.get(2);
         List<BigDecimal> items = Arrays.asList(ZERO, minus(v3), v2,v3,ZERO,minus(v1),minus(v2),v1, ZERO);
-        return setValues3x3(items, NO);
+        return new RMatrix(items);
     }
 
     /**
@@ -117,9 +113,9 @@ public class AngleAxis {
         }
 
         if(nearZero(normOfVector(omgtheta)) > 0){
-            return getIdentityMatrix();
+            return getIdentityMatrix(3);
         } else {
-            var I = getIdentityMatrix();
+            var I = getIdentityMatrix(3);
             var c = cos(theta, MC6);
             var oneMinusCos = ONE.subtract(c);
             var s = sin(theta, MC6);
@@ -153,7 +149,7 @@ public class AngleAxis {
      */
     public static RMatrix MatrixLog3(RMatrix rotationMatrixData){
         RVector axisAngle;
-        var i = RMatrix.getIdentityMatrix();
+        var i = RMatrix.getIdentityMatrix(3);
         var trace = RMatrix.trace(rotationMatrixData);
         System.out.println("Trace is " + trace);
         axisAngle = new RVector(4);
@@ -163,7 +159,7 @@ public class AngleAxis {
             System.out.println("Case A matrix is Identity");
             System.out.println("vectorAxisOmega is "+ axisAngle.toString());
 
-            return RMatrix.getZerosMatrix();
+            return RMatrix.getZerosMatrix(3);
         }
 
         else if (trace.compareTo(minusONE) == 0)

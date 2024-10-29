@@ -1,25 +1,25 @@
-package ru.robot.cartesian.spatial.rotation;
+package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation;
 
-import ru.robot.cartesian.utils.AXIS;
-import ru.robot.cartesian.utils.RMatrix;
+import ru.robot.Model.CoordinateSystem.Cartesian.AXIS;
+import ru.robot.Model.DataStructure.RMatrix;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import static ch.obermuhlner.math.big.BigDecimalMath.cos;
 import static ch.obermuhlner.math.big.BigDecimalMath.sin;
-import static ru.robot.cartesian.spatial.rotation.AngleAxis.AxisAng3;
-import static ru.robot.cartesian.spatial.rotation.AngleAxis.so3ToVec;
-import static ru.robot.cartesian.utils.GVARS.*;
-import static ru.robot.cartesian.utils.RMatrix.*;
-import static ru.robot.cartesian.utils.RVector.normOfVector;
-import static ru.robot.cartesian.utils.Utils.nearZero;
-import static ru.robot.cartesian.utils.YESNO.YES;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.AngleAxis.AxisAng3;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.AngleAxis.so3ToVec;
+import static ru.robot.Environment.Global.*;
+import static ru.robot.Model.DataStructure.RMatrix.*;
+import static ru.robot.Model.DataStructure.RVector.normOfVector;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO.YES;
 
 public class Matrices {
 
     public static RMatrix rotate(RMatrix currentRotation, RMatrix rotationMatrixData) {
         var m = RMatrix.mult(currentRotation, rotationMatrixData);
-        return roundValuesOfMatrix(m);
+        return roundValuesOfRMatrix(m);
     }
 
     public static RMatrix getRotationAroundFixedAxis(RMatrix currentRotation, BigDecimal angleInRad, AXIS axis) throws InstantiationException {
@@ -38,7 +38,7 @@ public class Matrices {
                 itemList = Arrays.asList(c, minusS, ZERO, s, c, ZERO, ZERO, ZERO, ONE);
             }
         }
-        return mult(currentRotation, setValues3x3(itemList, YES));
+        return mult(currentRotation, new RMatrix(itemList));
     }
 
     /**
@@ -60,7 +60,7 @@ public class Matrices {
         }
 
         if(nearZero(normOfVector(omgtheta)) > 0){
-            return getIdentityMatrix();
+            return getIdentityMatrix(3);
         } else {
 
         }
@@ -106,6 +106,6 @@ public class Matrices {
         var m22 = c.add(m22_p);
 
         var itemList = Arrays.asList(m00, m01, m02, m10, m11, m12, m20, m21, m22);
-        return setValues3x3(itemList, YES);
+        return new RMatrix(itemList);
     }
 }

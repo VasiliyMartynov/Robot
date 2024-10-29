@@ -1,7 +1,7 @@
-package ru.robot.cartesian.coordinates;
+package ru.robot.Model.CoordinateSystem.Cartesian.coordinates;
 
-import ru.robot.cartesian.spatial.BodyRotation;
-import ru.robot.cartesian.spatial.BodyPosition;
+import ru.robot.Model.Rigid.BodyRotation;
+import ru.robot.Model.Rigid.BodyPosition;
 
 import java.math.BigDecimal;
 

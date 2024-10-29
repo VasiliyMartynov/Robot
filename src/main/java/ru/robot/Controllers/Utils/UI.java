@@ -1,4 +1,4 @@
-package ru.robot.utils;
+package ru.robot.Controllers.Utils;
 
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;

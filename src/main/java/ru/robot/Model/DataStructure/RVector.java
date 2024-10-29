@@ -1,11 +1,11 @@
-package ru.robot.cartesian.utils;
+package ru.robot.Model.DataStructure;
 
 import org.ujmp.core.Matrix;
 import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
 
 import java.math.BigDecimal;
 
-import static ru.robot.cartesian.utils.GVARS.MC6;
+import static ru.robot.Environment.Global.MC6;
 
 public class RVector {
     Matrix data;
@@ -98,5 +98,19 @@ public class RVector {
 
     public double getAsDouble(long... coordinates) {
         return this.data.getAsDouble(coordinates);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append("Rotation matrix:\n");
+        for(int i = 0; i < this.data.getRowCount(); i++) {
+
+                s.append(this.data.getAsDouble(i, 0));
+                s.append(" ");
+
+            s.append("\n");
+        }
+        return s.toString();
     }
 }

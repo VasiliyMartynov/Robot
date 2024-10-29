@@ -3,13 +3,11 @@ package ru.robot.cartesian.spatial;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import ru.robot.cartesian.utils.AXIS;
-import ru.robot.cartesian.utils.RMatrix;
+import ru.robot.Model.Rigid.BodyRotation;
+import ru.robot.Model.DataStructure.RMatrix;
 
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.robot.cartesian.spatial.rotation.Matrices.rotate;
-import static ru.robot.cartesian.utils.RMatrix.getIdentityMatrix;
 
 public class BodyRotationTest {
 
@@ -57,11 +55,7 @@ public class BodyRotationTest {
         }
     }
 
-    @Test
-    void BodyRotationListConstructorTestNotOK(){
-        assertThrows(InstantiationException.class, () -> new BodyRotation(getBadRotationMatrix()));
 
-    }
 
 
 

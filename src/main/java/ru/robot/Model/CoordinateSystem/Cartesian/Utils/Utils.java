@@ -1,7 +1,7 @@
-package ru.robot.cartesian.utils;
+package ru.robot.Model.CoordinateSystem.Cartesian.Utils;
 
 import java.math.BigDecimal;
-import static ru.robot.cartesian.utils.GVARS.*;
+import static ru.robot.Environment.Global.*;
 
 public class Utils {
 
@@ -22,7 +22,7 @@ public class Utils {
      *         True
      */
     public static int nearZero(BigDecimal z){
-        return z.abs(MC6).compareTo(new BigDecimal("0.000005"));
+        return z.abs(MC6).compareTo(new BigDecimal("0.000001"));
     }
 
 

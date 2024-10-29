@@ -3,14 +3,14 @@ package ru.robot.cartesian.spatial.rotation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import ru.robot.cartesian.utils.RMatrix;
-import ru.robot.cartesian.utils.YESNO;
+import ru.robot.Model.DataStructure.RMatrix;
+import ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO;
 import java.math.BigDecimal;
 import java.util.Arrays;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static ru.robot.cartesian.spatial.rotation.AngleAxis.MatrixLog3;
-import static ru.robot.cartesian.utils.GVARS.*;
-import static ru.robot.cartesian.utils.Utils.minus;
+
+import static ru.robot.Environment.Global.*;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.AngleAxis.MatrixLog3;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.minus;
 
 public class AngleAxisTest {
 
@@ -49,10 +49,10 @@ public class AngleAxisTest {
 
     @Test
     void MatrixLog3Test() throws InstantiationException {
-        var SO3 = RMatrix.setValues3x3(Arrays.asList(ZERO,ZERO,ONE, ONE,ZERO,ZERO,ZERO,ONE,ZERO), YESNO.YES);
+        var SO3 = new RMatrix(Arrays.asList(ZERO,ZERO,ONE, ONE,ZERO,ZERO,ZERO,ONE,ZERO));
         var n = new BigDecimal("1.20919958");
         var minusN = minus(n);
-        var so3 = RMatrix.setValues3x3(Arrays.asList(ZERO, minusN,n, n,ZERO,minusN,minusN,n,ZERO), YESNO.NO);
+        var so3 = new RMatrix(Arrays.asList(ZERO, minusN,n, n,ZERO,minusN,minusN,n,ZERO));
         System.out.println(SO3.toString());
         System.out.println(so3.toString());
         System.out.println(MatrixLog3(SO3).toString());

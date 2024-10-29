@@ -1,4 +1,4 @@
-package ru.robot.controllers;
+package ru.robot.Controllers;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import ru.robot.utils.UI;
 
 public class FXMLController implements Initializable {
 

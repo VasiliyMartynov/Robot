@@ -1,10 +1,8 @@
-package ru.robot.cartesian.coordinates;
+package ru.robot.Model.CoordinateSystem.Cartesian.coordinates;
 
 
 import org.ujmp.core.DenseMatrix;
-import org.ujmp.core.DenseMatrix2D;
 import org.ujmp.core.Matrix;
-
 import java.math.BigDecimal;
 
 public class Coordinates {
