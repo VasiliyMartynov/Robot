@@ -8,10 +8,8 @@ import org.junit.jupiter.api.TestInfo;
 import ru.robot.Model.DataStructure.Base.RMatrix;
 import ru.robot.Model.DataStructure.RotationMatrix;
 import ru.robot.Model.DataStructure.SkewSymmetricMatrix;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Matrices.*;
@@ -24,7 +22,7 @@ public class MatricesTest {
 
     @BeforeEach
     void init(TestInfo testInfo) {
-        System.out.println(testInfo.getDisplayName());
+        LOGGER.debug(testInfo.getDisplayName());
     }
 
     private RotationMatrix getGoodRotationMatrix(){
@@ -96,38 +94,29 @@ public class MatricesTest {
      */
     @Test
     void MatrixExp3Test(){
-        LOGGER.debug("set so3");
-        var so3 = new SkewSymmetricMatrix(new RMatrix(Arrays.asList(
-                ZERO,
-                minus(THREE),
-                TWO,
-                THREE,
-                ZERO,
-                minusONE,
-                minus(TWO),
-                ONE,
-                ZERO)));
-        LOGGER.debug("so3 `{}`", so3.getData());
-        var actual = MatrixExp3(so3);
-        LOGGER.debug("actual `{}`", actual.getData());
+        var skewSymmetricMatrix = new SkewSymmetricMatrix(new RMatrix(Arrays.asList(
+                ZERO, minus(THREE), TWO,
+                THREE, ZERO, minus(ONE),
+                minus(TWO), ONE, ZERO)));
         var expected = new RMatrix(Arrays.asList(
-                new BigDecimal("-0.69492056"),
-                new BigDecimal("0.71352099"),
-                new BigDecimal("0.08929286"),
-                new BigDecimal("-0.19200697"),
-                new BigDecimal("-0.30378504"),
-                new BigDecimal("0.93319235"),
-                new BigDecimal("0.69297817"),
-                new BigDecimal("0.6313497"),
-                new BigDecimal("0.34810748")
-        )
-        );
+                new BigDecimal("-0.694920"),
+                new BigDecimal("0.713520"),
+                new BigDecimal("0.089292"),
+                new BigDecimal("-0.192006"),
+                new BigDecimal("-0.303785"),
+                new BigDecimal("0.933192"),
+                new BigDecimal("0.692978"),
+                new BigDecimal("0.631349"),
+                new BigDecimal("0.348107")
+        ));
 
-        for(int i = 0; i < actual.getData().getSize(); i++){
-            for(int j = 0; j < actual.getData().getSize(); j++){
-                assertEquals(actual.getData().getDouble(i,j), expected.getDouble(i,j));
+        var actual = Matrices.MatrixExp3(skewSymmetricMatrix);
+
+        LOGGER.debug("actual matrix `{}`\n", actual.getData());
+        for(int i = 0; i < actual.getSize(); i++){
+            for(int j = 0; j < actual.getSize(); j++){
+                assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
             }
         }
-
     }
 }

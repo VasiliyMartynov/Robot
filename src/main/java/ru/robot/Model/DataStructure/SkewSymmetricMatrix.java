@@ -19,7 +19,7 @@ public class SkewSymmetricMatrix {
             this.data = R;
             this.size = (int) R.getRowCount();
         } else {
-            String message = "Body rotation cannot be instantiated, " +
+            String message = "Matrix cannot be instantiated, " +
                     "because Matrix isn't R ∈ SO(3), " +
                     "det R not equals 1, please check input values";
             IllegalArgumentException e = new IllegalArgumentException(message);
@@ -30,13 +30,14 @@ public class SkewSymmetricMatrix {
 
     private Boolean checkIsLittleSO3(Matrix R){
         LOGGER.debug("checkIsLittleSO3 start");
+        LOGGER.debug("Cheking Matrix `{}`", R);
         boolean ruleOne = R.trace() == 0;
         LOGGER.debug("rule 1 - trace is ZERO: `{}`", ruleOne);
         boolean ruleTwo =
                 R.getAsBigDecimal(0,1).compareTo(minus(R.getAsBigDecimal(1,0))) == 0 &
                 R.getAsBigDecimal(0,2).compareTo(minus(R.getAsBigDecimal(2,0))) == 0 &
                 R.getAsBigDecimal(1,2).compareTo(minus(R.getAsBigDecimal(2,1))) == 0;
-        LOGGER.debug("rule 2 - R*Rt = I: `{}`", ruleTwo);
+        LOGGER.debug("rule 2 - check values: `{}`", ruleTwo);
         boolean ruleThree = haveSize(R);
         LOGGER.debug("rule 3 - input matrix has same size as compared: `{}`", ruleThree);
         LOGGER.debug("checkIsLittleSO3 finished with result:`{}`", ruleOne & ruleTwo & ruleThree );

@@ -47,7 +47,7 @@ public class AngleAxisTest {
 
         var expected = new SkewSymmetricMatrix(new RMatrix(Arrays.asList(
                 ZERO, minus(THREE), TWO,
-                THREE, ZERO, minusONE,
+                THREE, ZERO, minus(ONE),
                 minus(TWO), ONE, ZERO)));
 
         for(int i = 0; i < actual.getData().getSize(); i++){
@@ -74,7 +74,7 @@ public class AngleAxisTest {
     void so3ToVecTest(){
         var skewSymmetricMatrix = new SkewSymmetricMatrix(new RMatrix(Arrays.asList(
                 ZERO, minus(THREE), TWO,
-                THREE, ZERO, minusONE,
+                THREE, ZERO, minus(ONE),
                 minus(TWO), ONE, ZERO)));
         var expected = new Vector3(ONE, TWO, THREE);
 
@@ -163,7 +163,7 @@ public class AngleAxisTest {
     void MatrixExp3Test(){
         var skewSymmetricMatrix = new SkewSymmetricMatrix(new RMatrix(Arrays.asList(
                 ZERO, minus(THREE), TWO,
-                THREE, ZERO, minusONE,
+                THREE, ZERO, minus(ONE),
                 minus(TWO), ONE, ZERO)));
         var expected = new RMatrix(Arrays.asList(
                 new BigDecimal("-0.694920"),
@@ -177,7 +177,7 @@ public class AngleAxisTest {
                 new BigDecimal("0.348107")
         ));
 
-        var actual = MatrixExp3(skewSymmetricMatrix);
+        var actual = AngleAxis.MatrixExp3(skewSymmetricMatrix);
 
         LOGGER.debug("actual matrix `{}`\n", actual.getData());
         for(int i = 0; i < actual.getSize(); i++){

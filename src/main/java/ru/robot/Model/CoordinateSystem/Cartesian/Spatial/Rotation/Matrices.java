@@ -64,8 +64,8 @@ public class Matrices {
      [ 0.69297817,  0.6313497 ,  0.34810748]])
      """
      */
-    public static RotationMatrix MatrixExp3(SkewSymmetricMatrix so3mat) {
-        LOGGER.debug("MatrixExp3 has started");
+    public static RMatrix MatrixExp3(SkewSymmetricMatrix so3mat) {
+
         var omgtheta = so3ToVec(so3mat);
         LOGGER.debug("omgtheta: `{}`", omgtheta.getData());
         var w1 = omgtheta.getData().get(0);
@@ -73,15 +73,9 @@ public class Matrices {
         var w3 = omgtheta.getData().get(2);
         var theta = AxisAng3(omgtheta).getData().get(3);
 
-//        if (w1.compareTo(ONE) > 0 || w2.compareTo(ONE) > 0 || w3.compareTo(ONE) > 0 ) {
-//            IllegalArgumentException e = new IllegalArgumentException("Illegal input, please check input parameters");
-//            LOGGER.debug("MatrixExp3 has finished with exception", e);
-//            throw  e;
-//        }
-
-        if(nearZero(normOfVector(omgtheta)) > 0){
+        if(nearZero(normOfVector(omgtheta)) < 0){
             LOGGER.debug("nearZero(normOfVector(omgtheta)) > 0 return Identity");
-            return new RotationMatrix(getIdentityMatrix(3));
+            return getIdentityMatrix(3);
         }
 
         var c = cos(theta,MC6);
@@ -126,6 +120,6 @@ public class Matrices {
 
         var itemList = Arrays.asList(m00, m01, m02, m10, m11, m12, m20, m21, m22);
         LOGGER.debug("MatrixExp3 has finished");
-        return new RotationMatrix(new RMatrix(itemList));
+        return new RMatrix(itemList);
     }
 }

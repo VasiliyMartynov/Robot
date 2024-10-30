@@ -6,9 +6,13 @@ import static ru.robot.Environment.Global.*;
 public class Utils {
 
 
-
+    /**
+     * just negate input value
+     * @param x
+     * @return negative valuew of x
+     */
     public static BigDecimal minus(BigDecimal x){
-        return x.multiply(minusONE);
+        return x.multiply(ONE);
     }
 
 

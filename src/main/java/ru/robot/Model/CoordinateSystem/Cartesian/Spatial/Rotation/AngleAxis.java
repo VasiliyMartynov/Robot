@@ -121,9 +121,6 @@ public class AngleAxis {
      */
     public static RMatrix MatrixExp3(SkewSymmetricMatrix so3mat){
         var omgtheta = so3ToVec(so3mat);
-//        var w1 = omgtheta.getData().get(0);
-//        var w2 = omgtheta.getData().get(1);
-//        var w3 = omgtheta.getData().get(2);
         var theta = AxisAng3(omgtheta).getData().get(3);
         var omghat = so3mat.getData().divide(theta);
 
@@ -178,7 +175,7 @@ public class AngleAxis {
             return new SkewSymmetricMatrix(RMatrix.getZerosMatrix(3));
         }
 
-        else if (trace.compareTo(minusONE) == 0)
+        else if (trace.compareTo(minus(ONE)) == 0)
         {
             LOGGER.debug("Case B Trace is -1");
             var r13 = rotationMatrixData.getData().get(0,2);
