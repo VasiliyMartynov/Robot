@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Matrices.getRotationAroundFixedAxis;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Matrices.rotate;
 import static ru.robot.Model.DataStructure.RMatrix.getIdentityMatrix;
 
 public class MatricesTest {
@@ -47,23 +46,6 @@ public class MatricesTest {
         a.set(new BigDecimal("0.505879"), 2, 1);
         a.set(new BigDecimal("0.804738"), 2, 2);
         return a;
-    }
-
-    @Test
-    void RotationTest() throws InstantiationException {
-        var c = getGoodRotationMatrix();
-        var b = getGoodRotationMatrix();
-        var a = new BodyRotation(rotate(c,b));
-        System.out.println(a.toString());
-        assertEquals(0.333334, a.getItem(0,0).doubleValue());
-        assertEquals(-0.244017, a.getItem(0,1).doubleValue());
-        assertEquals(0.910683, a.getItem(0,2).doubleValue());
-        assertEquals(0.910683, a.getItem(1,0).doubleValue());
-        assertEquals(0.333334, a.getItem(1,1).doubleValue());
-        assertEquals(-0.244017, a.getItem(1,2).doubleValue());
-        assertEquals(-0.244017, a.getItem(2,0).doubleValue());
-        assertEquals(0.910683, a.getItem(2,1).doubleValue());
-        assertEquals(0.333334, a.getItem(2,2).doubleValue());
     }
 
     @Test

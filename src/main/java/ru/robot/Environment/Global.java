@@ -11,5 +11,7 @@ public class Global {
     public static final BigDecimal ZERO = BigDecimal.ZERO;
     public static final BigDecimal ONE = BigDecimal.ONE;
     public static final BigDecimal TWO = new BigDecimal("2");
+    public static final BigDecimal THREE = new BigDecimal("3");
+    public static final BigDecimal FOUR = new BigDecimal("4");
     public static final BigDecimal FIVE = new BigDecimal("5");
 }

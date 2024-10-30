@@ -40,11 +40,6 @@ public class RMatrix {
         return this.size;
     }
 
-    public static RMatrix RotInv(RMatrix R){
-        var invR = R.getData().inv();
-        return new RMatrix(invR);
-    }
-
     public static BigDecimal getDeterminantOfx3(Matrix m){
         var a = m.getAsBigDecimal(0, 0);
         var b = m.getAsBigDecimal(0, 1);
@@ -107,6 +102,12 @@ public class RMatrix {
         return ruleOne & ruleTwo & ruleThree;
     }
 
+
+    public static RMatrix RotInv(RMatrix R){
+        var invR = R.getData().inv();
+        return new RMatrix(invR);
+    }
+
     private boolean haveSize(Matrix R,int size){
         var rows = R.getRowCount();
         var columns = R.getColumnCount();
@@ -148,24 +149,24 @@ public class RMatrix {
         return m;
     }
 
-    public static RMatrix setValues(List<BigDecimal> arrayList, YESNO needToBeRounded, int size){
-        RMatrix m = new RMatrix(size);
-        var index = 0;
-        for(int i = 0; i < m.getRowCount(); i++) {
-            for(int j = 0; j < m.getColumnCount(); j++) {
-                switch (needToBeRounded){
-                    case NO -> {
-                        m.set(arrayList.get(index), i,j);
-                    }
-                    case YES -> {
-                        m.set(arrayList.get(index).round(MC6), i,j);
-                    }
-                }
-                index++;
-            }
-        }
-        return m;
-    }
+//    public static RMatrix setValues(List<BigDecimal> arrayList, YESNO needToBeRounded, int size){
+//        RMatrix m = new RMatrix(size);
+//        var index = 0;
+//        for(int i = 0; i < m.getRowCount(); i++) {
+//            for(int j = 0; j < m.getColumnCount(); j++) {
+//                switch (needToBeRounded){
+//                    case NO -> {
+//                        m.set(arrayList.get(index), i,j);
+//                    }
+//                    case YES -> {
+//                        m.set(arrayList.get(index).round(MC6), i,j);
+//                    }
+//                }
+//                index++;
+//            }
+//        }
+//        return m;
+//    }
 
     public static RMatrix setValues(RMatrix matrix, YESNO needToBeRounded, int size){
         RMatrix m = new RMatrix(size);
@@ -272,6 +273,8 @@ public class RMatrix {
         return new RMatrix(m.data.mtimes(n.data));
     }
 
+
+
     public RMatrix mult(BigDecimal scalar) {
         return new RMatrix(this.data.times(scalar.doubleValue()));
     }
@@ -279,6 +282,7 @@ public class RMatrix {
     public RMatrix mult(RMatrix m) {
         return new RMatrix(this.data.mtimes(m.data));
     }
+
 
     public RMatrix divide(BigDecimal scalar) {
         return new RMatrix(this.data.divide(scalar.doubleValue()));
@@ -312,12 +316,6 @@ public class RMatrix {
             s.append("\n");
         }
         return s.toString();
-    }
-
-    public static RMatrix getEmptyTransformationMatrix(){
-        var T = getZerosMatrix(4);
-        T.set(ONE,3,3);
-        return T;
     }
 
 }

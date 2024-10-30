@@ -1,12 +1,21 @@
 package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Motion;
 
+
 import ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO;
 import ru.robot.Model.DataStructure.RMatrix;
 import ru.robot.Model.DataStructure.RVector;
-
+import static ru.robot.Environment.Global.ONE;
+import static ru.robot.Environment.Global.minusONE;
 import static ru.robot.Model.DataStructure.RMatrix.*;
+import static ru.robot.Model.DataStructure.RVector.*;
 
 public class Motion {
+
+    public static RMatrix getEmptyTransformationMatrix(){
+        var T = getZerosMatrix(4);
+        T.set(ONE,3,3);
+        return T;
+    }
 
     /**
      * Converts a rotation matrix and a position vector into homogeneous
@@ -28,6 +37,7 @@ public class Motion {
      *                   [0, 0,  0, 1]])
      */
     public static RMatrix RpToTrans(RMatrix rotationMatrix, RVector position){
+
         var T = getEmptyTransformationMatrix();
 
         for(int i = 0; i<rotationMatrix.getSize(); i++){
@@ -35,20 +45,39 @@ public class Motion {
                 T.set(rotationMatrix.get(i,j), i,j);
             }
         }
-
         for(int z = 0; z <= position.size(); z++){
-
             T.set(position.get(z),z,3);
+
         }
+
         return T;
     }
 
     /**
      *  Converts a homogeneous transformation matrix into a rotation matrix
-     *     and position vector
      *
      *     :param T: A homogeneous transformation matrix
      *     :return R: The corresponding rotation matrix,
+     *
+     *     Example Input:
+     *         T = np.array([[1, 0,  0, 0],
+     *                       [0, 0, -1, 0],
+     *                       [0, 1,  0, 3],
+     *                       [0, 0,  0, 1]])
+     *     Output:
+     *         (np.array([[1, 0,  0],
+     *                    [0, 0, -1],
+     *                    [0, 1,  0]]),
+     *          np.array([0, 0, 3]))
+     */
+    public static RMatrix TransToR(RMatrix T){
+        return setValues(T, YESNO.NO, 3);
+    }
+
+    /**
+     *  Converts a homogeneous transformation matrix into position vector
+     *
+     *     :param T: A homogeneous transformation matrix
      *     :return p: The corresponding position vector.
      *
      *     Example Input:
@@ -62,17 +91,14 @@ public class Motion {
      *                    [0, 1,  0]]),
      *          np.array([0, 0, 3]))
      */
-    public static RMatrix TrToRotationMatrix(RMatrix T){
-        var R = setValues(T, YESNO.NO, 3);
-        return R;
-    }
-
-    public static RVector TrToPositionVector(RMatrix T){
+    public static RVector TransToP(RMatrix T){
+        //System.out.println("T " + T);
         var P = new RVector(3);
+        //System.out.println("empty P\n" + P);
         for(int z = 0; z <= P.size(); z++){
-
-            T.set(P.get(z),z,3);
+            P.set(z, T.get(z,3));
         }
+        //System.out.println("P "+ P);
         return P;
     }
 
@@ -97,7 +123,15 @@ public class Motion {
      *     """
      */
     public static RMatrix TransInv(RMatrix T){
-
+        System.out.println("T " + T);
+        var R = TransToR(T);
+        System.out.println("R " + R);
+        var P = TransToP(T);
+        System.out.println("P " + P);
+        var Rinv = RotInv(R);
+        var RinvMultP = mult(Rinv, P);
+        var munusRinvMultP = mult(RinvMultP, minusONE);
+        return RpToTrans(Rinv, munusRinvMultP);
     }
 
 }

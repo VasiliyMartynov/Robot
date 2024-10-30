@@ -17,8 +17,8 @@ import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO.YES;
 
 public class Matrices {
 
-    public static RMatrix rotate(RMatrix currentRotation, RMatrix rotationMatrixData) {
-        var m = RMatrix.mult(currentRotation, rotationMatrixData);
+    public RMatrix rotate(RMatrix currentRotation, RMatrix rotationMatrixData) {
+        var m = mult(currentRotation, rotationMatrixData);
         return roundValuesOfRMatrix(m);
     }
 
@@ -40,6 +40,7 @@ public class Matrices {
         }
         return mult(currentRotation, new RMatrix(itemList));
     }
+
 
     /**
      * soMat to SO(3) using matrix multimpliactionl

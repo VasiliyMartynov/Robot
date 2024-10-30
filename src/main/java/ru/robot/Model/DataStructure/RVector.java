@@ -29,6 +29,15 @@ public class RVector {
         this.data.setAsBigDecimal(x4, 3,0);
     }
 
+    public RVector(Matrix m) {
+        System.out.println("input matrix\n" + m.toString());
+        if(m.getColumnCount() > 1) {
+            throw new IllegalArgumentException("Input matrix isn't vector");
+        }
+        this.data = m;
+
+    }
+
     public BigDecimal get(int item){
         return this.data.getAsBigDecimal(item,0);
     }
@@ -52,6 +61,14 @@ public class RVector {
         var v1powPlusV2pow2 = v1pow2.add(v2pow2);
         var v1powPlusV2pow2PlusV3 = v1powPlusV2pow2.add(v3pow2);
         return v1powPlusV2pow2PlusV3.sqrt(MC6);
+    }
+
+    public static RVector mult(RMatrix m, RVector n) {
+        return new RVector(m.data.mtimes(n.data));
+    }
+
+    public static RVector mult(RVector v, BigDecimal scalar) {
+        return new RVector(v.data.times(scalar.doubleValue()));
     }
 
     /**
