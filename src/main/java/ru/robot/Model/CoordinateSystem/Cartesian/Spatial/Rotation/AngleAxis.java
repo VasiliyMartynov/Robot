@@ -1,14 +1,18 @@
 package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation;
 
-import ru.robot.Model.DataStructure.RMatrix;
-import ru.robot.Model.DataStructure.RVector;
+import ru.robot.Model.DataStructure.Base.RMatrix;
+import ru.robot.Model.DataStructure.Vector3;
+import ru.robot.Model.DataStructure.Vector4;
+import ru.robot.Model.DataStructure.RotationMatrix;
+import ru.robot.Model.DataStructure.SkewSymmetricMatrix;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import static ch.obermuhlner.math.big.BigDecimalMath.*;
-import static ru.robot.Model.DataStructure.RMatrix.getIdentityMatrix;
-import static ru.robot.Model.DataStructure.RVector.normOfVector;
-import static ru.robot.Model.DataStructure.RVector.normaliseVector;
+import static ru.robot.Model.DataStructure.Base.RMatrix.getIdentityMatrix;
+import static ru.robot.Model.DataStructure.Base.RVector.normOfVector;
+import static ru.robot.Model.DataStructure.Base.RVector.normaliseVector;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
 import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.*;
@@ -27,12 +31,12 @@ public class AngleAxis {
      * [ 3,  0, -1],
      * [-2,  1,  0]])
      */
-    public static RMatrix VecToso3(RVector omg){
-        var v1 = omg.get(0);
-        var v2 = omg.get(1);
-        var v3 = omg.get(2);
+    public static SkewSymmetricMatrix VecToso3(Vector3 omg){
+        var v1 = omg.getData().get(0);
+        var v2 = omg.getData().get(1);
+        var v3 = omg.getData().get(2);
         List<BigDecimal> items = Arrays.asList(ZERO, minus(v3), v2,v3,ZERO,minus(v1),minus(v2),v1, ZERO);
-        return new RMatrix(items);
+        return new SkewSymmetricMatrix(new RMatrix(items));
     }
 
     /**
@@ -48,24 +52,12 @@ public class AngleAxis {
      *     Output:
      *         np.array([1, 2, 3])
      */
-    public static RVector so3ToVec(RMatrix so3mat){
-        var m1 = so3mat.get(2,1);
-        var m2 = so3mat.get(0,2);
-        var m3 = so3mat.get(1,0);
-        return  new RVector(m1, m2, m3);
+    public static Vector3 so3ToVec(SkewSymmetricMatrix so3mat){
+        var m1 = so3mat.getData().get(2,1);
+        var m2 = so3mat.getData().get(0,2);
+        var m3 = so3mat.getData().get(1,0);
+        return  new Vector3(m1, m2, m3);
     }
-
-    public static RVector AngleAxisToVec(RVector fourVector){
-        var m1 = fourVector.get(0);
-        var m2 = fourVector.get(1);
-        var m3 = fourVector.get(2);
-        var m4 = fourVector.get(3);
-        var x1 = m1.multiply(m4);
-        var x2 = m2.multiply(m4);
-        var x3 = m3.multiply(m4);
-        return  new RVector(x1, x2, x3);
-    }
-
 
     /**
      *     Converts a 3-vector of exponential coordinates for rotation into
@@ -80,9 +72,31 @@ public class AngleAxis {
      * @param expc3  A 3-vector of exponential coordinates for rotation
      * @return result
      */
-    public static RVector AxisAng3(RVector expc3){
-        RVector omghat = normaliseVector(expc3);
-        return new RVector(omghat.get(0), omghat.get(1),omghat.get(2) , normOfVector(expc3));
+    public static Vector4 AxisAng3(Vector3 expc3){
+        Vector3 omghat = normaliseVector(expc3);
+        return new Vector4(omghat.getData().get(0), omghat.getData().get(1),omghat.getData().get(2) , normOfVector(expc3));
+    }
+
+    /**
+     *     Converts a 4-vector of axis-angle form to
+     *     exponential coordinates for rotation
+     *     Example Input:
+     *      (np.array([0.26726124, 0.53452248, 0.80178373]), 3.7416573867739413)
+     *     Output:  expc3 = np.array([1, 2, 3])
+     *
+     *     return (Normalize(expc3), np.linalg.norm(expc3))
+     * @param  fourVector of exponential coordinates for rotation
+     * @return result
+     */
+    public static Vector3 AngleAxisToVec3(Vector4 fourVector){
+        var m1 = fourVector.getData().get(0);
+        var m2 = fourVector.getData().get(1);
+        var m3 = fourVector.getData().get(2);
+        var m4 = fourVector.getData().get(3);
+        var x1 = m1.multiply(m4,MC6);
+        var x2 = m2.multiply(m4,MC6);
+        var x3 = m3.multiply(m4,MC6);
+        return  new Vector3(x1, x2, x3);
     }
 
     /**
@@ -101,19 +115,19 @@ public class AngleAxis {
      [ 0.69297817,  0.6313497 ,  0.34810748]])
 
      */
-    public static RMatrix MatrixExp3(RMatrix so3mat){
+    public static RotationMatrix MatrixExp3(SkewSymmetricMatrix so3mat){
         var omgtheta = so3ToVec(so3mat);
-        var w1 = omgtheta.get(0);
-        var w2 = omgtheta.get(1);
-        var w3 = omgtheta.get(2);
-        var theta = AxisAng3(omgtheta).get(3);;
-        var omghat = so3mat.divide(theta);
+        var w1 = omgtheta.getData().get(0);
+        var w2 = omgtheta.getData().get(1);
+        var w3 = omgtheta.getData().get(2);
+        var theta = AxisAng3(omgtheta).getData().get(3);
+        var omghat = so3mat.getData().divide(theta);
         if (w1.compareTo(ONE) > 0 || w2.compareTo(ONE) > 0 || w3.compareTo(ONE) > 0 ) {
             throw  new IllegalArgumentException("Illegal input, please check input parameters");
         }
 
         if(nearZero(normOfVector(omgtheta)) > 0){
-            return getIdentityMatrix(3);
+            return new RotationMatrix(getIdentityMatrix(3));
         } else {
             var I = getIdentityMatrix(3);
             var c = cos(theta, MC6);
@@ -124,7 +138,7 @@ public class AngleAxis {
             var oneMunusCosMultOmghatPow2 = omghatPow2.mult(oneMinusCos);
             var IplusCmultOmghat = I.plus(cMultOmghat);
 
-            return IplusCmultOmghat.plus(oneMunusCosMultOmghatPow2);
+            return new RotationMatrix(IplusCmultOmghat.plus(oneMunusCosMultOmghatPow2));
         }
     }
 
@@ -147,27 +161,27 @@ public class AngleAxis {
      *                   [ 1.20919958,           0, -1.20919958],
      *                   [-1.20919958,  1.20919958,           0]])
      */
-    public static RMatrix MatrixLog3(RMatrix rotationMatrixData){
-        RVector axisAngle;
-        var i = RMatrix.getIdentityMatrix(3);
-        var trace = RMatrix.trace(rotationMatrixData);
+    public static SkewSymmetricMatrix MatrixLog3(RotationMatrix rotationMatrixData){
+        Vector4 axisAngle = null;
+        var i = getIdentityMatrix(3);
+        var trace = RMatrix.trace(rotationMatrixData.getData());
         System.out.println("Trace is " + trace);
-        axisAngle = new RVector(4);
 
-        if (RMatrix.equalsContent(rotationMatrixData,i))
+
+        if (RMatrix.equalsContent(rotationMatrixData.getData(),i))
         {
             System.out.println("Case A matrix is Identity");
-            System.out.println("vectorAxisOmega is "+ axisAngle.toString());
+            System.out.println("vectorAxisOmega is "+ axisAngle);
 
-            return RMatrix.getZerosMatrix(3);
+            return new SkewSymmetricMatrix(RMatrix.getZerosMatrix(3));
         }
 
         else if (trace.compareTo(minusONE) == 0)
         {
             System.out.println("Case B Trace is -1");
-            var r13 = rotationMatrixData.get(0,2);
-            var r23 = rotationMatrixData.get(1,2);
-            var r33 = rotationMatrixData.get(2,2);
+            var r13 = rotationMatrixData.getData().get(0,2);
+            var r23 = rotationMatrixData.getData().get(1,2);
+            var r33 = rotationMatrixData.getData().get(2,2);
             var onePlusR33 = r33.add(ONE);
             var TwoMultOnePlusR33 = onePlusR33.multiply(new BigDecimal("2"));
             var sqrtFromTwoMultOnePlusR33 = TwoMultOnePlusR33.sqrt(MC6);
@@ -175,7 +189,7 @@ public class AngleAxis {
             var w1 = p1.multiply(r13, MC6);
             var w2 = p1.multiply(r23, MC6);
             var w3 = p1.multiply(onePlusR33, MC6);
-            return VecToso3(new RVector(w1,w2,w3));
+            return VecToso3(new Vector3(w1,w2,w3));
         }
         else
         {
@@ -187,12 +201,12 @@ public class AngleAxis {
             var TwoSinA = sinA.multiply(TWO);
             var OneDivTwoSinA = ONE.divide(TwoSinA, MC6);
 
-            var r21 = rotationMatrixData.get(2,1);
-            var r12 = rotationMatrixData.get(1,2);
-            var r02 = rotationMatrixData.get(0,2);
-            var r20 = rotationMatrixData.get(2,0);
-            var r10 = rotationMatrixData.get(1,0);
-            var r01 = rotationMatrixData.get(0,1);
+            var r21 = rotationMatrixData.getData().get(2,1);
+            var r12 = rotationMatrixData.getData().get(1,2);
+            var r02 = rotationMatrixData.getData().get(0,2);
+            var r20 = rotationMatrixData.getData().get(2,0);
+            var r10 = rotationMatrixData.getData().get(1,0);
+            var r01 = rotationMatrixData.getData().get(0,1);
 
             var r21MinusR12 = r21.subtract(r12);
             var r02MinusR20 = r02.subtract(r20);
@@ -201,8 +215,8 @@ public class AngleAxis {
             var w1 = OneDivTwoSinA.multiply(r21MinusR12).round(MC6);
             var w2 = OneDivTwoSinA.multiply(r02MinusR20).round(MC6);
             var w3 = OneDivTwoSinA.multiply(r10MinusR01).round(MC6);
-            var fourVector = new RVector(w1,w2,w3,angle);
-            return VecToso3(AngleAxisToVec(fourVector));
+            var fourVector = new Vector4(w1,w2,w3,angle);
+            return VecToso3(AngleAxisToVec3(fourVector));
         }
     }
 }

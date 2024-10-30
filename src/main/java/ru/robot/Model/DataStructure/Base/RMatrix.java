@@ -1,5 +1,7 @@
-package ru.robot.Model.DataStructure;
+package ru.robot.Model.DataStructure.Base;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ujmp.core.Matrix;
 import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
 import ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO;
@@ -9,6 +11,8 @@ import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
 import static ru.robot.Environment.Global.*;
 
 public class RMatrix {
+
+    private static final Logger LOGGER = LogManager.getLogger();
     Matrix data;
     int size;
 
@@ -23,17 +27,7 @@ public class RMatrix {
     }
 
     public RMatrix(Matrix R) throws IllegalArgumentException {
-        if (checkIsSO(R)) {
-            System.out.println("Check is OK");
-            this.data = R;
-            this.size = (int) R.getRowCount();
-        } else {
-            System.out.println("Check isn't OK");
-            throw new IllegalArgumentException(
-                    "Body rotation cannot be instantiated, " +
-                            "because Matrix isn't R ∈ SO(3), " +
-                            "det R not equals 1, please check input values");
-        }
+        this.data = R;
     }
 
     public int getSize(){
@@ -90,17 +84,7 @@ public class RMatrix {
         return r1.add(p3).round(MC6);
     }
 
-    private Boolean checkIsSO(Matrix R){
-        var Rtransponsed = R.transpose();
-        var RmultRtansposed = R.mtimes(Rtransponsed);
-        var det = BigDecimal.valueOf(R.det()).round(MC6);
-        var diff = ONE.subtract(det, MC6);
-        boolean ruleOne = nearZero(diff) < 0;
-        var I = getIdentityMatrix((int) R.getRowCount()).data;
-        boolean ruleTwo = compare(I, RmultRtansposed);
-        boolean ruleThree = haveSize(R, this.size);
-        return ruleOne & ruleTwo & ruleThree;
-    }
+
 
 
     public static RMatrix RotInv(RMatrix R){
@@ -108,34 +92,6 @@ public class RMatrix {
         return new RMatrix(invR);
     }
 
-    private boolean haveSize(Matrix R,int size){
-        var rows = R.getRowCount();
-        var columns = R.getColumnCount();
-        if (rows == columns || rows == size){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean compare(Matrix n, Matrix m){
-        boolean result = false;
-        BigDecimal x, y;
-        var roundedN = roundValuesOfMatrix(n);
-        var roundedM = roundValuesOfMatrix(m);
-        for(long i = 0; i < n.getColumnCount(); i++) {
-            for(long j = 0; j < n.getRowCount(); j++) {
-                x = roundedN.getAsBigDecimal(i,j);
-                y = roundedM.getAsBigDecimal(i,j);
-                if (x.compareTo(y) == 0){
-                    result = true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return result;
-    }
 
     private static Matrix setValues(List<BigDecimal> arrayList, int size){
         Matrix m = new DefaultDenseBigDecimalMatrix2D(size,size);
@@ -227,7 +183,7 @@ public class RMatrix {
         return R;
     }
 
-    public void set(BigDecimal value, long... coordinates){
+    private void set(BigDecimal value, long... coordinates){
         this.data.setAsBigDecimal(value, coordinates);
     }
 
@@ -259,8 +215,6 @@ public class RMatrix {
         return data;
     }
 
-
-
     public long getRowCount() {
         return this.data.getRowCount();
     }
@@ -273,8 +227,6 @@ public class RMatrix {
         return new RMatrix(m.data.mtimes(n.data));
     }
 
-
-
     public RMatrix mult(BigDecimal scalar) {
         return new RMatrix(this.data.times(scalar.doubleValue()));
     }
@@ -282,7 +234,6 @@ public class RMatrix {
     public RMatrix mult(RMatrix m) {
         return new RMatrix(this.data.mtimes(m.data));
     }
-
 
     public RMatrix divide(BigDecimal scalar) {
         return new RMatrix(this.data.divide(scalar.doubleValue()));
@@ -307,7 +258,7 @@ public class RMatrix {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        s.append("Rotation matrix:\n");
+        s.append("Matrix:\n");
         for(int i = 0; i < this.data.getRowCount(); i++) {
             for(int j = 0; j < this.data.getColumnCount(); j++) {
                 s.append(this.data.getAsDouble(i, j));
@@ -316,6 +267,35 @@ public class RMatrix {
             s.append("\n");
         }
         return s.toString();
+    }
+
+    public static boolean compareMatrices(Matrix n, Matrix m){
+        boolean result = false;
+        BigDecimal x, y;
+        var roundedN = roundValuesOfMatrix(n);
+        var roundedM = roundValuesOfMatrix(m);
+        for(long i = 0; i < n.getColumnCount(); i++) {
+            for(long j = 0; j < n.getRowCount(); j++) {
+                x = roundedN.getAsBigDecimal(i,j);
+                y = roundedM.getAsBigDecimal(i,j);
+                if (x.compareTo(y) == 0){
+                    result = true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return result;
+    }
+
+    public static  boolean haveSize(Matrix R){
+        var rows = R.getRowCount();
+        var columns = R.getColumnCount();
+        if (rows == columns || rows == 3){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

@@ -2,7 +2,7 @@ package ru.robot.Model.CoordinateSystem.Cartesian.coordinates;
 
 import ru.robot.Model.Rigid.BodyRotation;
 import ru.robot.Model.Rigid.BodyPosition;
-import ru.robot.Model.DataStructure.RMatrix;
+import ru.robot.Model.DataStructure.Base.RMatrix;
 
 import java.math.BigDecimal;
 

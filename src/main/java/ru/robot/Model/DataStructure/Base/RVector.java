@@ -1,7 +1,8 @@
-package ru.robot.Model.DataStructure;
+package ru.robot.Model.DataStructure.Base;
 
 import org.ujmp.core.Matrix;
 import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
+import ru.robot.Model.DataStructure.Vector3;
 
 import java.math.BigDecimal;
 
@@ -50,11 +51,11 @@ public class RVector {
         return this.data.getSize().length;
     }
 
-    public static BigDecimal normOfVector(RVector V3) {
+    public static BigDecimal normOfVector(Vector3 V3) {
 
-        var v1 = V3.get(0);
-        var v2 = V3.get(1);
-        var v3 = V3.get(2);
+        var v1 = V3.getData().get(0);
+        var v2 = V3.getData().get(1);
+        var v3 = V3.getData().get(2);
         var v1pow2 = v1.pow(2);
         var v2pow2 = v2.pow(2);
         var v3pow2 = v3.pow(2);
@@ -82,11 +83,11 @@ public class RVector {
      *     Output:
      *         np.array([0.26726124, 0.53452248, 0.80178373])
      */
-    public static RVector normaliseVector(RVector V) {
-        var m1 = V.get(0).divide(normOfVector(V),MC6);
-        var m2 = V.get(1).divide(normOfVector(V),MC6);
-        var m3 = V.get(2).divide(normOfVector(V),MC6);
-        return new RVector(m1, m2, m3);
+    public static Vector3 normaliseVector(Vector3 V) {
+        var m1 = V.getData().get(0).divide(normOfVector(V),MC6);
+        var m2 = V.getData().get(1).divide(normOfVector(V),MC6);
+        var m3 = V.getData().get(2).divide(normOfVector(V),MC6);
+        return new Vector3(m1, m2, m3);
     }
 
     /**
@@ -100,18 +101,6 @@ public class RVector {
      *     Output:
      *         3.74166
      */
-    public static BigDecimal normOfVector(RMatrix V3) {
-
-        var v1 = V3.get(0,0);
-        var v2 = V3.get(1,0);
-        var v3 = V3.get(2,0);
-        var v1pow2 = v1.pow(2);
-        var v2pow2 = v2.pow(2);
-        var v3pow2 = v3.pow(2);
-        var v1powPlusV2pow2 = v1pow2.add(v2pow2);
-        var v1powPlusV2pow2PlusV3 = v1powPlusV2pow2.add(v3pow2);
-        return v1powPlusV2pow2PlusV3.sqrt(MC6);
-    }
 
     public double getAsDouble(long... coordinates) {
         return this.data.getAsDouble(coordinates);
@@ -120,7 +109,7 @@ public class RVector {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        s.append("Rotation matrix:\n");
+        s.append("Vector:\n");
         for(int i = 0; i < this.data.getRowCount(); i++) {
 
                 s.append(this.data.getAsDouble(i, 0));
