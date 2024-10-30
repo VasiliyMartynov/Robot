@@ -1,5 +1,7 @@
 package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.robot.Model.DataStructure.Base.RMatrix;
 import ru.robot.Model.DataStructure.Vector3;
 import ru.robot.Model.DataStructure.Vector4;
@@ -18,6 +20,8 @@ import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.*;
 
 public class AngleAxis {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Converts a 3-vector to an so(3) representation
@@ -93,9 +97,9 @@ public class AngleAxis {
         var m2 = fourVector.getData().get(1);
         var m3 = fourVector.getData().get(2);
         var m4 = fourVector.getData().get(3);
-        var x1 = m1.multiply(m4,MC6);
-        var x2 = m2.multiply(m4,MC6);
-        var x3 = m3.multiply(m4,MC6);
+        var x1 = m1.multiply(m4, MC6);
+        var x2 = m2.multiply(m4, MC6);
+        var x3 = m3.multiply(m4, MC6);
         return  new Vector3(x1, x2, x3);
     }
 
@@ -115,19 +119,17 @@ public class AngleAxis {
      [ 0.69297817,  0.6313497 ,  0.34810748]])
 
      */
-    public static RotationMatrix MatrixExp3(SkewSymmetricMatrix so3mat){
+    public static RMatrix MatrixExp3(SkewSymmetricMatrix so3mat){
         var omgtheta = so3ToVec(so3mat);
-        var w1 = omgtheta.getData().get(0);
-        var w2 = omgtheta.getData().get(1);
-        var w3 = omgtheta.getData().get(2);
+//        var w1 = omgtheta.getData().get(0);
+//        var w2 = omgtheta.getData().get(1);
+//        var w3 = omgtheta.getData().get(2);
         var theta = AxisAng3(omgtheta).getData().get(3);
         var omghat = so3mat.getData().divide(theta);
-        if (w1.compareTo(ONE) > 0 || w2.compareTo(ONE) > 0 || w3.compareTo(ONE) > 0 ) {
-            throw  new IllegalArgumentException("Illegal input, please check input parameters");
-        }
 
-        if(nearZero(normOfVector(omgtheta)) > 0){
-            return new RotationMatrix(getIdentityMatrix(3));
+
+        if(nearZero(normOfVector(omgtheta)) < 0){
+            return getIdentityMatrix(3);
         } else {
             var I = getIdentityMatrix(3);
             var c = cos(theta, MC6);
@@ -138,7 +140,7 @@ public class AngleAxis {
             var oneMunusCosMultOmghatPow2 = omghatPow2.mult(oneMinusCos);
             var IplusCmultOmghat = I.plus(cMultOmghat);
 
-            return new RotationMatrix(IplusCmultOmghat.plus(oneMunusCosMultOmghatPow2));
+            return IplusCmultOmghat.plus(oneMunusCosMultOmghatPow2);
         }
     }
 
@@ -165,20 +167,20 @@ public class AngleAxis {
         Vector4 axisAngle = null;
         var i = getIdentityMatrix(3);
         var trace = RMatrix.trace(rotationMatrixData.getData());
-        System.out.println("Trace is " + trace);
+        LOGGER.debug("Trace is: `{}`" , trace);
 
 
         if (RMatrix.equalsContent(rotationMatrixData.getData(),i))
         {
-            System.out.println("Case A matrix is Identity");
-            System.out.println("vectorAxisOmega is "+ axisAngle);
+            LOGGER.debug("Case A matrix is Identity");
+            LOGGER.debug("vectorAxisOmega is `{}`", axisAngle);
 
             return new SkewSymmetricMatrix(RMatrix.getZerosMatrix(3));
         }
 
         else if (trace.compareTo(minusONE) == 0)
         {
-            System.out.println("Case B Trace is -1");
+            LOGGER.debug("Case B Trace is -1");
             var r13 = rotationMatrixData.getData().get(0,2);
             var r23 = rotationMatrixData.getData().get(1,2);
             var r33 = rotationMatrixData.getData().get(2,2);
@@ -193,7 +195,7 @@ public class AngleAxis {
         }
         else
         {
-            System.out.println("Case C");
+            LOGGER.debug("Case C");
             var traceMinusOne  = trace.subtract(ONE);
             var traceMinusOneDivTWO = traceMinusOne.divide(TWO, MC6);
             var angle = acos(traceMinusOneDivTWO, MC6);

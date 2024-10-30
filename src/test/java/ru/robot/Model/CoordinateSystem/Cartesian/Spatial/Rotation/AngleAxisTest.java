@@ -6,13 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import ru.robot.Model.DataStructure.Base.RMatrix;
+import ru.robot.Model.DataStructure.RotationMatrix;
 import ru.robot.Model.DataStructure.Vector3;
 import ru.robot.Model.DataStructure.Vector4;
 import ru.robot.Model.DataStructure.SkewSymmetricMatrix;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.AngleAxis.*;
@@ -26,20 +25,6 @@ public class AngleAxisTest {
     void init(TestInfo testInfo) {
         LOGGER.info(testInfo.getDisplayName());
     }
-
-
-
-//    @Test
-//    void MatrixLog3Test() throws InstantiationException {
-//        var SO3 = new RotationMatrix(new RMatrix(Arrays.asList(ZERO,ZERO,ONE, ONE,ZERO,ZERO,ZERO,ONE,ZERO)));
-//        var n = new BigDecimal("1.20919958");
-//        var minusN = minus(n);
-//        var so3 = new RMatrix(Arrays.asList(ZERO, minusN,n, n,ZERO,minusN,minusN,n,ZERO));
-//        System.out.println(SO3.toString());
-//        System.out.println(so3.toString());
-//        System.out.println(MatrixLog3(SO3).toString());
-//
-//    }
 
 
     /**
@@ -67,7 +52,7 @@ public class AngleAxisTest {
 
         for(int i = 0; i < actual.getData().getSize(); i++){
             for(int j = 0; j < actual.getData().getSize(); j++){
-                assertEquals(actual.getData().getDouble(i,j), expected.getData().getDouble(i,j));
+                assertEquals(expected.getData().getDouble(i,j), actual.getData().getDouble(i,j));
             }
         }
     }
@@ -97,7 +82,7 @@ public class AngleAxisTest {
         LOGGER.debug("actual vector3 `{}`", actual.getData());
 
         for(int j = 0; j < actual.getSize(); j++){
-            assertEquals(actual.getData().get(j), expected.getData().get(j));
+            assertEquals(expected.getData().get(j),actual.getData().get(j));
         }
 
 
@@ -128,7 +113,7 @@ public class AngleAxisTest {
         LOGGER.debug("actual vector4 `{}`", actual.getData());
 
         for(int j = 0; j < actual.getSize(); j++){
-            assertEquals(actual.getData().get(j), expected.getData().get(j));
+            assertEquals(expected.getData().get(j),actual.getData().get(j));
         }
     }
 
@@ -148,16 +133,102 @@ public class AngleAxisTest {
                 new BigDecimal("0.534522"),
                 new BigDecimal("0.801783"),
                 new BigDecimal("3.74166"));
-
-        var expected = new Vector3(new BigDecimal("1"), new BigDecimal("2"), new BigDecimal("3"));
         var actual = AngleAxisToVec3(v4);
+        var expected = new Vector3(ONE, TWO, THREE);
 
         LOGGER.debug("actual vector3 `{}`", actual.getData());
 
         for(int j = 0; j < actual.getSize(); j++){
-            LOGGER.debug(actual.getData().get(j));
-            LOGGER.debug(expected.getData().get(j));
-            assertEquals(actual.getData().get(j), expected.getData().get(j));
+            assertEquals(expected.getData().get(j),actual.getData().get(j));
         }
+    }
+
+    /**
+     Computes the matrix exponential of a matrix in so(3) using Rodriges formula
+
+     :param so3mat: A 3x3 skew-symmetric matrix
+     :return: The matrix exponential of so3mat
+
+     Example Input:
+     so3mat = np.array([[ 0, -3,  2],
+     [ 3,  0, -1],
+     [-2,  1,  0]])
+     Output:
+     np.array(  [[-0.69492056,  0.71352099,  0.08929286],
+                 [-0.19200697, -0.30378504,  0.93319235],
+                 [ 0.69297817,  0.6313497 ,  0.34810748]])
+
+     */
+    @Test
+    void MatrixExp3Test(){
+        var skewSymmetricMatrix = new SkewSymmetricMatrix(new RMatrix(Arrays.asList(
+                ZERO, minus(THREE), TWO,
+                THREE, ZERO, minusONE,
+                minus(TWO), ONE, ZERO)));
+        var expected = new RMatrix(Arrays.asList(
+                new BigDecimal("-0.694920"),
+                new BigDecimal("0.713520"),
+                new BigDecimal("0.089292"),
+                new BigDecimal("-0.192006"),
+                new BigDecimal("-0.303785"),
+                new BigDecimal("0.933192"),
+                new BigDecimal("0.692978"),
+                new BigDecimal("0.631349"),
+                new BigDecimal("0.348107")
+        ));
+
+        var actual = MatrixExp3(skewSymmetricMatrix);
+
+        LOGGER.debug("actual matrix `{}`\n", actual.getData());
+        for(int i = 0; i < actual.getSize(); i++){
+            for(int j = 0; j < actual.getSize(); j++){
+                assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
+            }
+        }
+    }
+
+    /**
+     *Computes the matrix logarithm of a rotation matrix
+     *
+     *     :param R: A 3x3 rotation matrix
+     *     :return: The matrix logarithm of R
+     *
+     *     Example Input:
+     *         R = np.array([[0, 0, 1],
+     *                       [1, 0, 0],
+     *                       [0, 1, 0]])
+     *     Output:
+     *         np.array([[          0, -1.20919958,  1.20919958],
+     *                   [ 1.20919958,           0, -1.20919958],
+     *                   [-1.20919958,  1.20919958,           0]])
+     */
+    @Test
+    void MatrixLog3Test(){
+        var rotationMatrix = new RotationMatrix(
+                new RMatrix(Arrays.asList(
+                        ZERO,ZERO,ONE,
+                        ONE,ZERO,ZERO,
+                        ZERO,ONE,ZERO
+                )));
+        var expected = new RMatrix(Arrays.asList(
+                ZERO,
+                new BigDecimal("-1.20921"),
+                new BigDecimal("1.20921"),
+                new BigDecimal("1.20921"),
+                ZERO,
+                new BigDecimal("-1.20921"),
+                new BigDecimal("-1.20921"),
+                new BigDecimal("1.20921"),
+                ZERO
+        ));
+        var actual = MatrixLog3(rotationMatrix);
+
+        LOGGER.debug("actual matrix `{}`\n", actual.getData());
+        for(int i = 0; i < actual.getData().getSize(); i++){
+            for(int j = 0; j < actual.getData().getSize(); j++){
+                assertEquals(expected.getDouble(i,j), actual.getData().getDouble(i,j));
+            }
+        }
+
     }
 }

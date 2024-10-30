@@ -22,6 +22,7 @@ import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
 public class Matrices {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    //test is OK
     public static RotationMatrix rotate(RotationMatrix m, RotationMatrix n) {
         var z = mult(m.getData(), n.getData());
         return new RotationMatrix(roundValuesOfRMatrix(z));

@@ -4,10 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ujmp.core.Matrix;
 import ru.robot.Model.DataStructure.Base.RMatrix;
-import java.math.BigDecimal;
-import static ru.robot.Environment.Global.MC6;
-import static ru.robot.Environment.Global.ONE;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.minus;
 import static ru.robot.Model.DataStructure.Base.RMatrix.*;
 
 public class SkewSymmetricMatrix {
@@ -33,22 +30,17 @@ public class SkewSymmetricMatrix {
 
     private Boolean checkIsLittleSO3(Matrix R){
         LOGGER.debug("checkIsLittleSO3 start");
-//        var Rtransponsed = R.transpose();
-//        var RmultRtansposed = R.mtimes(Rtransponsed);
-//        var det = BigDecimal.valueOf(R.det()).round(MC6);
-//        var diff = ONE.subtract(det, MC6);
-//        LOGGER.debug("diff is `{}`", diff);
-//        boolean ruleOne = nearZero(diff) < 0;
-//        LOGGER.debug("rule 1 - determinant = 1: `{}`", ruleOne);
-//
-//        var I = getIdentityMatrix((int) R.getRowCount()).getData();
-//        boolean ruleTwo = compareMatrices(I, RmultRtansposed);
-//        LOGGER.debug("rule 2 - R*Rt = I: `{}`", ruleTwo);
-//        boolean ruleThree = haveSize(R);
-//        LOGGER.debug("rule 3 - input matrix has same size as copmared: `{}`", ruleThree);
-//        LOGGER.debug("checkIsLittleSO3 finished with result:`{}`", ruleOne & ruleTwo & ruleThree );
-//        return ruleOne & ruleTwo & ruleThree;
-        return true;
+        boolean ruleOne = R.trace() == 0;
+        LOGGER.debug("rule 1 - trace is ZERO: `{}`", ruleOne);
+        boolean ruleTwo =
+                R.getAsBigDecimal(0,1).compareTo(minus(R.getAsBigDecimal(1,0))) == 0 &
+                R.getAsBigDecimal(0,2).compareTo(minus(R.getAsBigDecimal(2,0))) == 0 &
+                R.getAsBigDecimal(1,2).compareTo(minus(R.getAsBigDecimal(2,1))) == 0;
+        LOGGER.debug("rule 2 - R*Rt = I: `{}`", ruleTwo);
+        boolean ruleThree = haveSize(R);
+        LOGGER.debug("rule 3 - input matrix has same size as compared: `{}`", ruleThree);
+        LOGGER.debug("checkIsLittleSO3 finished with result:`{}`", ruleOne & ruleTwo & ruleThree );
+        return ruleOne & ruleTwo & ruleThree;
     }
 
     public RMatrix getData(){
