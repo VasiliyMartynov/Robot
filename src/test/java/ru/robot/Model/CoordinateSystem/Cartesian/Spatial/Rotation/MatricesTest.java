@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Matrices.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.minus;
+
 import static ru.robot.Model.DataStructure.Base.RMatrix.getIdentityMatrix;
 
 public class MatricesTest {
@@ -112,7 +113,7 @@ public class MatricesTest {
 
         var actual = Matrices.MatrixExp3(skewSymmetricMatrix);
 
-        LOGGER.debug("actual matrix `{}`\n", actual.getData());
+        LOGGER.debug("actual matrix `\n{}`", actual.getData());
         for(int i = 0; i < actual.getSize(); i++){
             for(int j = 0; j < actual.getSize(); j++){
                 assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));

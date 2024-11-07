@@ -35,7 +35,7 @@ public class RotationMatrix {
     }
 
     private Boolean checkIsSO3(Matrix R){
-        LOGGER.debug("checkIsSO start");
+        LOGGER.info("checkIsSO start");
         var Rtransponsed = R.transpose();
         var RmultRtansposed = R.mtimes(Rtransponsed);
         var det = BigDecimal.valueOf(R.det()).round(MC6);
@@ -49,7 +49,7 @@ public class RotationMatrix {
         LOGGER.debug("rule 2 - R*Rt = I: `{}`", ruleTwo);
         boolean ruleThree = haveSize(R);
         LOGGER.debug("rule 3 - input matrix has same size as copmared: `{}`", ruleThree);
-        LOGGER.debug("checkIsSO finished with result:`{}`", ruleOne & ruleTwo & ruleThree );
+        LOGGER.info("checkIsSO finished with result:`{}`", ruleOne & ruleTwo & ruleThree );
         return ruleOne & ruleTwo & ruleThree;
     }
 

@@ -36,10 +36,16 @@ public class AngleAxis {
      * [-2,  1,  0]])
      */
     public static SkewSymmetricMatrix VecToso3(Vector3 omg){
+        LOGGER.debug("VecToso3 STARTED");
         var v1 = omg.getData().get(0);
+        LOGGER.debug("v1 '{}'", v1);
         var v2 = omg.getData().get(1);
+        LOGGER.debug("v2 '{}'", v2);
         var v3 = omg.getData().get(2);
+        LOGGER.debug("v3 '{}'", v3);
         List<BigDecimal> items = Arrays.asList(ZERO, minus(v3), v2,v3,ZERO,minus(v1),minus(v2),v1, ZERO);
+        LOGGER.debug("List<BigDecimal> items '{}'", items);
+        LOGGER.debug("VecToso3 FINISHED");
         return new SkewSymmetricMatrix(new RMatrix(items));
     }
 
@@ -57,9 +63,14 @@ public class AngleAxis {
      *         np.array([1, 2, 3])
      */
     public static Vector3 so3ToVec(SkewSymmetricMatrix so3mat){
+        LOGGER.debug("so3ToVec STARTED");
         var m1 = so3mat.getData().get(2,1);
+        LOGGER.debug("m1 '{}'", m1);
         var m2 = so3mat.getData().get(0,2);
+        LOGGER.debug("m2 '{}'", m2);
         var m3 = so3mat.getData().get(1,0);
+        LOGGER.debug("m3 '{}'", m3);
+        LOGGER.debug("so3ToVec FINISHED");
         return  new Vector3(m1, m2, m3);
     }
 
@@ -93,13 +104,19 @@ public class AngleAxis {
      * @return result
      */
     public static Vector3 AngleAxisToVec3(Vector4 fourVector){
+        LOGGER.debug("AngleAxisToVec3 STARTED");
+        LOGGER.debug("INPUT '{}'", fourVector.getData());
         var m1 = fourVector.getData().get(0);
         var m2 = fourVector.getData().get(1);
         var m3 = fourVector.getData().get(2);
         var m4 = fourVector.getData().get(3);
         var x1 = m1.multiply(m4, MC6);
+        LOGGER.debug("x1 '{}'", x1);
         var x2 = m2.multiply(m4, MC6);
+        LOGGER.debug("x2 '{}'", x2);
         var x3 = m3.multiply(m4, MC6);
+        LOGGER.debug("x3 '{}'", x3);
+        LOGGER.debug("AngleAxisToVec3 FINISHED");
         return  new Vector3(x1, x2, x3);
     }
 
@@ -161,6 +178,7 @@ public class AngleAxis {
      *                   [-1.20919958,  1.20919958,           0]])
      */
     public static SkewSymmetricMatrix MatrixLog3(RotationMatrix rotationMatrixData){
+        LOGGER.info("MatrixLog3 started");
         Vector4 axisAngle = null;
         var i = getIdentityMatrix(3);
         var trace = RMatrix.trace(rotationMatrixData.getData());
@@ -194,27 +212,45 @@ public class AngleAxis {
         {
             LOGGER.debug("Case C");
             var traceMinusOne  = trace.subtract(ONE);
+            LOGGER.debug("traceMinusOne '{}'", traceMinusOne);
             var traceMinusOneDivTWO = traceMinusOne.divide(TWO, MC6);
+            LOGGER.debug("traceMinusOneDivTWO '{}'", traceMinusOneDivTWO);
             var angle = acos(traceMinusOneDivTWO, MC6);
+            LOGGER.debug("angle '{}'", angle);
             var sinA = sin(angle, MC6);
+            LOGGER.debug("sinA '{}'", sinA);
             var TwoSinA = sinA.multiply(TWO);
+            LOGGER.debug("TwoSinA '{}'", TwoSinA);
             var OneDivTwoSinA = ONE.divide(TwoSinA, MC6);
-
+            LOGGER.debug("OneDivTwoSinA '{}'", OneDivTwoSinA);
             var r21 = rotationMatrixData.getData().get(2,1);
+            LOGGER.debug("r21 '{}'", r21);
             var r12 = rotationMatrixData.getData().get(1,2);
+            LOGGER.debug("r12 '{}'", r12);
             var r02 = rotationMatrixData.getData().get(0,2);
+            LOGGER.debug("r02 '{}'", r02);
             var r20 = rotationMatrixData.getData().get(2,0);
+            LOGGER.debug("r20 '{}'", r20);
             var r10 = rotationMatrixData.getData().get(1,0);
+            LOGGER.debug("r10 '{}'", r10);
             var r01 = rotationMatrixData.getData().get(0,1);
+            LOGGER.debug("r01 '{}'", r01);
 
             var r21MinusR12 = r21.subtract(r12);
+            LOGGER.debug("r21MinusR12 '{}'", r21MinusR12);
             var r02MinusR20 = r02.subtract(r20);
+            LOGGER.debug("r02MinusR20 '{}'", r02MinusR20);
             var r10MinusR01 = r10.subtract(r01);
+            LOGGER.debug("r10MinusR01 '{}'", r10MinusR01);
 
             var w1 = OneDivTwoSinA.multiply(r21MinusR12).round(MC6);
+            LOGGER.debug("w1 '{}'", w1);
             var w2 = OneDivTwoSinA.multiply(r02MinusR20).round(MC6);
+            LOGGER.debug("w2 '{}'", w2);
             var w3 = OneDivTwoSinA.multiply(r10MinusR01).round(MC6);
+            LOGGER.debug("w3 '{}'", w3);
             var fourVector = new Vector4(w1,w2,w3,angle);
+            LOGGER.debug("fourVector '{}'", fourVector.getData());
             return VecToso3(AngleAxisToVec3(fourVector));
         }
     }

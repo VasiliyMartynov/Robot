@@ -14,10 +14,11 @@ public class SkewSymmetricMatrix {
     int size = 3;
 
     public SkewSymmetricMatrix(RMatrix R){
-
+        LOGGER.debug("SkewSymmetricMatrix contructor has started");
         if (checkIsLittleSO3(R.getData())) {
             this.data = R;
             this.size = (int) R.getRowCount();
+            LOGGER.debug("SkewSymmetricMatrix contructor has finished,SkewSymmetricMatrix has been created ");
         } else {
             String message = "Matrix cannot be instantiated, " +
                     "because Matrix isn't R ∈ SO(3), " +
@@ -29,18 +30,18 @@ public class SkewSymmetricMatrix {
     }
 
     private Boolean checkIsLittleSO3(Matrix R){
-        LOGGER.debug("checkIsLittleSO3 start");
-        LOGGER.debug("Cheking Matrix `{}`", R);
+        LOGGER.debug("checkIsLittleSO3 started");
+        LOGGER.debug("Cheking Matrix \n`{}`", R);
         boolean ruleOne = R.trace() == 0;
-        LOGGER.debug("rule 1 - trace is ZERO: `{}`", ruleOne);
+        LOGGER.debug("checkIsLittleSO3 rule 1 - trace is ZERO: `{}`", ruleOne);
         boolean ruleTwo =
                 R.getAsBigDecimal(0,1).compareTo(minus(R.getAsBigDecimal(1,0))) == 0 &
                 R.getAsBigDecimal(0,2).compareTo(minus(R.getAsBigDecimal(2,0))) == 0 &
                 R.getAsBigDecimal(1,2).compareTo(minus(R.getAsBigDecimal(2,1))) == 0;
-        LOGGER.debug("rule 2 - check values: `{}`", ruleTwo);
+        LOGGER.debug("checkIsLittleSO3 rule 2 - check values: `{}`", ruleTwo);
         boolean ruleThree = haveSize(R);
-        LOGGER.debug("rule 3 - input matrix has same size as compared: `{}`", ruleThree);
-        LOGGER.debug("checkIsLittleSO3 finished with result:`{}`", ruleOne & ruleTwo & ruleThree );
+        LOGGER.debug("checkIsLittleSO3 rule 3 - input matrix has same size as compared: `{}`", ruleThree);
+        LOGGER.info("checkIsLittleSO3 finished with result:`{}`", ruleOne & ruleTwo & ruleThree );
         return ruleOne & ruleTwo & ruleThree;
     }
 

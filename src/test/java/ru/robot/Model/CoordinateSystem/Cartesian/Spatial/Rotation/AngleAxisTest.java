@@ -42,8 +42,9 @@ public class AngleAxisTest {
     @Test
     void VecToso3Test(){
         var omg = new Vector3(ONE, TWO, THREE);
+        LOGGER.debug("omg \n'{}'",omg.getData());
         var actual = VecToso3(omg);
-        LOGGER.debug("actual SkewSymmetricMatrix `{}`", actual.getData());
+        LOGGER.debug("actual SkewSymmetricMatrix \n`{}`", actual.getData());
 
         var expected = new SkewSymmetricMatrix(new RMatrix(Arrays.asList(
                 ZERO, minus(THREE), TWO,
@@ -189,10 +190,8 @@ public class AngleAxisTest {
 
     /**
      *Computes the matrix logarithm of a rotation matrix
-     *
      *     :param R: A 3x3 rotation matrix
      *     :return: The matrix logarithm of R
-     *
      *     Example Input:
      *         R = np.array([[0, 0, 1],
      *                       [1, 0, 0],
@@ -210,6 +209,7 @@ public class AngleAxisTest {
                         ONE,ZERO,ZERO,
                         ZERO,ONE,ZERO
                 )));
+        LOGGER.info("rotationMatrix\n'{}",rotationMatrix.getData());
         var expected = new RMatrix(Arrays.asList(
                 ZERO,
                 new BigDecimal("-1.20921"),
@@ -221,9 +221,9 @@ public class AngleAxisTest {
                 new BigDecimal("1.20921"),
                 ZERO
         ));
+        LOGGER.info("expected matrix \n`{}`", expected.getData());
         var actual = MatrixLog3(rotationMatrix);
-
-        LOGGER.debug("actual matrix `{}`\n", actual.getData());
+        LOGGER.info("actual matrix \n`{}`", actual.getData());
         for(int i = 0; i < actual.getData().getSize(); i++){
             for(int j = 0; j < actual.getData().getSize(); j++){
                 assertEquals(expected.getDouble(i,j), actual.getData().getDouble(i,j));
