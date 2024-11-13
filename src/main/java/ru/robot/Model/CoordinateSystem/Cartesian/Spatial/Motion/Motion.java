@@ -32,23 +32,24 @@ public class Motion {
     }
 
     /**
-     * Converts a rotation matrix and a position vector into homogeneous
-     * transformation matrix
-     * <p>
-     * :param R: A 3x3 rotation matrix
-     * :param p: A 3-vector
-     * :return: A homogeneous transformation matrix corresponding to the inputs
-     * <p>
-     * Example Input:
-     * R = np.array([[1, 0,  0],
-     * [0, 0, -1],
-     * [0, 1,  0]])
-     * p = np.array([1, 2, 5])
-     * Output:
-     * np.array([[1, 0,  0, 1],
-     * [0, 0, -1, 2],
-     * [0, 1,  0, 5],
-     * [0, 0,  0, 1]])
+     *
+     *       Converts a rotation matrix and a position vector into homogeneous
+     *      transformation matrix
+
+     *      xample Input:
+     *       R = np.array([[1, 0,  0],
+     *       [0, 0, -1],
+     *       [0, 1,  0]])
+     *       p = np.array([1, 2, 5])
+     *       Output:
+     *       np.array([[1, 0,  0, 1],
+     *       [0, 0, -1, 2],
+     *         [0, 1,  0, 5],
+     *       [0, 0,  0, 1]])
+     *
+     * @param rotationMatrix A 3x3 rotation matrix
+     * @param position A 3-vector
+     * @return A homogeneous transformation matrix corresponding to the inputs
      */
     //test OK
     public static RMatrix RpToTrans(RMatrix rotationMatrix, RVector position) {
@@ -69,21 +70,20 @@ public class Motion {
     }
 
     /**
-     * Converts a homogeneous transformation matrix into a rotation matrix
-     * <p>
-     * :param T: A homogeneous transformation matrix
-     * :return R: The corresponding rotation matrix,
-     * <p>
-     * Example Input:
-     * T = np.array([[1, 0,  0, 0],
-     * [0, 0, -1, 0],
-     * [0, 1,  0, 3],
-     * [0, 0,  0, 1]])
-     * Output:
-     * (np.array([[1, 0,  0],
-     * [0, 0, -1],
-     * [0, 1,  0]]),
-     * np.array([0, 0, 3]))
+     * * Converts a homogeneous transformation matrix into a rotation matrix
+     *
+     *      * Example Input:
+     *      * T = np.array([[1, 0,  0, 0],
+     *      * [0, 0, -1, 0],
+     *      * [0, 1,  0, 3],
+     *      * [0, 0,  0, 1]])
+     *      * Output:
+     *      * (np.array([[1, 0,  0],
+     *      * [0, 0, -1],
+     *      * [0, 1,  0]]),
+     *      * np.array([0, 0, 3]))
+     * @param T  A homogeneous transformation matrix
+     * @return The corresponding rotation matrix,
      */
 
     public static RMatrix TransToR(RMatrix T) {
@@ -91,21 +91,20 @@ public class Motion {
     }
 
     /**
-     * Converts a homogeneous transformation matrix into position vector
-     * <p>
-     * :param T: A homogeneous transformation matrix
-     * :return p: The corresponding position vector.
-     * <p>
-     * Example Input:
-     * T = np.array([[1, 0,  0, 0],
-     * [0, 0, -1, 0],
-     * [0, 1,  0, 3],
-     * [0, 0,  0, 1]])
-     * Output:
-     * (np.array([[1, 0,  0],
-     * [0, 0, -1],
-     * [0, 1,  0]]),
-     * np.array([0, 0, 3]))
+     *  Converts a homogeneous transformation matrix into position vector
+     *
+     *      * Example Input:
+     *      * T = np.array([[1, 0,  0, 0],
+     *      * [0, 0, -1, 0],
+     *      * [0, 1,  0, 3],
+     *      * [0, 0,  0, 1]])
+     *      * Output:
+     *      * (np.array([[1, 0,  0],
+     *      * [0, 0, -1],
+     *      * [0, 1,  0]]),
+     *      * np.array([0, 0, 3]))
+     * @param T A homogeneous transformation matrix
+     * @return The corresponding position vector.
      */
     //test OK
     public static Vector3 TransToP(RMatrix T) {
@@ -122,24 +121,24 @@ public class Motion {
     }
 
     /**
-     * """Inverts a homogeneous transformation matrix
-     * <p>
-     * :param T: A homogeneous transformation matrix
-     * :return: The inverse of T
-     * Uses the structure of transformation matrices to avoid taking a matrix
-     * inverse, for efficiency.
-     * <p>
-     * Example input:
-     * T = np.array([[1, 0,  0, 0],
-     * [0, 0, -1, 0],
-     * [0, 1,  0, 3],
-     * [0, 0,  0, 1]])
-     * Output:
-     * np.array([[1,  0, 0,  0],
-     * [0,  0, 1, -3],
-     * [0, -1, 0,  0],
-     * [0,  0, 0,  1]])
-     * """
+     * Inverts a homogeneous transformation matrix
+     *
+     *      * Uses the structure of transformation matrices to avoid taking a matrix
+     *      * inverse, for efficiency.
+     *      * <p>
+     *      * Example input:
+     *      * T = np.array([[1, 0,  0, 0],
+     *      * [0, 0, -1, 0],
+     *      * [0, 1,  0, 3],
+     *      * [0, 0,  0, 1]])
+     *      * Output:
+     *      * np.array([[1,  0, 0,  0],
+     *      * [0,  0, 1, -3],
+     *      * [0, -1, 0,  0],
+     *      * [0,  0, 0,  1]])
+     *      * """
+     * @param T A homogeneous transformation matrix
+     * @return The inverse of T
      */
     //test OK
     public static RMatrix TransInv(RMatrix T) {
@@ -174,7 +173,6 @@ public class Motion {
         se3.set(V.getItem(4), 3,0);
         se3.set(V.getItem(5), 3,1);
         se3.set(V.getItem(6), 3,2);
-
         return se3;
     }
 
