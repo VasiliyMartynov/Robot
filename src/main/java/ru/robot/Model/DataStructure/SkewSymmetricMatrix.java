@@ -14,11 +14,11 @@ public class SkewSymmetricMatrix {
     int size = 3;
 
     public SkewSymmetricMatrix(RMatrix R){
-        LOGGER.debug("SkewSymmetricMatrix contructor has started");
+        LOGGER.debug("SkewSymmetricMatrix constructor has started");
         if (checkIsLittleSO3(R.getData())) {
             this.data = R;
             this.size = (int) R.getRowCount();
-            LOGGER.debug("SkewSymmetricMatrix contructor has finished,SkewSymmetricMatrix has been created ");
+            LOGGER.debug("SkewSymmetricMatrix constructor has finished,SkewSymmetricMatrix has been created ");
         } else {
             String message = "Matrix cannot be instantiated, " +
                     "because Matrix isn't R ∈ SO(3), " +
@@ -31,7 +31,7 @@ public class SkewSymmetricMatrix {
 
     private Boolean checkIsLittleSO3(Matrix R){
         LOGGER.debug("checkIsLittleSO3 started");
-        LOGGER.debug("Cheking Matrix \n`{}`", R);
+        LOGGER.debug("Checking Matrix \n`{}`", R);
         boolean ruleOne = R.trace() == 0;
         LOGGER.debug("checkIsLittleSO3 rule 1 - trace is ZERO: `{}`", ruleOne);
         boolean ruleTwo =
