@@ -14,16 +14,51 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.AngleAxis.*;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.minus;
+import static ru.robot.Model.DataStructure.Base.RMatrix.getIdentityMatrix;
 
-public class AngleAxisTest {
+public class RotationTest {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     @BeforeEach
     void init(TestInfo testInfo) {
         LOGGER.info(testInfo.getDisplayName());
+    }
+
+    private RotationMatrix getGoodRotationMatrix(){
+        LOGGER.debug("getGoodRotationMatrix");
+        var r = new RMatrix(Arrays.asList(
+                new BigDecimal("0.804738"),
+                new BigDecimal("-0.310617"),
+                new BigDecimal("0.505879"),
+                new BigDecimal("0.505879"),
+                new BigDecimal("0.804738"),
+                new BigDecimal("-0.310617"),
+                new BigDecimal("-0.310617"),
+                new BigDecimal("0.505879"),
+                new BigDecimal("0.804738")));
+        return new RotationMatrix(r);
+    }
+
+    private RMatrix init(){
+        LOGGER.debug("init");
+        return getIdentityMatrix(3);
+    }
+
+    private RMatrix getBadRotationMatrix(){
+        LOGGER.debug("getBadRotationMatrix");
+        return new RMatrix(Arrays.asList(
+                new BigDecimal("0.804738"),
+                new BigDecimal("-0.310617"),
+                new BigDecimal("0.505879"),
+                new BigDecimal("0.505879"),
+                new BigDecimal("0.804738"),
+                new BigDecimal("-0.310617"),
+                new BigDecimal("-0.310617"),
+                new BigDecimal("0.505879"),
+                new BigDecimal("0.804738")));
     }
 
 
@@ -124,7 +159,7 @@ public class AngleAxisTest {
      *     Example Input:
      *      (np.array([0.26726124, 0.53452248, 0.80178373]), 3.7416573867739413)
      *     Output:  expc3 = np.array([1, 2, 3])
-     *
+
      *     return (Normalize(expc3), np.linalg.norm(expc3))
      */
     @Test
@@ -178,7 +213,7 @@ public class AngleAxisTest {
                 new BigDecimal("0.348107")
         ));
 
-        var actual = AngleAxis.MatrixExp3(skewSymmetricMatrix);
+        var actual = Rotation.MatrixExp3(skewSymmetricMatrix);
 
         LOGGER.debug("actual matrix `{}`\n", actual.getData());
         for(int i = 0; i < actual.getSize(); i++){
@@ -230,5 +265,24 @@ public class AngleAxisTest {
             }
         }
 
+
+
+    }
+
+    @Test
+    void rotateTest(){
+        var m = new RotationMatrix(init());
+        LOGGER.debug("M `{}`", m.getData());
+        LOGGER.debug("M size`{}`", m.getData().getSize());
+        var n = getGoodRotationMatrix();
+        LOGGER.debug("N `{}`", n.getData());
+        var r = rotate(m, n);
+        LOGGER.debug("R `{}`", r.getData());
+
+        for(int i = 0; i < m.getData().getSize(); i++){
+            for(int j = 0; j < m.getData().getSize(); j++){
+                assertEquals(r.getData().getDouble(i,j), n.getData().getDouble(i,j));
+            }
+        }
     }
 }

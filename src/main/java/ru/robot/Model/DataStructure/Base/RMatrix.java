@@ -22,8 +22,9 @@ public class RMatrix {
     }
 
     public RMatrix(List<BigDecimal> list) {
-        this(setValues(list,3));
-        this.size = (int) Math.sqrt(list.size());
+        Double s = Math.sqrt(list.size());
+        this.data = setMatrixValues(list,s);
+        this.size = s.intValue();
     }
 
     public RMatrix(Matrix R) throws IllegalArgumentException {
@@ -93,8 +94,8 @@ public class RMatrix {
     }
 
 
-    private static Matrix setValues(List<BigDecimal> arrayList, int size){
-        Matrix m = new DefaultDenseBigDecimalMatrix2D(size,size);
+    private static Matrix setMatrixValues(List<BigDecimal> arrayList, Double size){
+        Matrix m = new DefaultDenseBigDecimalMatrix2D(size.intValue(),size.intValue());
         var index = 0;
         for(int i = 0; i < m.getRowCount(); i++) {
             for(int j = 0; j < m.getColumnCount(); j++) {
@@ -124,7 +125,7 @@ public class RMatrix {
 //        return m;
 //    }
 
-    public static RMatrix setValues(RMatrix matrix, YESNO needToBeRounded, int size){
+    public static RMatrix setMatrixValues(RMatrix matrix, YESNO needToBeRounded, int size){
         RMatrix m = new RMatrix(size);
         var index = 0;
         for(int i = 0; i < m.getRowCount(); i++) {
@@ -183,7 +184,7 @@ public class RMatrix {
         return R;
     }
 
-    private void set(BigDecimal value, long... coordinates){
+    public void set(BigDecimal value, long... coordinates){
         this.data.setAsBigDecimal(value, coordinates);
     }
 

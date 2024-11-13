@@ -2,6 +2,7 @@ package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.robot.Model.CoordinateSystem.Cartesian.Utils.AXIS;
 import ru.robot.Model.DataStructure.Base.RMatrix;
 import ru.robot.Model.DataStructure.Vector3;
 import ru.robot.Model.DataStructure.Vector4;
@@ -12,16 +13,41 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import static ch.obermuhlner.math.big.BigDecimalMath.*;
-import static ru.robot.Model.DataStructure.Base.RMatrix.getIdentityMatrix;
+import static ru.robot.Model.DataStructure.Base.RMatrix.*;
+import static ru.robot.Model.DataStructure.Base.RMatrix.mult;
 import static ru.robot.Model.DataStructure.Base.RVector.normOfVector;
 import static ru.robot.Model.DataStructure.Base.RVector.normaliseVector;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
 import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.*;
 
-public class AngleAxis {
+public class Rotation {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    public static RotationMatrix rotate(RotationMatrix m, RotationMatrix n) {
+        var z = mult(m.getData(), n.getData());
+        return new RotationMatrix(roundValuesOfRMatrix(z));
+    }
+
+    public static RotationMatrix getRotationAroundFixedAxis(RotationMatrix currentRotation, BigDecimal angleInRad, AXIS axis) {
+        var c = cos(angleInRad, MC6);
+        var s = sin(angleInRad, MC6);
+        var minusS = s.multiply(new BigDecimal("-1"), MC6);
+        List<BigDecimal> itemList = List.of();
+        switch (axis) {
+            case X -> {
+                itemList = Arrays.asList(ONE, ZERO, ZERO, ZERO, c, minusS, ZERO, s, c);
+            }
+            case Y -> {
+                itemList = Arrays.asList(c, ZERO, s, ZERO, ONE, ZERO, minusS, ZERO, c);
+            }
+            case Z -> {
+                itemList = Arrays.asList(c, minusS, ZERO, s, c, ZERO, ZERO, ZERO, ONE);
+            }
+        }
+        return new RotationMatrix(mult(currentRotation.getData(), new RMatrix(itemList)));
+    }
 
     /**
      * Converts a 3-vector to an so(3) representation
@@ -164,10 +190,10 @@ public class AngleAxis {
      * input: none
      * return Matrix 4,0 with w1,w2,w3, angle
      *Computes the matrix logarithm of a rotation matrix
-     *
+
      *     :param R: A 3x3 rotation matrix
      *     :return: The matrix logarithm of R
-     *
+
      *     Example Input:
      *         R = np.array([[0, 0, 1],
      *                       [1, 0, 0],
