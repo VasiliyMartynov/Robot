@@ -14,7 +14,7 @@ public class Utils {
      * @return negative valuew of x
      */
     public static BigDecimal minus(BigDecimal x){
-        return x.multiply(Global.minusONE);
+        return x.multiply(Global.minusONE, MC6);
     }
 
 

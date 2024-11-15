@@ -127,9 +127,8 @@ public class RMatrix {
 
     public static RMatrix setMatrixValues(RMatrix matrix, YESNO needToBeRounded, int size){
         RMatrix m = new RMatrix(size);
-        var index = 0;
-        for(int i = 0; i < m.getRowCount(); i++) {
-            for(int j = 0; j < m.getColumnCount(); j++) {
+        for(int i = 0; i < size - 1; i++) {
+            for(int j = 0; j < size -1 ; j++) {
                 switch (needToBeRounded){
                     case NO -> {
                         m.set(matrix.get(i,j), i,j);
@@ -138,7 +137,6 @@ public class RMatrix {
                         m.set(matrix.get(i,j).round(MC6), i,j);
                     }
                 }
-                index++;
             }
         }
         return m;
