@@ -9,7 +9,7 @@ import ru.robot.Model.DataStructure.Vector6;
 
 import static ru.robot.Environment.Global.ONE;
 import static ru.robot.Environment.Global.minusONE;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.MatrixExp3;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.RotInv;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.VecToso3;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO.NO;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO.YES;
@@ -24,7 +24,7 @@ public class Motion {
 
     public Motion(){
         var T = getZerosMatrix(4);
-        T.set(ONE, 3,3);
+        T.setItem(ONE, 3,3);
         this.data = T;
     }
 
@@ -54,16 +54,20 @@ public class Motion {
      */
     //test OK
     public static RMatrix RpToTrans(RMatrix rotationMatrix, RVector position) {
+        LOGGER.debug("RpToTrans has started");
         var T = new Motion();
         for (int i = 0; i < rotationMatrix.getSize(); i++) {
             for (int j = 0; j < rotationMatrix.getSize(); j++) {
-                T.getData().set(rotationMatrix.get(i, j), i, j);
+                T.getData().setItem(rotationMatrix.get(i, j), i, j);
             }
         }
         for (int z = 0; z <= position.size(); z++) {
-            T.getData().set(position.get(z), z, 3);
+            T.getData().setItem(position.get(z), z, 3);
         }
-        return T.getData();
+        var result = T.getData();
+        LOGGER.debug("result /n '{}'", result);
+        LOGGER.debug("RpToTrans has finished");
+        return result;
     }
 
     /**
@@ -83,7 +87,13 @@ public class Motion {
      */
     //Test OK
     public static RMatrix TransToR(RMatrix T) {
-        return setMatrixValues(T, NO, 3);
+        LOGGER.debug("TransToR has started" );
+        LOGGER.debug("TransToR input T '{}' \n", T );
+        var R = new RMatrix(3);
+        R.setData(T, YES, 0,0);
+        LOGGER.debug("TransToR result '{}' \n", R.getData());
+        LOGGER.debug("TransToR has finished");
+        return R;
     }
 
     /**
@@ -103,15 +113,14 @@ public class Motion {
      */
     //test OK
     public static Vector3 TransToP(RMatrix T) {
-        LOGGER.debug("TransToP START");
+        LOGGER.debug("TransToP has STARTED");
         LOGGER.debug("INPUT Motion T '{}'", T);
         var P = new Vector3();
         for (int z = 0; z <= 2; z++) {
-            LOGGER.debug("T.get '{}'", T.get(z, 3));
             P.setItem(z, T.get(z, 3));
         }
         LOGGER.debug("P '{}", P.getData());
-        LOGGER.debug("TransToP END");
+        LOGGER.debug("TransToP has finished");
         return P;
     }
 
@@ -136,14 +145,13 @@ public class Motion {
      */
     //test OK
     public static RMatrix TransInv(RMatrix T) {
-        System.out.println("T " + T);
+        LOGGER.debug("TransInv has started");
         var R = TransToR(T);
-        System.out.println("R " + R);
         var P = TransToP(T);
-        System.out.println("P " + P);
         var Rinv = RotInv(R);
         var RinvMultP = mult(Rinv, P.getData());
         var munusRinvMultP = mult(RinvMultP, minusONE);
+        LOGGER.debug("TransInv has finished");
         return RpToTrans(Rinv, munusRinvMultP);
     }
 
@@ -161,13 +169,65 @@ public class Motion {
      */
     //testOK
     public static RMatrix VecTose3(Vector6 V){
+        LOGGER.debug("VecTose3 has started" );
         var so3 = VecToso3(new Vector3(V.getItem(0), V.getItem(1), V.getItem(2)));
-        var se3 = setMatrixValues(so3.getData(), YES, 4);
-        se3.set(V.getItem(3), 0,3);
-        se3.set(V.getItem(4), 1,3);
-        se3.set(V.getItem(5), 2,3);
-        se3.set(ONE,3,3);
+        var se3 = new RMatrix(4);
+        se3.setData(so3.getData(), YES,0,0);
+        se3.setItem(V.getItem(3), 0,3);
+        se3.setItem(V.getItem(4), 1,3);
+        se3.setItem(V.getItem(5), 2,3);
+        se3.setItem(ONE,3,3);
+        LOGGER.debug("se3 \n '{}'", se3);
+        LOGGER.debug("VecTose3 has shinished");
         return se3;
+    }
+
+    /**
+     * Converts an se3 matrix into a spatial velocity vector
+     *     Example Input:
+     *         se3mat = np.array([[ 0, -3,  2, 4],
+     *                            [ 3,  0, -1, 5],
+     *                            [-2,  1,  0, 6],
+     *                            [ 0,  0,  0, 0]])
+     *     Output:
+     *         np.array([1, 2, 3, 4, 5, 6])
+     * @param se3mat A 4x4 matrix in se3
+     * @return The spatial velocity 6-vector corresponding to se3mat
+     */
+    //Test OK
+    public static Vector6 se3ToVec(RMatrix se3mat){
+        return new Vector6(
+                se3mat.get(2,1),
+                se3mat.get(0,2),
+                se3mat.get(1,0),
+                se3mat.get(0,3),
+                se3mat.get(1,3),
+                se3mat.get(2,3));
+    }
+
+    /**
+     * Computes the adjoint representation of a homogeneous transformation matrix
+     *     Example Input:
+     *         T = np.array([[1, 0,  0, 0],
+     *                       [0, 0, -1, 0],
+     *                       [0, 1,  0, 3],
+     *                       [0, 0,  0, 1]])
+     *     Output:
+     *         np.array([[1, 0,  0, 0, 0,  0],
+     *                   [0, 0, -1, 0, 0,  0],
+     *                   [0, 1,  0, 0, 0,  0],
+     *                   [0, 0,  3, 1, 0,  0],
+     *                   [3, 0,  0, 0, 0, -1],
+     *                   [0, 0,  0, 0, 1,  0]]
+     * @param T A homogeneous transformation matrix
+     * @return The 6x6 adjoint representation [AdT] of T
+     */
+    public static RMatrix Adjoint(RMatrix T){
+        var R = TransToR(T);
+        var P = TransToP(T);
+        var result = new RMatrix(6);
+        result.setData(R, YES, 0,0);
+        return result;
     }
 
 }

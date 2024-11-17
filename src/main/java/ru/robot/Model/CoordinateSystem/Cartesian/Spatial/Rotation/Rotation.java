@@ -2,6 +2,7 @@ package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ujmp.core.Matrix;
 import ru.robot.Model.CoordinateSystem.Cartesian.Utils.AXIS;
 import ru.robot.Model.DataStructure.Base.RMatrix;
 import ru.robot.Model.DataStructure.Vector3;
@@ -49,6 +50,19 @@ public class Rotation {
         return new RotationMatrix(mult(currentRotation.getData(), new RMatrix(itemList)));
     }
 
+
+    public static RMatrix RotInv(RMatrix R){
+        LOGGER.debug("RotInv has started");
+        Matrix data = R.getData();
+        LOGGER.debug("data \n '{}'", data);
+        Matrix invMatrix = data.inv();
+        LOGGER.debug("invMatrix \n '{}'", invMatrix);
+        var result = new RMatrix(invMatrix);
+        LOGGER.debug("result /n '{}'", result);
+        LOGGER.debug("RotInv has finished");
+        return result;
+    }
+
     /**
      * Converts a 3-vector to an so(3) representation
      *     :param omg: A 3-vector
@@ -62,7 +76,7 @@ public class Rotation {
      * [-2,  1,  0]])
      */
     public static SkewSymmetricMatrix VecToso3(Vector3 omg){
-        LOGGER.debug("VecToso3 STARTED");
+        LOGGER.debug("VecToso3 has STARTED");
         var v1 = omg.getData().get(0);
         LOGGER.debug("v1 '{}'", v1);
         var v2 = omg.getData().get(1);
@@ -71,9 +85,12 @@ public class Rotation {
         LOGGER.debug("v3 '{}'", v3);
         List<BigDecimal> items = Arrays.asList(ZERO, minus(v3), v2,v3,ZERO,minus(v1),minus(v2),v1, ZERO);
         LOGGER.debug("List<BigDecimal> items '{}'", items);
+        var result = new SkewSymmetricMatrix(new RMatrix(items));
+        LOGGER.debug("result \n'{}'", result.getData());
         LOGGER.debug("VecToso3 FINISHED");
-        return new SkewSymmetricMatrix(new RMatrix(items));
+        return result;
     }
+
 
     /**
      *     Converts an so(3) representation to a 3-vector
@@ -179,8 +196,10 @@ public class Rotation {
             var omghatPow2 = omghat.mult(omghat);
             var oneMunusCosMultOmghatPow2 = omghatPow2.mult(oneMinusCos);
             var IplusCmultOmghat = I.plus(cMultOmghat);
+            var res = IplusCmultOmghat.plus(oneMunusCosMultOmghatPow2);
+            var result = roundValuesOfRMatrix(res);
 
-            return IplusCmultOmghat.plus(oneMunusCosMultOmghatPow2);
+            return result;
         }
     }
 

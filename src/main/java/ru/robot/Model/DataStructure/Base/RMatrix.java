@@ -29,10 +29,15 @@ public class RMatrix {
 
     public RMatrix(Matrix R) throws IllegalArgumentException {
         this.data = R;
+        this.size = (int) R.getRowCount();
     }
 
     public int getSize(){
         return this.size;
+    }
+
+    public Matrix getData() {
+        return data;
     }
 
     public static BigDecimal getDeterminantOfx3(Matrix m){
@@ -85,15 +90,6 @@ public class RMatrix {
         return r1.add(p3).round(MC6);
     }
 
-
-
-
-    public static RMatrix RotInv(RMatrix R){
-        var invR = R.getData().inv();
-        return new RMatrix(invR);
-    }
-
-
     private static Matrix setMatrixValues(List<BigDecimal> arrayList, Double size){
         Matrix m = new DefaultDenseBigDecimalMatrix2D(size.intValue(),size.intValue());
         var index = 0;
@@ -106,40 +102,32 @@ public class RMatrix {
         return m;
     }
 
-//    public static RMatrix setValues(List<BigDecimal> arrayList, YESNO needToBeRounded, int size){
-//        RMatrix m = new RMatrix(size);
-//        var index = 0;
-//        for(int i = 0; i < m.getRowCount(); i++) {
-//            for(int j = 0; j < m.getColumnCount(); j++) {
-//                switch (needToBeRounded){
-//                    case NO -> {
-//                        m.set(arrayList.get(index), i,j);
-//                    }
-//                    case YES -> {
-//                        m.set(arrayList.get(index).round(MC6), i,j);
-//                    }
-//                }
-//                index++;
-//            }
-//        }
-//        return m;
-//    }
-
-    public static RMatrix setMatrixValues(RMatrix matrix, YESNO needToBeRounded, int size){
-        RMatrix m = new RMatrix(size);
-        for(int i = 0; i < size - 1; i++) {
-            for(int j = 0; j < size -1 ; j++) {
+    public void setData(RMatrix inputMatrix, YESNO needToBeRounded, long coordinateX, long coordinateY){
+        LOGGER.debug("SetData has started");
+        LOGGER.debug("Input Matrix '{}'\n", inputMatrix);
+        LOGGER.debug("Input Matrix size '{}'\n", inputMatrix.getSize());
+        LOGGER.debug("this Matrix size '{}'\n", this.getSize());
+        LOGGER.debug("Input coordinateX '{}'\n", coordinateX);
+        LOGGER.debug("Input coordinateX '{}'\n", coordinateX);
+        int row;
+        if (this.size > inputMatrix.size) {
+            row = inputMatrix.size;
+        } else row = this.size;
+        for(int i = (int) coordinateX; i <= row - 1; i++) {
+            for(int j = (int) coordinateY; j <= row - 1; j++) {
                 switch (needToBeRounded){
                     case NO -> {
-                        m.set(matrix.get(i,j), i,j);
+                        this.setItem(inputMatrix.get(i,j), i,j);
                     }
                     case YES -> {
-                        m.set(matrix.get(i,j).round(MC6), i,j);
+                        this.setItem(inputMatrix.get(i,j).round(MC6), i,j);
+
                     }
                 }
             }
         }
-        return m;
+        LOGGER.debug("setData this.data\n'{}'", this.data);
+
     }
 
     public BigDecimal get(long... coordinates){
@@ -160,10 +148,10 @@ public class RMatrix {
                 {
                     // Checking if row is equal to column
                     if (row == col){
-                        R.set(ONE, row,col);
+                        R.setItem(ONE, row,col);
                     }
                     else
-                        R.set(ZERO, row,col);
+                        R.setItem(ZERO, row,col);
                 }
             }
         return R;
@@ -176,13 +164,13 @@ public class RMatrix {
         {
             for (col = 0; col < size; col++)
             {
-                R.set(ZERO, row,col);
+                R.setItem(ZERO, row,col);
             }
         }
         return R;
     }
 
-    public void set(BigDecimal value, long... coordinates){
+    public void setItem(BigDecimal value, long... coordinates){
         this.data.setAsBigDecimal(value, coordinates);
     }
 
@@ -210,9 +198,7 @@ public class RMatrix {
         return rounded;
     }
 
-    public Matrix getData() {
-        return data;
-    }
+
 
     public long getRowCount() {
         return this.data.getRowCount();

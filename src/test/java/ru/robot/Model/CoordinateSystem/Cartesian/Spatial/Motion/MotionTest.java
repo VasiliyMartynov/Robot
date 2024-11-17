@@ -80,9 +80,7 @@ public class MotionTest {
     void TransToPTest(){
         LOGGER.debug("TransToPTest");
         var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
-        LOGGER.debug("R '{}", R);
         var P = new RVector(ZERO, ZERO, THREE);
-        LOGGER.debug("P '{}", P);
         var tr = RpToTrans(R,P);
         LOGGER.debug("test Motion '{}", tr);
         var actual = TransToP(tr);
@@ -112,12 +110,9 @@ public class MotionTest {
      */
     @Test
     void TransToRTest(){
-        LOGGER.debug("TransToRTest");
         var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
         var expected = R;
-        LOGGER.debug("R '{}", R);
         var P = new RVector(ZERO, ZERO, THREE);
-        LOGGER.debug("P '{}", P);
         var tr = RpToTrans(R,P);
         LOGGER.debug("test Motion '{}", tr);
         var actual = TransToR(tr);
@@ -150,13 +145,11 @@ public class MotionTest {
      */
     @Test
     public void TransInvTest(){
-        var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
         var P = new RVector(ZERO, ZERO, THREE);
-        LOGGER.debug("P '{}", P);
+        var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
         var tr = RpToTrans(R,P);
-        System.out.println(tr);
+        LOGGER.debug("input test data \n'{}", tr);
         var trInv = TransInv(tr);
-        System.out.println(trInv);
     }
 
     /**
@@ -171,7 +164,6 @@ public class MotionTest {
      */
     @Test
     public void VecTose3Test(){
-        LOGGER.debug("VecTose3Test");
         var v6 = new Vector6(ONE, TWO, THREE, FOUR,FIVE,SIX);
         LOGGER.debug("input v6 '{}", v6.getData());
         var actual = VecTose3(v6);
@@ -181,6 +173,76 @@ public class MotionTest {
                 THREE, ZERO,minus(ONE),FIVE,
                 minus(TWO),ONE,ZERO,SIX,
                 ZERO,ZERO,ZERO,ONE));
+        for(int i = 0; i < actual.getRowCount(); i++){
+            for(int j = 0; j < actual.getColumnCount(); j++){
+                assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
+            }
+        }
+    }
+
+    /**
+     * Converts an se3 matrix into a spatial velocity vector
+     *     :param se3mat: A 4x4 matrix in se3
+     *     :return: The spatial velocity 6-vector corresponding to se3mat
+     *     Example Input:
+     *         se3mat = np.array([[ 0, -3,  2, 4],
+     *                            [ 3,  0, -1, 5],
+     *                            [-2,  1,  0, 6],
+     *                            [ 0,  0,  0, 0]])
+     *     Output:
+     *         np.array([1, 2, 3, 4, 5, 6])
+     */
+    @Test
+    public void se3ToVecTest(){
+        LOGGER.debug("VecTose3Test");
+        var se3mat = new RMatrix(Arrays.asList(
+                ZERO, minus(THREE),TWO,FOUR,
+                THREE, ZERO,minus(ONE),FIVE,
+                minus(TWO),ONE,ZERO,SIX,
+                ZERO,ZERO,ZERO,ZERO));
+        LOGGER.debug("input se3mat \n'{}", se3mat.getData());
+        var actual = se3ToVec(se3mat);
+        LOGGER.debug("actual '{}", actual.getData());
+        var expected = new Vector6(ONE, TWO, THREE, FOUR,FIVE,SIX);
+        for(int i = 0; i < actual.getSize(); i++){
+                assertEquals(expected.getItem(i), actual.getItem(i));
+
+        }
+    }
+
+    /**
+     * Computes the adjoint representation of a homogeneous transformation matrix
+     *     Example Input:
+     *         T = np.array([[1, 0,  0, 0],
+     *                       [0, 0, -1, 0],
+     *                       [0, 1,  0, 3],
+     *                       [0, 0,  0, 1]])
+     *     Output:
+     *         np.array([[1, 0,  0, 0, 0,  0],
+     *                   [0, 0, -1, 0, 0,  0],
+     *                   [0, 1,  0, 0, 0,  0],
+     *                   [0, 0,  3, 1, 0,  0],
+     *                   [3, 0,  0, 0, 0, -1],
+     *                   [0, 0,  0, 0, 1,  0]]
+     */
+    @Test
+    public void AdjointTest(){
+        LOGGER.debug("AdjointTest");
+        var T = new RMatrix(Arrays.asList(
+                ONE, ZERO,ZERO,ZERO,
+                ZERO, ZERO,minus(ONE),ZERO,
+                ZERO,ONE,ZERO,THREE,
+                ZERO,ZERO,ZERO,ONE));
+        LOGGER.debug("Input T: '{}'", T);
+        var actual = Adjoint(T);
+        LOGGER.debug("actual '{}", actual);
+        var expected = new RMatrix(Arrays.asList(
+                ONE, ZERO,ZERO,ZERO,ZERO,ZERO,
+                ZERO, ZERO,minus(ONE),ZERO,ZERO,ZERO,
+                ZERO,ONE,ZERO,ZERO,ZERO,ZERO,
+                ZERO,ZERO,ZERO,THREE,ONE,ZERO,ZERO,
+                THREE, ZERO,ZERO,ZERO,ZERO,minus(ONE),
+                ZERO,ZERO,ZERO,ZERO,ONE,ZERO));
         for(int i = 0; i < actual.getRowCount(); i++){
             for(int j = 0; j < actual.getColumnCount(); j++){
                 assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
