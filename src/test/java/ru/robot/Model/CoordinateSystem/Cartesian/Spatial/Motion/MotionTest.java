@@ -154,13 +154,13 @@ public class MotionTest {
 
     /**
      * Converts a spatial velocity vector into a 4x4 matrix in se3
-     *     Example Input:
-     *         V = np.array([1, 2, 3, 4, 5, 6])
-     *     Output:
-     *         <p>[ 0, -3,  2, 4]</>
-     *         <p>[ 3,  0, -1, 5]</>
-     *         <p>[-2,  1,  0, 6],</>
-     *         <p>[ 0,  0,  0, 0]</>
+     *     <P> Example Input:
+     *        <P> [1, 2, 3, 4, 5, 6]
+     *     <p>Output:
+     *        <P> [ 0, -3,  2, 4]
+     *         <p>[ 3,  0, -1, 5]
+     *         <p>[-2,  1,  0, 6]
+     *         <p>[ 0,  0,  0, 0]
      */
     @Test
     public void VecTose3Test(){

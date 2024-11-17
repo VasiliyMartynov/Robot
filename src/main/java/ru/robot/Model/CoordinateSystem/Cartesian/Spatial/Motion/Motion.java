@@ -227,6 +227,7 @@ public class Motion {
         var P = TransToP(T);
         var result = new RMatrix(6);
         result.setData(R, YES, 0,0);
+        result.setData(R, YES, 3,3);
         return result;
     }
 

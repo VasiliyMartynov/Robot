@@ -102,36 +102,47 @@ public class RMatrix {
         return m;
     }
 
-    public void setData(RMatrix inputMatrix, YESNO needToBeRounded, long coordinateX, long coordinateY){
+    public void setData(RMatrix inputMatrix, YESNO needToBeRounded, int coordinateX, int coordinateY){
         LOGGER.debug("SetData has started");
         LOGGER.debug("Input Matrix '{}'\n", inputMatrix);
         LOGGER.debug("Input Matrix size '{}'\n", inputMatrix.getSize());
         LOGGER.debug("this Matrix size '{}'\n", this.getSize());
         LOGGER.debug("Input coordinateX '{}'\n", coordinateX);
-        LOGGER.debug("Input coordinateX '{}'\n", coordinateX);
-        int row;
+        LOGGER.debug("Input coordinateY '{}'\n", coordinateY);
+        int startRow;
+        int startColumn;
+        int rowMax;
         if (this.size > inputMatrix.size) {
-            row = inputMatrix.size;
-        } else row = this.size;
-        for(int i = (int) coordinateX; i <= row - 1; i++) {
-            for(int j = (int) coordinateY; j <= row - 1; j++) {
+            rowMax = inputMatrix.size - 1;
+        } else rowMax = this.size - 1;
+        LOGGER.debug("rowMax '{}'\n", rowMax);
+
+        for(int thisI = coordinateX; thisI <= rowMax;thisI++ ) {
+            for(int thisJ = coordinateY; thisJ <= rowMax;thisJ++ ) {
                 switch (needToBeRounded){
                     case NO -> {
-                        this.setItem(inputMatrix.get(i,j), i,j);
+                        this.setItem(inputMatrix.get(thisI,thisJ), thisI,thisJ);
                     }
                     case YES -> {
-                        this.setItem(inputMatrix.get(i,j).round(MC6), i,j);
+
+                        LOGGER.debug("thisI '{}'", thisI);
+                        LOGGER.debug("thisj '{}'", thisJ);
+                        LOGGER.debug("inputMatrix.get(inputI,inputJ).round(MC6) '{}'", inputMatrix.get(thisI,thisJ).round(MC6));
+                        this.setItem(inputMatrix.get(thisI,thisJ).round(MC6), thisI,thisJ);
+                        LOGGER.debug("next iteration");
 
                     }
                 }
+
             }
+
         }
         LOGGER.debug("setData this.data\n'{}'", this.data);
 
     }
 
     public BigDecimal get(long... coordinates){
-        return this.data.getAsBigDecimal(coordinates);
+        return this.data.getAsBigDecimal(coordinates).round(MC6);
     }
 
     public double getDouble(long... coordinates){
