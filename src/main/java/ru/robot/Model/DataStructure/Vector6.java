@@ -4,6 +4,8 @@ import ru.robot.Model.DataStructure.Base.RVector;
 
 import java.math.BigDecimal;
 
+import static ru.robot.Environment.Global.MC6;
+
 public class Vector6 {
     int size = 6;
     RVector data = new RVector(size);
@@ -37,5 +39,18 @@ public class Vector6 {
 
     public int getSize() {
         return size;
+    }
+
+    public void setItem(int i, BigDecimal n){
+        this.data.set(i, n);
+    }
+
+    public static Vector6 divide(Vector6 v, BigDecimal n){
+        var result = new Vector6();
+        var max = v.getSize() - 1;
+        for(int i = 0; i <= max; i++){
+            result.setItem(i, v.getItem(i).divide(n, MC6));
+        }
+        return result;
     }
 }

@@ -9,18 +9,17 @@ import ru.robot.Model.DataStructure.Vector3;
 import ru.robot.Model.DataStructure.Vector4;
 import ru.robot.Model.DataStructure.RotationMatrix;
 import ru.robot.Model.DataStructure.SkewSymmetricMatrix;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import static ch.obermuhlner.math.big.BigDecimalMath.*;
 import static ru.robot.Model.DataStructure.Base.RMatrix.*;
 import static ru.robot.Model.DataStructure.Base.RMatrix.mult;
-import static ru.robot.Model.DataStructure.Base.RVector.normOfVector;
-import static ru.robot.Model.DataStructure.Base.RVector.normaliseVector;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
 import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.*;
+import static ru.robot.Model.DataStructure.Vector3.normOfVector;
+import static ru.robot.Model.DataStructure.Vector3.normaliseVector;
 
 public class Rotation {
 

@@ -6,13 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import ru.robot.Model.DataStructure.Base.RMatrix;
-import ru.robot.Model.DataStructure.Base.RVector;
+
 import ru.robot.Model.DataStructure.Vector3;
 import ru.robot.Model.DataStructure.Vector6;
 import ru.robot.Model.DataStructure.Vector7;
 
 import java.util.Arrays;
-import java.util.Vector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;

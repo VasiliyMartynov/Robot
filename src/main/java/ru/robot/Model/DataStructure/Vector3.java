@@ -4,6 +4,8 @@ import ru.robot.Model.DataStructure.Base.RVector;
 
 import java.math.BigDecimal;
 
+import static ru.robot.Environment.Global.MC6;
+
 public class Vector3 {
     int size = 3;
     RVector data = new RVector(size);
@@ -16,6 +18,41 @@ public class Vector3 {
         if (r.size() <=this.size) {
             this.data = r;
         }
+    }
+
+    /**
+     * """Normalizes a vector
+     *     Example Input:
+     *         V = np.array([1, 2, 3])
+     *     Output:
+     *         np.array([0.26726124, 0.53452248, 0.80178373])
+     *     """
+     * @param V A 3 vector
+     * @return A unit vector pointing in the same direction as z
+     */
+    public static Vector3 normaliseVector(Vector3 V) {
+        var m1 = V.getData().get(0).divide(normOfVector(V),MC6);
+        var m2 = V.getData().get(1).divide(normOfVector(V),MC6);
+        var m3 = V.getData().get(2).divide(normOfVector(V),MC6);
+        return new Vector3(m1, m2, m3);
+    }
+
+    /**
+     * Функия вычисляет ному вектора = Квадратный корень из суммы квадратов
+     * @param v Vector3
+     * @return norm of input vector
+     */
+    public static BigDecimal normOfVector(Vector3 v) {
+
+        var v1 = v.getData().get(0);
+        var v2 = v.getData().get(1);
+        var v3 = v.getData().get(2);
+        var v1pow2 = v1.pow(2);
+        var v2pow2 = v2.pow(2);
+        var v3pow2 = v3.pow(2);
+        var v1powPlusV2pow2 = v1pow2.add(v2pow2);
+        var v1powPlusV2pow2PlusV3 = v1powPlusV2pow2.add(v3pow2);
+        return v1powPlusV2pow2PlusV3.sqrt(MC6);
     }
 
     public Vector3(BigDecimal i1,BigDecimal i2,BigDecimal i3){

@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.RotInv;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.VecToso3;
+import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO.YES;
 import static ru.robot.Model.DataStructure.Base.RMatrix.*;
 import static ru.robot.Model.DataStructure.Base.RVector.*;
@@ -275,10 +276,34 @@ public class Motion {
      *     Output:
      *         (np.array([1.0, 0.0, 0.0, 1.0, 2.0, 3.0]), 1.0)
      * @param expc6 A 6-vector of exponential coordinates for rigid-body motion S*theta
-     * @return S, The corresponding normalized screw axis, theta: The distance traveled along/about S
+     * @return S, The corresponding normalized screw axis
      */
     public static Vector7 AxisAng6(Vector6 expc6) {
-        return new Vector7(ZERO, ZERO, ZERO, ZERO,ZERO,ZERO, ZERO);
+        LOGGER.debug("AxisAng6toS has started" );
+        var theta = normOfVector(new Vector3(
+                expc6.getItem(0),
+                expc6.getItem(1),
+                expc6.getItem(2)
+        ));
+        if (nearZero(theta) < 0 ) {
+            theta = normOfVector(new Vector3(
+                    expc6.getItem(3),
+                    expc6.getItem(4),
+                    expc6.getItem(5)
+            ));
+        }
+        var v = Vector6.divide(expc6, theta);
+        var result = new Vector7();
+        result.setItem(0, v.getItem(0));
+        result.setItem(1, v.getItem(1));
+        result.setItem(2, v.getItem(2));
+        result.setItem(3, v.getItem(3));
+        result.setItem(4, v.getItem(4));
+        result.setItem(5, v.getItem(5));
+        result.setItem(6, theta);
+        LOGGER.debug("AxisAng6toS has finished" );
+        return result;
     }
+
 
 }

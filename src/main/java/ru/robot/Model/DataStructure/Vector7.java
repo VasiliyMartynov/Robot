@@ -38,4 +38,8 @@ public class Vector7 {
     public int getSize() {
         return size;
     }
+
+    public void setItem(int i, BigDecimal value){
+        this.data.set(i, value);
+    }
 }

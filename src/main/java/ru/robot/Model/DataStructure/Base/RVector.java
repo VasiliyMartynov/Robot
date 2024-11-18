@@ -55,18 +55,7 @@ public class RVector {
         return this.data.getSize().length;
     }
 
-    public static BigDecimal normOfVector(Vector3 V3) {
 
-        var v1 = V3.getData().get(0);
-        var v2 = V3.getData().get(1);
-        var v3 = V3.getData().get(2);
-        var v1pow2 = v1.pow(2);
-        var v2pow2 = v2.pow(2);
-        var v3pow2 = v3.pow(2);
-        var v1powPlusV2pow2 = v1pow2.add(v2pow2);
-        var v1powPlusV2pow2PlusV3 = v1powPlusV2pow2.add(v3pow2);
-        return v1powPlusV2pow2PlusV3.sqrt(MC6);
-    }
 
     public static RVector mult(RMatrix m, RVector n) {
         return new RVector(m.data.mtimes(n.data));
@@ -87,12 +76,7 @@ public class RVector {
      *     Output:
      *         np.array([0.26726124, 0.53452248, 0.80178373])
      */
-    public static Vector3 normaliseVector(Vector3 V) {
-        var m1 = V.getData().get(0).divide(normOfVector(V),MC6);
-        var m2 = V.getData().get(1).divide(normOfVector(V),MC6);
-        var m3 = V.getData().get(2).divide(normOfVector(V),MC6);
-        return new Vector3(m1, m2, m3);
-    }
+
 
     /**
      * calc length of a vector
