@@ -240,7 +240,7 @@ public class MotionTest {
                 ONE, ZERO,ZERO,ZERO,ZERO,ZERO,
                 ZERO, ZERO,minus(ONE),ZERO,ZERO,ZERO,
                 ZERO,ONE,ZERO,ZERO,ZERO,ZERO,
-                ZERO,ZERO,ZERO,THREE,ONE,ZERO,ZERO,
+                ZERO,ZERO,THREE,ONE,ZERO,ZERO,
                 THREE, ZERO,ZERO,ZERO,ZERO,minus(ONE),
                 ZERO,ZERO,ZERO,ZERO,ONE,ZERO));
         for(int i = 0; i < actual.getRowCount(); i++){

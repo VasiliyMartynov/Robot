@@ -207,11 +207,11 @@ public class RMatrix {
     }
 
     public void setItem(BigDecimal value, long... coordinates){
-//        LOGGER.debug("SetItem has started");
-//        LOGGER.debug("SetItem input value '{}'", value);
-//        LOGGER.debug("SetItem input coordinates '{}'", coordinates);
+        LOGGER.debug("SetItem has started");
+        LOGGER.debug("SetItem input value '{}'", value);
+        LOGGER.debug("SetItem input coordinates '{}'", coordinates);
         this.data.setAsBigDecimal(value, coordinates);
-//        LOGGER.debug("SetItem has finished");
+        LOGGER.debug("SetItem has finished");
     }
 
     public static RMatrix roundValuesOfRMatrix(RMatrix m){
@@ -224,7 +224,7 @@ public class RMatrix {
         return  new RMatrix(rounded);
     }
 
-    public static Matrix roundValuesOfMatrix(Matrix m){
+    private static Matrix roundValuesOfMatrix(Matrix m){
         Matrix rounded = new DefaultDenseBigDecimalMatrix2D(3,3);
         for(int i = 0; i < m.getRowCount(); i++) {
             for(int j = 0; j < m.getColumnCount(); j++) {

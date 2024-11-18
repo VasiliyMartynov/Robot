@@ -228,6 +228,8 @@ public class Motion {
         var result = new RMatrix(6);
         result.setData(R, YES, 0,0);
         result.setData(R, YES, 3,3);
+        var m = VecToso3(P).getData().mult(R);
+        result.setData(m, YES, 3, 0);
         return result;
     }
 
