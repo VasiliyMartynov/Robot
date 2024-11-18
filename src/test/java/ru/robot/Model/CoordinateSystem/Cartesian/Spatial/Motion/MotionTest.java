@@ -45,13 +45,12 @@ public class MotionTest {
      */
     @Test
     public void RpToTransTest(){
-        LOGGER.debug("RpToTransTest");
         var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
-        LOGGER.debug("R '{}", R);
+        LOGGER.debug("RpToTransTest R '{}", R);
         var P = new RVector(ONE, TWO, FIVE);
-        LOGGER.debug("P '{}", P);
+        LOGGER.debug("RpToTransTest P '{}", P);
         var actual = RpToTrans(R,P);
-        LOGGER.debug("actual '{}", actual);
+        LOGGER.debug("RpToTransTest actual '{}", actual);
         var expected = new RMatrix(Arrays.asList(
                 ONE, ZERO,ZERO,ONE,
                 ZERO, ZERO,minusONE,TWO,
@@ -78,13 +77,12 @@ public class MotionTest {
      */
     @Test
     void TransToPTest(){
-        LOGGER.debug("TransToPTest");
         var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
         var P = new RVector(ZERO, ZERO, THREE);
         var tr = RpToTrans(R,P);
-        LOGGER.debug("test Motion '{}", tr);
+        LOGGER.debug("TransToPTest input '{}", tr);
         var actual = TransToP(tr);
-        LOGGER.debug("actual '{}", actual.getData());
+        LOGGER.debug("TransToPTest actual '{}", actual.getData());
         var expected = new Vector3(ZERO,ZERO,THREE);
         assertEquals(expected.getData().get(0), actual.getItem(0));
         assertEquals(expected.getData().get(1), actual.getItem(1));
@@ -111,15 +109,14 @@ public class MotionTest {
     @Test
     void TransToRTest(){
         var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
-        var expected = R;
         var P = new RVector(ZERO, ZERO, THREE);
         var tr = RpToTrans(R,P);
-        LOGGER.debug("test Motion '{}", tr);
+        LOGGER.debug("TransToRTest input '{}", tr);
         var actual = TransToR(tr);
-        LOGGER.debug("actual \n'{}", actual.getData());
+        LOGGER.debug("TransToRTest actual \n'{}", actual.getData());
         for(int i = 0; i < actual.getRowCount(); i++){
             for(int j = 0; j < actual.getColumnCount(); j++){
-                assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
+                assertEquals(R.getDouble(i,j), actual.getDouble(i,j));
             }
         }
 
@@ -127,11 +124,8 @@ public class MotionTest {
 
 
     /**
-     * """Inverts a homogeneous transformation matrix
-     *     :param T: A homogeneous transformation matrix
-     *     :return: The inverse of T
-     *     Uses the structure of transformation matrices to avoid taking a matrix
-     *     inverse, for efficiency.
+     * Inverts a homogeneous transformation matrix
+     * Uses the structure of transformation matrices to avoid taking a matrix inverse, for efficiency.
      *     Example input:
      *         T = np.array([[1, 0,  0, 0],
      *                       [0, 0, -1, 0],
@@ -148,8 +142,20 @@ public class MotionTest {
         var P = new RVector(ZERO, ZERO, THREE);
         var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
         var tr = RpToTrans(R,P);
-        LOGGER.debug("input test data \n'{}", tr);
-        var trInv = TransInv(tr);
+        LOGGER.debug("TransInvTest input test data \n'{}", tr);
+        var expected = new RMatrix(Arrays.asList(
+                ONE, ZERO, ZERO, ZERO,
+                ZERO, ZERO, ONE, minus(THREE),
+                ZERO, minus(ONE), ZERO, ZERO,
+                ZERO,ZERO,ZERO, ONE));
+        LOGGER.debug("TransInvTest expected \n'{}", expected);
+        var actual = TransInv(tr);
+        for(int i = 0; i < actual.getRowCount(); i++){
+            for(int j = 0; j < actual.getColumnCount(); j++){
+                assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
+            }
+        }
+
     }
 
     /**
@@ -165,9 +171,9 @@ public class MotionTest {
     @Test
     public void VecTose3Test(){
         var v6 = new Vector6(ONE, TWO, THREE, FOUR,FIVE,SIX);
-        LOGGER.debug("input v6 '{}", v6.getData());
+        LOGGER.debug("VecTose3Test input v6 '{}", v6.getData());
         var actual = VecTose3(v6);
-        LOGGER.debug("actual '{}", actual);
+        LOGGER.debug("VecTose3Test actual '{}", actual);
         var expected = new RMatrix(Arrays.asList(
                 ZERO, minus(THREE),TWO,FOUR,
                 THREE, ZERO,minus(ONE),FIVE,
@@ -194,15 +200,14 @@ public class MotionTest {
      */
     @Test
     public void se3ToVecTest(){
-        LOGGER.debug("VecTose3Test");
         var se3mat = new RMatrix(Arrays.asList(
                 ZERO, minus(THREE),TWO,FOUR,
                 THREE, ZERO,minus(ONE),FIVE,
                 minus(TWO),ONE,ZERO,SIX,
                 ZERO,ZERO,ZERO,ZERO));
-        LOGGER.debug("input se3mat \n'{}", se3mat.getData());
+        LOGGER.debug("se3ToVecTest input se3mat \n'{}", se3mat.getData());
         var actual = se3ToVec(se3mat);
-        LOGGER.debug("actual '{}", actual.getData());
+        LOGGER.debug("se3ToVecTest actual '{}", actual.getData());
         var expected = new Vector6(ONE, TWO, THREE, FOUR,FIVE,SIX);
         for(int i = 0; i < actual.getSize(); i++){
                 assertEquals(expected.getItem(i), actual.getItem(i));
@@ -227,15 +232,14 @@ public class MotionTest {
      */
     @Test
     public void AdjointTest(){
-        LOGGER.debug("AdjointTest");
         var T = new RMatrix(Arrays.asList(
                 ONE, ZERO,ZERO,ZERO,
                 ZERO, ZERO,minus(ONE),ZERO,
                 ZERO,ONE,ZERO,THREE,
                 ZERO,ZERO,ZERO,ONE));
-        LOGGER.debug("Input T: '{}'", T);
+        LOGGER.debug("AdjointTest Input T: '{}'", T);
         var actual = Adjoint(T);
-        LOGGER.debug("actual '{}", actual);
+        LOGGER.debug("AdjointTest actual '{}", actual);
         var expected = new RMatrix(Arrays.asList(
                 ONE, ZERO,ZERO,ZERO,ZERO,ZERO,
                 ZERO, ZERO,minus(ONE),ZERO,ZERO,ZERO,
