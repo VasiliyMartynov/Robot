@@ -109,33 +109,58 @@ public class RMatrix {
         LOGGER.debug("this Matrix size '{}'\n", this.getSize());
         LOGGER.debug("Input coordinateX '{}'\n", coordinateX);
         LOGGER.debug("Input coordinateY '{}'\n", coordinateY);
-        int startRow;
-        int startColumn;
-        int rowMax;
-        if (this.size > inputMatrix.size) {
-            rowMax = inputMatrix.size - 1;
-        } else rowMax = this.size - 1;
-        LOGGER.debug("rowMax '{}'\n", rowMax);
-
-        for(int thisI = coordinateX; thisI <= rowMax;thisI++ ) {
-            for(int thisJ = coordinateY; thisJ <= rowMax;thisJ++ ) {
+        var X = inputMatrix;
+        var A = this;
+        int startI;
+        int startJ;
+        int finishI;
+        int finishJ;
+        int Xsize = X.getSize();
+        int Asize = A.getSize();
+        if (Asize > Xsize) {
+            startI = 0;
+            startJ = 0;
+            finishI = Xsize - 1;
+            finishJ = Xsize - 1;
+        } else {
+            startI = 0;
+            startJ = 0;
+            finishI = Asize - 1;
+            finishJ = Asize - 1;
+        }
+        //var startX = coordinateX;
+        var startY = coordinateY;
+        for(int i = startI; i <= finishI; i++ ) {
+            coordinateY = startY;
+            for(int j = startJ; j <= finishJ; j++ ) {
                 switch (needToBeRounded){
                     case NO -> {
-                        this.setItem(inputMatrix.get(thisI,thisJ), thisI,thisJ);
+//                        LOGGER.debug("i '{}'", i);
+//                        LOGGER.debug("j '{}'", j);
+                        var item = X.get(i,j);
+//                        LOGGER.debug("item '{}'", item );
+                        this.setItem(item, coordinateX ,coordinateY);
+                        coordinateY++;
+//                        LOGGER.debug("coordinateX '{}'", coordinateX );
+//                        LOGGER.debug("coordinateY '{}'", coordinateY );
+//                        LOGGER.debug("next iteration");
+//                        LOGGER.debug("----------------");
                     }
                     case YES -> {
-
-                        LOGGER.debug("thisI '{}'", thisI);
-                        LOGGER.debug("thisj '{}'", thisJ);
-                        LOGGER.debug("inputMatrix.get(inputI,inputJ).round(MC6) '{}'", inputMatrix.get(thisI,thisJ).round(MC6));
-                        this.setItem(inputMatrix.get(thisI,thisJ).round(MC6), thisI,thisJ);
-                        LOGGER.debug("next iteration");
-
+//                        LOGGER.debug("i '{}'", i);
+//                        LOGGER.debug("j '{}'", j);
+                        var item = X.get(i,j).round(MC6);
+//                        LOGGER.debug("item '{}'", item );
+                        this.setItem(item, coordinateX ,coordinateY);
+                        coordinateY++;
+//                        LOGGER.debug("coordinateX '{}'", coordinateX );
+//                        LOGGER.debug("coordinateY '{}'", coordinateY );
+//                        LOGGER.debug("next iteration");
+//                        LOGGER.debug("----------------");
                     }
                 }
-
             }
-
+            coordinateX++;
         }
         LOGGER.debug("setData this.data\n'{}'", this.data);
 
@@ -182,7 +207,11 @@ public class RMatrix {
     }
 
     public void setItem(BigDecimal value, long... coordinates){
+//        LOGGER.debug("SetItem has started");
+//        LOGGER.debug("SetItem input value '{}'", value);
+//        LOGGER.debug("SetItem input coordinates '{}'", coordinates);
         this.data.setAsBigDecimal(value, coordinates);
+//        LOGGER.debug("SetItem has finished");
     }
 
     public static RMatrix roundValuesOfRMatrix(RMatrix m){
