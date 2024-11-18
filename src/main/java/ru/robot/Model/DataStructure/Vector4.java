@@ -14,6 +14,9 @@ public class Vector4 {
         this.data.set(2, i3);
         this.data.set(3, i4);
     }
+    public Vector4(){
+
+    }
 
     public RVector getData(){
         return this.data;

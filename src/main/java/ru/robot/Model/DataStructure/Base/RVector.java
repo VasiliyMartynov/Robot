@@ -15,22 +15,26 @@ public class RVector {
         this.data = new DefaultDenseBigDecimalMatrix2D(size,1);
     }
 
-    public RVector(BigDecimal x1, BigDecimal x2, BigDecimal x3){
-        this.data = new DefaultDenseBigDecimalMatrix2D(3,1);
-        this.data.setAsBigDecimal(x1, 0,0);
-        this.data.setAsBigDecimal(x2, 1,0);
-        this.data.setAsBigDecimal(x3, 2,0);
+    public Matrix getData(){
+        return this.data;
     }
 
-    public RVector(BigDecimal x1, BigDecimal x2, BigDecimal x3, BigDecimal x4){
-        this.data = new DefaultDenseBigDecimalMatrix2D(4,1);
-        this.data.setAsBigDecimal(x1, 0,0);
-        this.data.setAsBigDecimal(x2, 1,0);
-        this.data.setAsBigDecimal(x3, 2,0);
-        this.data.setAsBigDecimal(x4, 3,0);
-    }
+//    public RVector(BigDecimal x1, BigDecimal x2, BigDecimal x3){
+//        this.data = new DefaultDenseBigDecimalMatrix2D(3,1);
+//        this.data.setAsBigDecimal(x1, 0,0);
+//        this.data.setAsBigDecimal(x2, 1,0);
+//        this.data.setAsBigDecimal(x3, 2,0);
+//    }
+//
+//    public RVector(BigDecimal x1, BigDecimal x2, BigDecimal x3, BigDecimal x4){
+//        this.data = new DefaultDenseBigDecimalMatrix2D(4,1);
+//        this.data.setAsBigDecimal(x1, 0,0);
+//        this.data.setAsBigDecimal(x2, 1,0);
+//        this.data.setAsBigDecimal(x3, 2,0);
+//        this.data.setAsBigDecimal(x4, 3,0);
+//    }
 
-    public RVector(Matrix m) {
+    private RVector(Matrix m) {
         System.out.println("input matrix\n" + m.toString());
         if(m.getColumnCount() > 1) {
             throw new IllegalArgumentException("Input matrix isn't vector");

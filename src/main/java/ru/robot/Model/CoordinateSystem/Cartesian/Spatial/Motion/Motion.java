@@ -6,15 +6,17 @@ import ru.robot.Model.DataStructure.Base.RMatrix;
 import ru.robot.Model.DataStructure.Base.RVector;
 import ru.robot.Model.DataStructure.Vector3;
 import ru.robot.Model.DataStructure.Vector6;
+import ru.robot.Model.DataStructure.Vector7;
 
-import static ru.robot.Environment.Global.ONE;
-import static ru.robot.Environment.Global.minusONE;
+import java.math.BigDecimal;
+
+import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.RotInv;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.VecToso3;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO.NO;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO.YES;
 import static ru.robot.Model.DataStructure.Base.RMatrix.*;
 import static ru.robot.Model.DataStructure.Base.RVector.*;
+import static ru.robot.Model.DataStructure.Vector3.*;
 
 public class Motion {
 
@@ -222,6 +224,7 @@ public class Motion {
      * @param T A homogeneous transformation matrix
      * @return The 6x6 adjoint representation [AdT] of T
      */
+    //Test OK
     public static RMatrix Adjoint(RMatrix T){
         var R = TransToR(T);
         var P = TransToP(T);
@@ -231,6 +234,51 @@ public class Motion {
         var m = VecToso3(P).getData().mult(R);
         result.setData(m, YES, 3, 0);
         return result;
+    }
+
+    /**
+     * Takes a parametric description of a screw axis and converts it to normalized screw axis
+     *     Example Input:
+     *         q = np.array([3, 0, 0])
+     *         s = np.array([0, 0, 1])
+     *         h = 2
+     *     Output:
+     *         np.array([0, 0, 1, 0, -3, 2])
+     * @param q A point lying on the screw axis
+     * @param s A unit vector in the direction of the screw axis
+     * @param h The pitch of the screw axis
+     * @return A normalized screw axis described by the inputs
+     */
+    //Test OK
+    public static Vector6 ScrewToAxis(Vector3 q, Vector3 s, BigDecimal h){
+        LOGGER.debug("ScrewToAxis has started" );
+        var v = new RVector(6);
+        v.set(0,s.getItem(0));
+        v.set(1,s.getItem(1));
+        v.set(2,s.getItem(2));
+        var crossQS = crossProduct(q,s);
+        var dotHS = times(s,h);
+        var crossQSplusDotHS = plus(crossQS,dotHS);
+        v.set(3,crossQSplusDotHS.getItem(0));
+        v.set(4,crossQSplusDotHS.getItem(1));
+        v.set(5,crossQSplusDotHS.getItem(2));
+        var result = new Vector6(v);
+        LOGGER.debug("ScrewToAxis has finished" );
+        return result;
+    }
+
+    /**
+     * """Converts a 6-vector of exponential coordinates into screw axis-angle
+     *     form
+     *     Example Input:
+     *         expc6 = np.array([1, 0, 0, 1, 2, 3])
+     *     Output:
+     *         (np.array([1.0, 0.0, 0.0, 1.0, 2.0, 3.0]), 1.0)
+     * @param expc6 A 6-vector of exponential coordinates for rigid-body motion S*theta
+     * @return S, The corresponding normalized screw axis, theta: The distance traveled along/about S
+     */
+    public static Vector7 AxisAng6(Vector6 expc6) {
+        return new Vector7(ZERO, ZERO, ZERO, ZERO,ZERO,ZERO, ZERO);
     }
 
 }

@@ -9,8 +9,11 @@ import ru.robot.Model.DataStructure.Base.RMatrix;
 import ru.robot.Model.DataStructure.Base.RVector;
 import ru.robot.Model.DataStructure.Vector3;
 import ru.robot.Model.DataStructure.Vector6;
+import ru.robot.Model.DataStructure.Vector7;
 
 import java.util.Arrays;
+import java.util.Vector;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Motion.Motion.*;
@@ -47,9 +50,9 @@ public class MotionTest {
     public void RpToTransTest(){
         var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
         LOGGER.debug("RpToTransTest R '{}", R);
-        var P = new RVector(ONE, TWO, FIVE);
+        var P = new Vector3(ONE, TWO, FIVE);
         LOGGER.debug("RpToTransTest P '{}", P);
-        var actual = RpToTrans(R,P);
+        var actual = RpToTrans(R,P.getData());
         LOGGER.debug("RpToTransTest actual '{}", actual);
         var expected = new RMatrix(Arrays.asList(
                 ONE, ZERO,ZERO,ONE,
@@ -78,8 +81,8 @@ public class MotionTest {
     @Test
     void TransToPTest(){
         var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
-        var P = new RVector(ZERO, ZERO, THREE);
-        var tr = RpToTrans(R,P);
+        var P = new Vector3(ZERO, ZERO, THREE);
+        var tr = RpToTrans(R,P.getData());
         LOGGER.debug("TransToPTest input '{}", tr);
         var actual = TransToP(tr);
         LOGGER.debug("TransToPTest actual '{}", actual.getData());
@@ -109,8 +112,8 @@ public class MotionTest {
     @Test
     void TransToRTest(){
         var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
-        var P = new RVector(ZERO, ZERO, THREE);
-        var tr = RpToTrans(R,P);
+        var P = new Vector3(ZERO, ZERO, THREE);
+        var tr = RpToTrans(R,P.getData());
         LOGGER.debug("TransToRTest input '{}", tr);
         var actual = TransToR(tr);
         LOGGER.debug("TransToRTest actual \n'{}", actual.getData());
@@ -139,9 +142,9 @@ public class MotionTest {
      */
     @Test
     public void TransInvTest(){
-        var P = new RVector(ZERO, ZERO, THREE);
+        var P = new Vector3(ZERO, ZERO, THREE);
         var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
-        var tr = RpToTrans(R,P);
+        var tr = RpToTrans(R,P.getData());
         LOGGER.debug("TransInvTest input test data \n'{}", tr);
         var expected = new RMatrix(Arrays.asList(
                 ONE, ZERO, ZERO, ZERO,
@@ -253,5 +256,56 @@ public class MotionTest {
             }
         }
     }
+
+    /**
+     * Takes a parametric description of a screw axis and converts it to normalized screw axis
+     *     Example Input:
+     *         q = np.array([3, 0, 0])
+     *         s = np.array([0, 0, 1])
+     *         h = 2
+     *     Output:
+     *         np.array([0, 0, 1, 0, -3, 2])
+     */
+
+    @Test
+    public void ScrewToAxisTest(){
+        var q = new Vector3(THREE, ZERO, ZERO);
+        LOGGER.debug("ScrewToAxisTest input q\n'{}", q.getData());
+        var s = new Vector3(ZERO, ZERO, ONE);
+        LOGGER.debug("ScrewToAxisTest input s\n'{}", s.getData());
+        var h = TWO;
+        LOGGER.debug("ScrewToAxisTest input h\n'{}", h);
+        var expected = new Vector6(ZERO, ZERO,ONE,ZERO,minus(THREE), TWO);
+        LOGGER.debug("ScrewToAxisTest expected \n'{}", expected.getData());
+        var actual = ScrewToAxis(q,s,h);
+        LOGGER.debug("ScrewToAxisTest actual \n'{}", actual.getData());
+        for(int i = 0; i < actual.getSize(); i++){
+            assertEquals(expected.getItem(i).doubleValue(), actual.getItem(i).doubleValue());
+        }
+    }
+
+    /**
+     * Converts a 6-vector of exponential coordinates into screw axis-angle
+     *     form
+     *     Example Input:
+     *         expc6 = np.array([1, 0, 0, 1, 2, 3])
+     *     Output:
+     *         (np.array([1.0, 0.0, 0.0, 1.0, 2.0, 3.0]), 1.0)
+     */
+    @Test
+    public void AxisAng6Test(){
+        var expc6 = new Vector6(ONE, ZERO, ZERO, ONE,TWO,THREE);
+        LOGGER.debug("AxisAng6 input \n'{}", expc6.getData());
+        var expected = new Vector7(ONE, ZERO, ZERO, ONE,TWO,THREE, ONE);
+        LOGGER.debug("AxisAng6 expected \n'{}", expected.getData());
+        var actual = AxisAng6(expc6);
+        LOGGER.debug("AxisAng6Test actual \n'{}", actual.getData());
+        for(int i = 0; i < actual.getSize(); i++){
+            assertEquals(expected.getItem(i), actual.getItem(i));
+        }
+    }
+
+
+
 
 }
