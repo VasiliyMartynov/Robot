@@ -2,12 +2,10 @@ package ru.robot.Model.CS.Cartesian;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.robot.Model.DS.*;
 import ru.robot.Model.DS.Base.RMatrix;
 import ru.robot.Model.DS.Base.RVector;
-import ru.robot.Model.DS.SkewSymmetricMatrix;
-import ru.robot.Model.DS.Vector3;
-import ru.robot.Model.DS.Vector6;
-import ru.robot.Model.DS.Vector7;
+
 import java.math.BigDecimal;
 
 import static ch.obermuhlner.math.big.DefaultBigDecimalMath.cos;
@@ -398,6 +396,13 @@ public class Motion {
     public static RMatrix MatrixLog6(RMatrix T){
         LOGGER.info("========================");
         LOGGER.info("MatrixLog6 has started" );
+        var R = TransToR(T);
+        var P = TransToP(T);
+        var omgMat = MatrixLog3(new RotationMatrix(R));
+        if
+
+
+
         var result = getIdentityMatrix(4);
         LOGGER.info("MatrixLog6 has finished" );
         LOGGER.info("========================");
