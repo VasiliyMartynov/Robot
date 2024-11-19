@@ -14,9 +14,10 @@ public class Vector4 {
         this.data.set(2, i3);
         this.data.set(3, i4);
     }
-    public Vector4(){
 
-    }
+//    public Vector4(){
+//
+//    }
 
     public BigDecimal getItem(int i){
         return this.data.get(i);

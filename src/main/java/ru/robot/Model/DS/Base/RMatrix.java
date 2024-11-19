@@ -8,6 +8,8 @@ import ru.robot.Model.Utils.YESNO;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import static ru.robot.Model.Utils.Utils.Rround;
 import static ru.robot.Model.Utils.Utils.nearZero;
 import static ru.robot.Environment.Global.*;
 
@@ -104,6 +106,7 @@ public class RMatrix {
     }
 
     public void setData(RMatrix inputMatrix, YESNO needToBeRounded, int coordinateX, int coordinateY){
+        LOGGER.info("========================");
         LOGGER.info("SetData has started");
 //        LOGGER.debug("Input Matrix '{}'\n", inputMatrix);
 //        LOGGER.debug("Input Matrix size '{}'\n", inputMatrix.getSize());
@@ -164,6 +167,7 @@ public class RMatrix {
             coordinateX++;
         }
         LOGGER.info("SetData has finished");
+        LOGGER.info("========================");
 
     }
 
@@ -216,10 +220,11 @@ public class RMatrix {
     }
 
     public static RMatrix roundValuesOfRMatrix(RMatrix m){
-        Matrix rounded = new DefaultDenseBigDecimalMatrix2D(3,3);
+        var size = m.getSize();
+        Matrix rounded = new DefaultDenseBigDecimalMatrix2D(size,size);
         for(int i = 0; i < m.getRowCount(); i++) {
             for(int j = 0; j < m.getColumnCount(); j++) {
-                rounded.setAsBigDecimal(m.get(i,j).round(MC6), i,j);
+                rounded.setAsBigDecimal(Rround(m.get(i,j)), i,j);
             }
         }
         return  new RMatrix(rounded);
@@ -254,7 +259,8 @@ public class RMatrix {
     }
 
     public static RMatrix mult(RMatrix m, BigDecimal scalar) {
-        return new RMatrix(m.data.times(scalar.doubleValue()));
+        var result = new RMatrix(m.data.times(scalar.doubleValue()));
+        return  roundValuesOfRMatrix(result);
     }
 
     public RMatrix mult(BigDecimal scalar) {
@@ -325,11 +331,7 @@ public class RMatrix {
     public static  boolean haveSize(Matrix R){
         var rows = R.getRowCount();
         var columns = R.getColumnCount();
-        if (rows == columns || rows == 3){
-            return true;
-        } else {
-            return false;
-        }
+        return rows == columns || rows == 3;
     }
 
 }

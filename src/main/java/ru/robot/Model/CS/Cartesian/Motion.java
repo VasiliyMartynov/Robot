@@ -10,6 +10,7 @@ import ru.robot.Model.DS.Vector6;
 import ru.robot.Model.DS.Vector7;
 import java.math.BigDecimal;
 
+import static ch.obermuhlner.math.big.DefaultBigDecimalMath.cos;
 import static ch.obermuhlner.math.big.DefaultBigDecimalMath.sin;
 import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.CS.Cartesian.Rotation.*;
@@ -58,7 +59,7 @@ public class Motion {
      */
     //test OK
     public static RMatrix RpToTrans(RMatrix rotationMatrix, RVector position) {
-        LOGGER.debug("RpToTrans has started");
+        LOGGER.info("RpToTrans has started");
         var T = new Motion();
         for (int i = 0; i < rotationMatrix.getSize(); i++) {
             for (int j = 0; j < rotationMatrix.getSize(); j++) {
@@ -69,8 +70,8 @@ public class Motion {
             T.getData().setItem(position.get(z), z, 3);
         }
         var result = T.getData();
-        LOGGER.debug("result /n '{}'", result);
-        LOGGER.debug("RpToTrans has finished");
+//        LOGGER.debug("result /n '{}'", result);
+        LOGGER.info("RpToTrans has finished");
         return result;
     }
 
@@ -91,12 +92,12 @@ public class Motion {
      */
     //Test OK
     public static RMatrix TransToR(RMatrix T) {
-        LOGGER.debug("TransToR has started" );
-        LOGGER.debug("TransToR input T  \n'{}'", T );
+        LOGGER.info("TransToR has started" );
+//        LOGGER.debug("TransToR input T  \n'{}'", T );
         var R = new RMatrix(3);
         R.setData(T, YES, 0,0);
-        LOGGER.debug("TransToR result \n'{}' ", R.getData());
-        LOGGER.debug("TransToR has finished");
+//        LOGGER.debug("TransToR result \n'{}' ", R.getData());
+        LOGGER.info("TransToR has finished");
         return R;
     }
 
@@ -320,7 +321,8 @@ public class Motion {
      * @return The matrix(size 4) exponential of se3mat
      */
     public static RMatrix MatrixExp6(RMatrix se3mat){
-        LOGGER.debug("MatrixExp6 has started" );
+        LOGGER.info("========================");
+        LOGGER.info("MatrixExp6 has started" );
         var R = TransToR(se3mat);
         LOGGER.debug("MatrixExp6 R \n'{}'", R.getData());
         var P = TransToP(se3mat);
@@ -328,43 +330,77 @@ public class Motion {
         var so3mat = new SkewSymmetricMatrix(R);
         var omgtheta = so3ToVec(so3mat);
         LOGGER.debug("MatrixExp6 omgtheta '{}'", omgtheta.getData());
-        var result = new RMatrix(4);
+        var res = new RMatrix(4);
         if (nearZero(normOfVector(omgtheta)) < 0.00001) {
-            result.setData(getIdentityMatrix(3), YES,0,0);
-            result.setItem(P.getItem(0), 0,3);
-            result.setItem(P.getItem(1), 1,3);
-            result.setItem(P.getItem(2), 2,3);
-            result.setItem(ONE, 3,3);
+            res.setData(getIdentityMatrix(3), YES,0,0);
+            res.setItem(P.getItem(0), 0,3);
+            res.setItem(P.getItem(1), 1,3);
+            res.setItem(P.getItem(2), 2,3);
+            res.setItem(ONE, 3,3);
         } else {
             var me3 = MatrixExp3(so3mat);
+            LOGGER.debug("MatrixExp6 me3 '{}'", me3.getData());
             var theta = AxisAng3(omgtheta).getItem(3);
+//            LOGGER.debug("MatrixExp6 theta '{}'", theta);
             var omgMat = divide(so3mat.getData(), theta);
+//            LOGGER.debug("MatrixExp6 omgMat '{}'", omgMat);
             var p1 = getIdentityMatrix(3).mult(theta);
-            var OneMinusCosTheta = ONE.subtract(sin(theta));
+//            LOGGER.debug("MatrixExp6 p1(getIdentityMatrix(3).mult(theta);) '{}'", p1);
+            var OneMinusCosTheta = ONE.subtract(cos(theta));
             var p2 = mult(omgMat, OneMinusCosTheta);
+//            LOGGER.debug("MatrixExp6 p2(mult(omgMat, OneMinusCosTheta)) '{}'", p2);
             var thetaMunusSinTheta = theta.subtract(sin(theta));
-            var omghatPow2 = mult(omgMat, omgMat);
-            var p3 = mult(omghatPow2, thetaMunusSinTheta);
+            var omgMatPow2 = mult(omgMat, omgMat);
+//            LOGGER.debug("MatrixExp6 omghatPow2 '{}'", omgMatPow2);
+            var p3 = mult(omgMatPow2, thetaMunusSinTheta);
+//            LOGGER.debug("MatrixExp6 p3(mult(omghatPow2, thetaMunusSinTheta)) '{}'", p3);
             var p1PlusP2 = p1.plus(p2);
+//            LOGGER.debug("MatrixExp6 p1PlusP2 '{}'", p1PlusP2);
             var p1PlusP2PlusP3 = p1PlusP2.plus(p3);
+//            LOGGER.debug("MatrixExp6 p1PlusP2PlusP3 '{}'", p1PlusP2PlusP3);
+//            LOGGER.debug("MatrixExp6 P '{}'", P.getData());
             var p4 = mult(p1PlusP2PlusP3, P.getData());
-            /**
-             * np.dot(
-             *      np.eye(3) * theta +
-             *      (1 - np.cos(theta)) * omgmat +
-             *      (theta - np.sin(theta)) * np.dot(omgmat,omgmat),
-             *      se3mat[0: 3, 3])
-             * / theta
-             */
-            var xxx = divide(p4, theta);
-            var GthetaV = new Vector3(xxx);
-            result.setItem(GthetaV.getItem(0), 0,3);
-            result.setItem(GthetaV.getItem(1), 1,3);
-            result.setItem(GthetaV.getItem(2), 2,3);
-            result.setData(me3, YES, 0,0);
-            result.setItem(ONE, 3,3);
+
+//            LOGGER.debug("MatrixExp6 p4(mult(p1PlusP2PlusP3, P.getData());) '{}'", p4);
+            var p5 = divide(p4, theta);
+//            LOGGER.debug("MatrixExp6 p5(divide(p4, theta)) '{}'", p5);
+            var GthetaV = new Vector3(p5);
+            LOGGER.debug("MatrixExp6 GthetaV '{}'", GthetaV.getData());
+            res.setItem(GthetaV.getItem(0), 0,3);
+            res.setItem(GthetaV.getItem(1), 1,3);
+            res.setItem(GthetaV.getItem(2), 2,3);
+            res.setData(me3, YES, 0,0);
+            res.setItem(ONE, 3,3);
         }
-        LOGGER.debug("MatrixExp6 has finished" );
+        var result = roundValuesOfRMatrix(res);
+        LOGGER.debug("MatrixExp6 result '{}'", result.getData());
+        LOGGER.info("MatrixExp6 has finished" );
+        LOGGER.info("========================");
+        return result;
+    }
+
+
+    /**
+     * Computes the matrix logarithm of a homogeneous transformation matrix
+     *     <p>Example Input:
+     *      <br>   [1, 0,  0, 0],
+     *      <br>   [0, 0, -1, 0],
+     *      <br>   [0, 1,  0, 3],
+     *      <br>   [0, 0,  0, 1]
+     *     <p>Output:
+     *         <br>[0,          0,           0,           0]
+     *         <br>[0,          0, -1.57079633,  2.35619449]
+     *         <br>[0, 1.57079633,           0,  2.35619449]
+     *         <br>[0,          0,           0,           0]
+     * @param T A matrix in SE3
+     * @return The matrix logarithm of T
+     */
+    public static RMatrix MatrixLog6(RMatrix T){
+        LOGGER.info("========================");
+        LOGGER.info("MatrixLog6 has started" );
+        var result = getIdentityMatrix(4);
+        LOGGER.info("MatrixLog6 has finished" );
+        LOGGER.info("========================");
         return result;
     }
 

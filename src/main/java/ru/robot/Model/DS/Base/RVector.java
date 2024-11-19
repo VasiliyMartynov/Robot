@@ -1,11 +1,14 @@
 package ru.robot.Model.DS.Base;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ujmp.core.Matrix;
 import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
 
 import java.math.BigDecimal;
 
 public class RVector {
+    private static final Logger LOGGER = LogManager.getLogger();
     Matrix data;
 
     public RVector(int size){
@@ -32,7 +35,8 @@ public class RVector {
 //    }
 
     private RVector(Matrix m) {
-        System.out.println("input matrix\n" + m.toString());
+        //LOGGER.info("RVector constructor input matrix \n'{}'", m );
+        //System.out.println("input matrix\n" + m.toString());
         if(m.getColumnCount() > 1) {
             throw new IllegalArgumentException("Input matrix isn't vector");
         }
@@ -73,19 +77,17 @@ public class RVector {
 
     /**
      * calc length of a vector
-     *
      *     :param V: A vector
      *     :return: A unit vector pointing in the same direction as z
-     *
      *     Example Input:
      *         V = matrix 0.26726124, 0.53452248, 0.80178373
      *     Output:
      *         3.74166
      */
 
-    public double getAsDouble(long... coordinates) {
-        return this.data.getAsDouble(coordinates);
-    }
+//    public double getAsDouble(long... coordinates) {
+//        return this.data.getAsDouble(coordinates);
+//    }
 
     @Override
     public String toString() {

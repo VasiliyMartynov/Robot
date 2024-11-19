@@ -66,7 +66,6 @@ public class RotationTest {
      * Converts a 3-vector to an so(3) representation
      *     :param omg: A 3-vector
      *     :return: The skew symmetric representation of omg
-     *
      *     Example Input:
      *         omg = np.array([1, 2, 3])
      *     Output:
@@ -95,10 +94,8 @@ public class RotationTest {
 
     /**
      *     Converts an so(3) representation to a 3-vector
-     *
      *     :param so3mat: A 3x3 skew-symmetric matrix
      *     :return: The 3-vector corresponding to so3mat
-     *
      *     Example Input:
      *         so3mat = np.array([[ 0, -3,  2],
      *                            [ 3,  0, -1],

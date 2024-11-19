@@ -332,9 +332,10 @@ public class MotionTest {
                 ZERO, ZERO,minus(ONE),ZERO,
                 ZERO,ONE,ZERO,THREE,
                 ZERO,ZERO,ZERO,ONE));
-        LOGGER.debug("MatrixExp6Test expected \n'{}", expected.getData());
+
         var actual = MatrixExp6(input);
         LOGGER.debug("MatrixExp6Test actual \n'{}", actual.getData());
+        LOGGER.debug("MatrixExp6Test expected \n'{}", expected.getData());
         for(int i = 0; i < actual.getRowCount(); i++){
             for(int j = 0; j < actual.getColumnCount(); j++){
                 assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
@@ -342,5 +343,39 @@ public class MotionTest {
         }
     }
 
-
+    /**
+     * Computes the matrix logarithm of a homogeneous transformation matrix
+     *     <p>Example Input:
+     *      <br>   [1, 0,  0, 0],
+     *      <br>   [0, 0, -1, 0],
+     *      <br>   [0, 1,  0, 3],
+     *      <br>   [0, 0,  0, 1]
+     *     <p>Output:
+     *         <br>[0,          0,           0,           0]
+     *         <br>[0,          0, -1.57079633,  2.35619449]
+     *         <br>[0, 1.57079633,           0,  2.35619449]
+     *         <br>[0,          0,           0,           0]
+     */
+    @Test
+    public void MatrixLog6Test(){
+        var input = new RMatrix(Arrays.asList(
+                ONE, ZERO,ZERO,ZERO,
+                ZERO, ZERO,minus(ONE),ZERO,
+                ZERO,ONE,ZERO,THREE,
+                ZERO,ZERO,ZERO,ONE));
+        var expected = new RMatrix(Arrays.asList(
+                ZERO, ZERO,ZERO,ZERO,
+                ZERO, ZERO,minus(new BigDecimal("1.57079632")),new BigDecimal("2.35619449").round(MC6),
+                ZERO, new BigDecimal("1.57079632").round(MC6),ZERO,new BigDecimal("2.35619449").round(MC6),
+                ZERO,ZERO,ZERO,ZERO));
+        LOGGER.debug("MatrixLog6Test input\n'{}", input.getData());
+        var actual = MatrixLog6(input);
+        LOGGER.debug("MatrixLog6Test actual \n'{}", actual.getData());
+        LOGGER.debug("MatrixLog6Test expected \n'{}", expected.getData());
+        for(int i = 0; i < actual.getRowCount(); i++){
+            for(int j = 0; j < actual.getColumnCount(); j++){
+                assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
+            }
+        }
+    }
 }

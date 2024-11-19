@@ -37,15 +37,15 @@ public class Rotation {
         var minusS = s.multiply(new BigDecimal("-1"), MC6);
         List<BigDecimal> itemList = List.of();
         switch (axis) {
-            case X -> {
+            case X ->
                 itemList = Arrays.asList(ONE, ZERO, ZERO, ZERO, c, minusS, ZERO, s, c);
-            }
-            case Y -> {
+
+            case Y ->
                 itemList = Arrays.asList(c, ZERO, s, ZERO, ONE, ZERO, minusS, ZERO, c);
-            }
-            case Z -> {
+
+            case Z ->
                 itemList = Arrays.asList(c, minusS, ZERO, s, c, ZERO, ZERO, ZERO, ONE);
-            }
+
         }
         return new RotationMatrix(mult(currentRotation.getData(), new RMatrix(itemList)));
     }
@@ -161,26 +161,25 @@ public class Rotation {
     }
 
     /**
-     Computes the matrix exponential of a matrix in so(3) using Rodriges formula
-
-     :param so3mat: A 3x3 skew-symmetric matrix
-     :return: The matrix exponential of so3mat
-
-     Example Input:
-     so3mat = np.array([[ 0, -3,  2],
-     [ 3,  0, -1],
-     [-2,  1,  0]])
-     Output:
-     np.array([[-0.69492056,  0.71352099,  0.08929286],
-     [-0.19200697, -0.30378504,  0.93319235],
-     [ 0.69297817,  0.6313497 ,  0.34810748]])
-
+     *      Computes the matrix exponential of a matrix in so(3) using Rodriges formula
+     *     <P> Example Input:
+     *      <br>[ 0, -3,  2],
+     *      <br>[ 3,  0, -1],
+     *      <br>[-2,  1,  0]])
+     *     <P> Output:
+     *      <br>[-0.69492056,  0.71352099,  0.08929286],
+     *      <br>[-0.19200697, -0.30378504,  0.93319235],
+     *      <br>[ 0.69297817,  0.6313497 ,  0.34810748]
+     * @param so3mat A 3x3 skew-symmetric matrix
+     * @return The matrix exponential of so3mat
      */
     public static RMatrix MatrixExp3(SkewSymmetricMatrix so3mat){
+        LOGGER.info("========================");
+        LOGGER.info("MatrixExp3 has started");
+        LOGGER.debug("MatrixExp3 input  \n '{}'", so3mat.getData());
         var omgtheta = so3ToVec(so3mat);
         var theta = AxisAng3(omgtheta).getData().get(3);
         var omghat = so3mat.getData().divide(theta);
-
 
         if(nearZero(normOfVector(omgtheta)) < 0){
             return getIdentityMatrix(3);
@@ -190,12 +189,19 @@ public class Rotation {
             var oneMinusCos = ONE.subtract(c);
             var s = sin(theta, MC6);
             var cMultOmghat = omghat.mult(s);
+            LOGGER.debug("MatrixExp3 cMultOmghat  \n '{}'", cMultOmghat.getData());
             var omghatPow2 = omghat.mult(omghat);
+            LOGGER.debug("MatrixExp3 omghatPow2  \n '{}'", omghatPow2.getData());
             var oneMunusCosMultOmghatPow2 = omghatPow2.mult(oneMinusCos);
+            LOGGER.debug("MatrixExp3 oneMunusCosMultOmghatPow2  \n '{}'", oneMunusCosMultOmghatPow2.getData());
             var IplusCmultOmghat = I.plus(cMultOmghat);
+            LOGGER.debug("MatrixExp3 IplusCmultOmghat  \n '{}'", IplusCmultOmghat.getData());
             var res = IplusCmultOmghat.plus(oneMunusCosMultOmghatPow2);
+            LOGGER.debug("MatrixExp3 res  \n '{}'", res.getData());
             var result = roundValuesOfRMatrix(res);
-
+            LOGGER.debug("MatrixExp3 result  \n '{}'", result.getData());
+            LOGGER.info("MatrixExp3 has finished");
+            LOGGER.info("========================");
             return result;
         }
     }
