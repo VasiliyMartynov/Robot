@@ -39,19 +39,19 @@ public class Motion {
 
     /**
      *
-     *       Converts a rotation matrix and a position vector into homogeneous
-     *      transformation matrix
+     *       Converts a rotation matrix and a position vector into homogeneous transformation matrix
 
-     *      example Input:
-     *       R = np.array([[1, 0,  0],
-     *       [0, 0, -1],
-     *       [0, 1,  0]])
-     *       p = np.array([1, 2, 5])
-     *       Output:
-     *       np.array([[1, 0,  0, 1],
-     *       [0, 0, -1, 2],
-     *         [0, 1,  0, 5],
-     *       [0, 0,  0, 1]])
+     *      <p>example Input:
+     *       <br>R = np.array
+     *       <br>[1, 0,  0],
+     *       <br>[0, 0, -1],
+     *       <br>[0, 1,  0]
+     *       <br>p = np.array([1, 2, 5])
+     *       <p>Output:
+     *       <br>[1, 0,  0, 1],
+     *       <br>[0, 0, -1, 2],
+     *       <br>[0, 1,  0, 5],
+     *       <br>[0, 0,  0, 1]
      *
      * @param rotationMatrix A 3x3 rotation matrix
      * @param position A 3-vector
@@ -76,17 +76,19 @@ public class Motion {
     }
 
     /**
-     * * Converts a homogeneous transformation matrix into a rotation matrix
-     *      * Example Input:
-     *      * T = np.array([[1, 0,  0, 0],
-     *      * [0, 0, -1, 0],
-     *      * [0, 1,  0, 3],
-     *      * [0, 0,  0, 1]])
-     *      * Output:
-     *      * (np.array([[1, 0,  0],
-     *      * [0, 0, -1],
-     *      * [0, 1,  0]]),
-     *      * np.array([0, 0, 3]))
+     * Converts a homogeneous transformation matrix into a rotation matrix
+     *      <P>Example Input:
+     *      <br>T = np.array(
+     *      <br>[[1, 0,  0, 0],
+     *       <br>[0, 0, -1, 0],
+     *       <br>[0, 1,  0, 3],
+     *       <br>[0, 0,  0, 1]])
+     *      <P> Output:
+     *      <br>np.array
+     *       <br>[1, 0,  0],
+     *       <br>[0, 0, -1],
+     *       <br>[0, 1,  0],
+     *
      * @param T  A homogeneous transformation matrix
      * @return The corresponding rotation matrix,
      */
@@ -102,19 +104,18 @@ public class Motion {
     }
 
     /**
-     *  Converts a homogeneous transformation matrix into position vector
-     *      * Example Input:
-     *      * T = np.array([[1, 0,  0, 0],
-     *      * [0, 0, -1, 0],
-     *      * [0, 1,  0, 3],
-     *      * [0, 0,  0, 1]])
-     *      * Output:
-     *      * (np.array([[1, 0,  0],
-     *      * [0, 0, -1],
-     *      * [0, 1,  0]]),
-     *      * np.array([0, 0, 3]))
-     * @param T A homogeneous transformation matrix
-     * @return The corresponding position vector.
+     * Converts a homogeneous transformation matrix into a position matrix
+     *      <P>Example Input:
+     *      <br>T = np.array(
+     *      <br>[[1, 0,  0, 0],
+     *       <br>[0, 0, -1, 0],
+     *       <br>[0, 1,  0, 3],
+     *       <br>[0, 0,  0, 1]])
+     *      <P> Output:
+     *      <br>np.array
+     *       <br>[3, 0,  3],
+     * @param T  A homogeneous transformation matrix
+     * @return The corresponding rotation matrix,
      */
     //test OK
     public static Vector3 TransToP(RMatrix T) {
@@ -160,13 +161,13 @@ public class Motion {
 
     /**
      * Converts a spatial velocity vector into a 4x4 matrix in se3
-     *     Example Input:
-     *         V = np.array([1, 2, 3, 4, 5, 6])
-     *     Output:
-     *         <p>[ 0, -3,  2, 4]
-     *         <p>[ 3,  0, -1, 5]
-     *         <p>[-2,  1,  0, 6]
-     *         <p>[ 0,  0,  0, 0]
+     *    <p> Example Input:
+     *         <br>V = np.array([1, 2, 3, 4, 5, 6])
+     *     <p>Output:
+     *         <br>[ 0, -3,  2, 4]
+     *         <br>[ 3,  0, -1, 5]
+     *         <br>[-2,  1,  0, 6]
+     *         <br>[ 0,  0,  0, 0]
      * @param V A 6-vector representing a spatial velocity
      * @return The 4x4 se3 representation of V
      */
@@ -188,10 +189,10 @@ public class Motion {
     /**
      * Converts an se3 matrix into a spatial velocity vector
      *     <P>Example Input:
-     *     <br>    se3mat = np.array([[ 0, -3,  2, 4],
+     *     <br>    se3mat = np.array(<br>[ 0, -3,  2, 4],
      *     <br>                       [ 3,  0, -1, 5],
      *     <br>                       [-2,  1,  0, 6],
-     *     <br>                       [ 0,  0,  0, 0]])
+     *     <br>                       [ 0,  0,  0, 0]
      *     <P>Output:
      *        <br> np.array([1, 2, 3, 4, 5, 6])
      * @param se3mat A 4x4 matrix in se3
@@ -211,17 +212,17 @@ public class Motion {
     /**
      * Computes the adjoint representation of a homogeneous transformation matrix
      *     <P>Example Input:
-     *        <br> T = np.array([[1, 0,  0, 0],
+     *        <br> T = np.array<br>[1, 0,  0, 0],
      *            <br>           [0, 0, -1, 0],
      *                <br>       [0, 1,  0, 3],
-     *                    <br>   [0, 0,  0, 1]])
+     *                    <br>   [0, 0,  0, 1]
      *     <P>Output:
-     *         <br>np.array([[1, 0,  0, 0, 0,  0],
+     *         <br>np.array<br>[1, 0,  0, 0, 0,  0],
      *             <br>      [0, 0, -1, 0, 0,  0],
      *                 <br>  [0, 1,  0, 0, 0,  0],
      *                   <br>[0, 0,  3, 1, 0,  0],
      *                   <br>[3, 0,  0, 0, 0, -1],
-     *                   <br>[0, 0,  0, 0, 1,  0]]
+     *                   <br>[0, 0,  0, 0, 1,  0]
      * @param T A homogeneous transformation matrix
      * @return The 6x6 adjoint representation [AdT] of T
      */
@@ -269,12 +270,12 @@ public class Motion {
     }
 
     /**
-     * """Converts a 6-vector of exponential coordinates into screw axis-angle
-     *     form
-     *     Example Input:
-     *         expc6 = np.array([1, 0, 0, 1, 2, 3])
-     *     Output:
-     *         (np.array([1.0, 0.0, 0.0, 1.0, 2.0, 3.0]), 1.0)
+     * Converts a 6-vector of exponential coordinates into screw axis-angle orm
+     *     <p>Example Input:
+     *         <br>expc6 = np.array([1, 0, 0, 1, 2, 3])
+     *     <p>Output:
+     *         (<br>np.array(
+     *         <br>[1.0, 0.0, 0.0, 1.0, 2.0, 3.0]), 1.0)
      * @param expc6 A 6-vector of exponential coordinates for rigid-body motion S*theta
      * @return S, The corresponding normalized screw axis
      */
