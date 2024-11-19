@@ -1,6 +1,6 @@
 package ru.robot.Model.Rigid;
 
-import ru.robot.Model.DataStructure.Base.RMatrix;
+import ru.robot.Model.DS.Base.RMatrix;
 import java.math.BigDecimal;
 
 

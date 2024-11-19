@@ -1,22 +1,23 @@
-package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Motion;
+package ru.robot.Model.CS.Cartesian;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import ru.robot.Model.DataStructure.Base.RMatrix;
+import ru.robot.Model.DS.Base.RMatrix;
 
-import ru.robot.Model.DataStructure.Vector3;
-import ru.robot.Model.DataStructure.Vector6;
-import ru.robot.Model.DataStructure.Vector7;
+import ru.robot.Model.DS.Vector3;
+import ru.robot.Model.DS.Vector6;
+import ru.robot.Model.DS.Vector7;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Motion.Motion.*;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.minus;
+import static ru.robot.Model.CS.Cartesian.Motion.*;
+import static ru.robot.Model.Utils.Utils.minus;
 
 
 public class MotionTest {
@@ -47,7 +48,7 @@ public class MotionTest {
      */
     @Test
     public void RpToTransTest(){
-        var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
+        var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minus(ONE), ZERO,ONE, ZERO));
         LOGGER.debug("RpToTransTest R '{}", R);
         var P = new Vector3(ONE, TWO, FIVE);
         LOGGER.debug("RpToTransTest P '{}", P);
@@ -55,7 +56,7 @@ public class MotionTest {
         LOGGER.debug("RpToTransTest actual '{}", actual);
         var expected = new RMatrix(Arrays.asList(
                 ONE, ZERO,ZERO,ONE,
-                ZERO, ZERO,minusONE,TWO,
+                ZERO, ZERO,minus(ONE),TWO,
                 ZERO,ONE,ZERO,FIVE,
                 ZERO,ZERO,ZERO,ONE));
         for(int i = 0; i < actual.getRowCount(); i++){
@@ -79,7 +80,7 @@ public class MotionTest {
      */
     @Test
     void TransToPTest(){
-        var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
+        var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minus(ONE), ZERO,ONE, ZERO));
         var P = new Vector3(ZERO, ZERO, THREE);
         var tr = RpToTrans(R,P.getData());
         LOGGER.debug("TransToPTest input '{}", tr);
@@ -94,23 +95,23 @@ public class MotionTest {
     }
 
     /**
-     * * Converts a homogeneous transformation matrix into a rotation matrix
-     *      * Example Input:
-     *      * T = np.array([[1, 0,  0, 0],
-     *      * [0, 0, -1, 0],
-     *      * [0, 1,  0, 3],
-     *      * [0, 0,  0, 1]])
-     *      * Output:
-     *      * (np.array([[1, 0,  0],
-     *      * [0, 0, -1],
-     *      * [0, 1,  0]]),
-     *      * np.array([0, 0, 3]))
+     * Converts a homogeneous transformation matrix into a rotation matrix
+     *   Example Input:
+     *      [1, 0,  0, 0],
+     *      [0, 0, -1, 0],
+     *      [0, 1,  0, 3],
+     *      [0, 0,  0, 1]
+     * Output:
+     *   [1, 0,  0],
+     *   [0, 0, -1],
+     *   [0, 1,  0]]),
+     *   [0, 0, 3]))
      *     homogeneous transformation matrix
      *  The corresponding rotation matrix,
      */
     @Test
     void TransToRTest(){
-        var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
+        var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minus(ONE), ZERO,ONE, ZERO));
         var P = new Vector3(ZERO, ZERO, THREE);
         var tr = RpToTrans(R,P.getData());
         LOGGER.debug("TransToRTest input '{}", tr);
@@ -142,7 +143,7 @@ public class MotionTest {
     @Test
     public void TransInvTest(){
         var P = new Vector3(ZERO, ZERO, THREE);
-        var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minusONE, ZERO,ONE, ZERO));
+        var R = new RMatrix(Arrays.asList(ONE, ZERO, ZERO, ZERO,ZERO,minus(ONE), ZERO,ONE, ZERO));
         var tr = RpToTrans(R,P.getData());
         LOGGER.debug("TransInvTest input test data \n'{}", tr);
         var expected = new RMatrix(Arrays.asList(
@@ -241,7 +242,7 @@ public class MotionTest {
                 ZERO,ZERO,ZERO,ONE));
         LOGGER.debug("AdjointTest Input T: '{}'", T);
         var actual = Adjoint(T);
-        LOGGER.debug("AdjointTest actual '{}", actual);
+        LOGGER.debug("AdjointTest actual '{}", actual.getData());
         var expected = new RMatrix(Arrays.asList(
                 ONE, ZERO,ZERO,ZERO,ZERO,ZERO,
                 ZERO, ZERO,minus(ONE),ZERO,ZERO,ZERO,
@@ -249,6 +250,7 @@ public class MotionTest {
                 ZERO,ZERO,THREE,ONE,ZERO,ZERO,
                 THREE, ZERO,ZERO,ZERO,ZERO,minus(ONE),
                 ZERO,ZERO,ZERO,ZERO,ONE,ZERO));
+        LOGGER.debug("AdjointTest expected '{}", expected.getData());
         for(int i = 0; i < actual.getRowCount(); i++){
             for(int j = 0; j < actual.getColumnCount(); j++){
                 assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
@@ -304,7 +306,41 @@ public class MotionTest {
         }
     }
 
-
+    /**
+     * Computes the matrix exponential of an se3 representation of exponential coordinates
+     *     Example Input:
+     *         se3mat = [0,          0,           0,          0],
+     *                  [0,          0, -1.57079632, 2.35619449],
+     *                  [0, 1.57079632,           0, 2.35619449],
+     *                  [0,          0,           0,          0]
+     *     Output:
+     *        [1.0, 0.0,  0.0, 0.0],
+     *        [0.0, 0.0, -1.0, 0.0],
+     *        [0.0, 1.0,  0.0, 3.0],
+     *        [  0,   0,    0,   1]
+     */
+    @Test
+    public void MatrixExp6Test(){
+        var input = new RMatrix(Arrays.asList(
+                ZERO, ZERO,ZERO,ZERO,
+                ZERO, ZERO,minus(new BigDecimal("1.57079632")),new BigDecimal("2.35619449").round(MC6),
+                ZERO, new BigDecimal("1.57079632").round(MC6),ZERO,new BigDecimal("2.35619449").round(MC6),
+                ZERO,ZERO,ZERO,ZERO));
+        LOGGER.debug("MatrixExp6Test input\n'{}", input.getData());
+        var expected = new RMatrix(Arrays.asList(
+                ONE, ZERO,ZERO,ZERO,
+                ZERO, ZERO,minus(ONE),ZERO,
+                ZERO,ONE,ZERO,THREE,
+                ZERO,ZERO,ZERO,ONE));
+        LOGGER.debug("MatrixExp6Test expected \n'{}", expected.getData());
+        var actual = MatrixExp6(input);
+        LOGGER.debug("MatrixExp6Test actual \n'{}", actual.getData());
+        for(int i = 0; i < actual.getRowCount(); i++){
+            for(int j = 0; j < actual.getColumnCount(); j++){
+                assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
+            }
+        }
+    }
 
 
 }

@@ -1,22 +1,22 @@
-package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation;
+package ru.robot.Model.CS.Cartesian;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import ru.robot.Model.DataStructure.Base.RMatrix;
-import ru.robot.Model.DataStructure.RotationMatrix;
-import ru.robot.Model.DataStructure.Vector3;
-import ru.robot.Model.DataStructure.Vector4;
-import ru.robot.Model.DataStructure.SkewSymmetricMatrix;
+import ru.robot.Model.DS.Base.RMatrix;
+import ru.robot.Model.DS.RotationMatrix;
+import ru.robot.Model.DS.Vector3;
+import ru.robot.Model.DS.Vector4;
+import ru.robot.Model.DS.SkewSymmetricMatrix;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.*;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.minus;
-import static ru.robot.Model.DataStructure.Base.RMatrix.getIdentityMatrix;
+import static ru.robot.Model.CS.Cartesian.Rotation.*;
+import static ru.robot.Model.Utils.Utils.minus;
+import static ru.robot.Model.DS.Base.RMatrix.getIdentityMatrix;
 
 public class RotationTest {
 

@@ -1,25 +1,26 @@
-package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation;
+package ru.robot.Model.CS.Cartesian;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ujmp.core.Matrix;
-import ru.robot.Model.CoordinateSystem.Cartesian.Utils.AXIS;
-import ru.robot.Model.DataStructure.Base.RMatrix;
-import ru.robot.Model.DataStructure.Vector3;
-import ru.robot.Model.DataStructure.Vector4;
-import ru.robot.Model.DataStructure.RotationMatrix;
-import ru.robot.Model.DataStructure.SkewSymmetricMatrix;
+
+import ru.robot.Model.DS.Base.RMatrix;
+import ru.robot.Model.DS.Vector3;
+import ru.robot.Model.DS.Vector4;
+import ru.robot.Model.DS.RotationMatrix;
+import ru.robot.Model.DS.SkewSymmetricMatrix;
+import ru.robot.Model.Utils.AXIS;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import static ch.obermuhlner.math.big.BigDecimalMath.*;
-import static ru.robot.Model.DataStructure.Base.RMatrix.*;
-import static ru.robot.Model.DataStructure.Base.RMatrix.mult;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
+import static ru.robot.Model.DS.Base.RMatrix.*;
+import static ru.robot.Model.DS.Base.RMatrix.mult;
+import static ru.robot.Model.Utils.Utils.nearZero;
 import static ru.robot.Environment.Global.*;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.*;
-import static ru.robot.Model.DataStructure.Vector3.normOfVector;
-import static ru.robot.Model.DataStructure.Vector3.normaliseVector;
+import static ru.robot.Model.Utils.Utils.*;
+import static ru.robot.Model.DS.Vector3.normOfVector;
+import static ru.robot.Model.DS.Vector3.normaliseVector;
 
 public class Rotation {
 
@@ -63,16 +64,16 @@ public class Rotation {
     }
 
     /**
-     * Converts a 3-vector to an so(3) representation
-     *     :param omg: A 3-vector
-     *     :return: The skew symmetric representation of omg
+     *Converts a 3-vector to an so(3) representation
+     *      Example Input:
+     *      <br> omg = np.array([1, 2, 3])
+     *      <br>Output:
+     *      * <br> [ 0, -3,  2]
+     *      * <br> [ 3,  0, -1]
+     *      * <br> [-2,  1,  0]
      *
-     *     Example Input:
-     *         omg = np.array([1, 2, 3])
-     *     Output:
-     * ([[ 0, -3,  2],
-     * [ 3,  0, -1],
-     * [-2,  1,  0]])
+     * @param omg A 3-vector
+     * @return The skew symmetric representation of omg
      */
     public static SkewSymmetricMatrix VecToso3(Vector3 omg){
         LOGGER.debug("VecToso3 has STARTED");
@@ -92,17 +93,15 @@ public class Rotation {
 
 
     /**
-     *     Converts an so(3) representation to a 3-vector
-     *
-     *     :param so3mat: A 3x3 skew-symmetric matrix
-     *     :return: The 3-vector corresponding to so3mat
-     *
-     *     Example Input:
-     *         so3mat = np.array([[ 0, -3,  2],
-     *                            [ 3,  0, -1],
-     *                            [-2,  1,  0]])
-     *     Output:
-     *         np.array([1, 2, 3])
+     * Converts an so(3) representation to a 3-vector
+     *      <P>Example Input so3mat:
+     *      <br>[ 0, -3,  2],
+     *      <br>[ 3,  0, -1],
+     *      <br>[-2,  1,  0]
+     *      <P>Output: [1, 2, 3]
+     * @see SkewSymmetricMatrix
+     * @param so3mat A 3x3 skew-symmetric matrix
+     * @return The 3-vector corresponding to so3mat
      */
     public static Vector3 so3ToVec(SkewSymmetricMatrix so3mat){
         LOGGER.debug("so3ToVec STARTED");
@@ -119,15 +118,14 @@ public class Rotation {
     /**
      *     Converts a 3-vector of exponential coordinates for rotation into
      *     axis-angle form
-     *     :return omghat: A unit rotation axis
-     *     :return theta: The corresponding rotation angle
-     *     Example Input:
-     *         expc3 = np.array([1, 2, 3])
-     *     Output:
-     *         (np.array([0.26726124, 0.53452248, 0.80178373]), 3.7416573867739413)
-     *     return (Normalize(expc3), np.linalg.norm(expc3))
+     *
+     *     <P>Example Input:
+     *     <br>  expc3 = np.array([1, 2, 3])
+     *     <P>Output:
+     *         <br> 0.26726124, 0.53452248, 0.80178373, 3.7416573867739413
+     *     <br> return (Normalize(expc3), np.linalg.norm(expc3))
      * @param expc3  A 3-vector of exponential coordinates for rotation
-     * @return result
+     * @return The corresponding rotation angle
      */
     public static Vector4 AxisAng3(Vector3 expc3){
         Vector3 omghat = normaliseVector(expc3);
@@ -137,13 +135,13 @@ public class Rotation {
     /**
      *     Converts a 4-vector of axis-angle form to
      *     exponential coordinates for rotation
-     *     Example Input:
-     *      (np.array([0.26726124, 0.53452248, 0.80178373]), 3.7416573867739413)
-     *     Output:  expc3 = np.array([1, 2, 3])
-     *
-     *     return (Normalize(expc3), np.linalg.norm(expc3))
+     *     <P>Example Input:
+     *      <br>(np.array([0.26726124, 0.53452248, 0.80178373]), 3.7416573867739413)
+     *     <P> Output:
+     *     <br> expc3 = np.array([1, 2, 3])
+
      * @param  fourVector of exponential coordinates for rotation
-     * @return result
+     * @return result (Normalize(expc3), np.linalg.norm(expc3))
      */
     public static Vector3 AngleAxisToVec3(Vector4 fourVector){
         LOGGER.debug("AngleAxisToVec3 STARTED");
@@ -203,23 +201,18 @@ public class Rotation {
     }
 
     /**
-     * log : R ∈ SO(3) → [ωˆ]θ ∈ so(3).
-     * get Angel/Axis from SO(3)
-     * input: none
-     * return Matrix 4,0 with w1,w2,w3, angle
      *Computes the matrix logarithm of a rotation matrix
-
-     *     :param R: A 3x3 rotation matrix
-     *     :return: The matrix logarithm of R
-
-     *     Example Input:
-     *         R = np.array([[0, 0, 1],
-     *                       [1, 0, 0],
-     *                       [0, 1, 0]])
-     *     Output:
-     *         np.array([[          0, -1.20919958,  1.20919958],
-     *                   [ 1.20919958,           0, -1.20919958],
-     *                   [-1.20919958,  1.20919958,           0]])
+     *           <P> Example Input:
+     *               <br> [[0, 0, 1],
+     *               <br> [1, 0, 0],
+     *               <br> [0, 1, 0]
+     *           <P> Output:
+     *               <br> [          0, -1.20919958,  1.20919958],
+     *               <br> [ 1.20919958,           0, -1.20919958],
+     *               <br> [-1.20919958,  1.20919958,           0]])
+     *
+     * @param rotationMatrixData R: A 3x3 rotation matrix
+     * @return The matrix logarithm of R
      */
     public static SkewSymmetricMatrix MatrixLog3(RotationMatrix rotationMatrixData){
         LOGGER.info("MatrixLog3 started");

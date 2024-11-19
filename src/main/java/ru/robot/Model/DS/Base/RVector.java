@@ -1,12 +1,9 @@
-package ru.robot.Model.DataStructure.Base;
+package ru.robot.Model.DS.Base;
 
 import org.ujmp.core.Matrix;
 import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
-import ru.robot.Model.DataStructure.Vector3;
 
 import java.math.BigDecimal;
-
-import static ru.robot.Environment.Global.MC6;
 
 public class RVector {
     Matrix data;
@@ -61,21 +58,17 @@ public class RVector {
         return new RVector(m.data.mtimes(n.data));
     }
 
+    public static RVector mult(RVector m, RVector n) {
+        return new RVector(m.data.mtimes(n.data));
+    }
+
     public static RVector mult(RVector v, BigDecimal scalar) {
         return new RVector(v.data.times(scalar.doubleValue()));
     }
 
-    /**
-     * Normalizes a vector
-     *
-     *     :param V: A vector
-     *     :return: A unit vector pointing in the same direction as z
-     *
-     *     Example Input:
-     *         V = np.array([1, 2, 3])
-     *     Output:
-     *         np.array([0.26726124, 0.53452248, 0.80178373])
-     */
+    public static RVector divide(RVector m, BigDecimal n) {
+        return new RVector(m.data.divide(n.doubleValue()));
+    }
 
 
     /**

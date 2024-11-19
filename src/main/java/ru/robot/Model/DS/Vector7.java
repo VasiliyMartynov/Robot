@@ -1,7 +1,6 @@
-package ru.robot.Model.DataStructure;
+package ru.robot.Model.DS;
 
-import ru.robot.Logger;
-import ru.robot.Model.DataStructure.Base.RVector;
+import ru.robot.Model.DS.Base.RVector;
 
 import java.math.BigDecimal;
 

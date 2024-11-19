@@ -1,23 +1,24 @@
-package ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Motion;
+package ru.robot.Model.CS.Cartesian;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.robot.Model.DataStructure.Base.RMatrix;
-import ru.robot.Model.DataStructure.Base.RVector;
-import ru.robot.Model.DataStructure.Vector3;
-import ru.robot.Model.DataStructure.Vector6;
-import ru.robot.Model.DataStructure.Vector7;
-
+import ru.robot.Model.DS.Base.RMatrix;
+import ru.robot.Model.DS.Base.RVector;
+import ru.robot.Model.DS.SkewSymmetricMatrix;
+import ru.robot.Model.DS.Vector3;
+import ru.robot.Model.DS.Vector6;
+import ru.robot.Model.DS.Vector7;
 import java.math.BigDecimal;
 
+import static ch.obermuhlner.math.big.DefaultBigDecimalMath.sin;
 import static ru.robot.Environment.Global.*;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.RotInv;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Spatial.Rotation.Rotation.VecToso3;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO.YES;
-import static ru.robot.Model.DataStructure.Base.RMatrix.*;
-import static ru.robot.Model.DataStructure.Base.RVector.*;
-import static ru.robot.Model.DataStructure.Vector3.*;
+import static ru.robot.Model.CS.Cartesian.Rotation.*;
+import static ru.robot.Model.Utils.Utils.minus;
+import static ru.robot.Model.Utils.Utils.nearZero;
+import static ru.robot.Model.DS.Base.RMatrix.*;
+import static ru.robot.Model.DS.Base.RVector.*;
+import static ru.robot.Model.DS.Vector3.*;
+import static ru.robot.Model.Utils.YESNO.*;
 
 public class Motion {
 
@@ -91,10 +92,10 @@ public class Motion {
     //Test OK
     public static RMatrix TransToR(RMatrix T) {
         LOGGER.debug("TransToR has started" );
-        LOGGER.debug("TransToR input T '{}' \n", T );
+        LOGGER.debug("TransToR input T  \n'{}'", T );
         var R = new RMatrix(3);
         R.setData(T, YES, 0,0);
-        LOGGER.debug("TransToR result '{}' \n", R.getData());
+        LOGGER.debug("TransToR result \n'{}' ", R.getData());
         LOGGER.debug("TransToR has finished");
         return R;
     }
@@ -129,20 +130,18 @@ public class Motion {
 
     /**
      * Inverts a homogeneous transformation matrix
-     *      * Uses the structure of transformation matrices to avoid taking a matrix
-     *      * inverse, for efficiency.
-     *      * <p>
-     *      * Example input:
-     *      * T = np.array([[1, 0,  0, 0],
-     *      * [0, 0, -1, 0],
-     *      * [0, 1,  0, 3],
-     *      * [0, 0,  0, 1]])
-     *      * Output:
-     *      * np.array([[1,  0, 0,  0],
-     *      * [0,  0, 1, -3],
-     *      * [0, -1, 0,  0],
-     *      * [0,  0, 0,  1]])
-     *      * """
+     *      Uses the structure of transformation matrices to avoid taking a matrix
+     *      inverse, for efficiency.
+     *       <p>Example input:
+     *      <br> T = np.array([[1, 0,  0, 0],
+     *      <br> [0, 0, -1, 0],
+     *      <br> [0, 1,  0, 3],
+     *      <br> [0, 0,  0, 1]])
+     *      <P>Output:
+     *      <br> np.array([[1,  0, 0,  0],
+     *      <br> [0,  0, 1, -3],
+     *      <br> [0, -1, 0,  0],
+     *      <br> [0,  0, 0,  1]])
      * @param T A homogeneous transformation matrix
      * @return The inverse of T
      */
@@ -153,7 +152,7 @@ public class Motion {
         var P = TransToP(T);
         var Rinv = RotInv(R);
         var RinvMultP = mult(Rinv, P.getData());
-        var munusRinvMultP = mult(RinvMultP, minusONE);
+        var munusRinvMultP = mult(RinvMultP, minus(ONE));
         LOGGER.debug("TransInv has finished");
         return RpToTrans(Rinv, munusRinvMultP);
     }
@@ -187,13 +186,13 @@ public class Motion {
 
     /**
      * Converts an se3 matrix into a spatial velocity vector
-     *     Example Input:
-     *         se3mat = np.array([[ 0, -3,  2, 4],
-     *                            [ 3,  0, -1, 5],
-     *                            [-2,  1,  0, 6],
-     *                            [ 0,  0,  0, 0]])
-     *     Output:
-     *         np.array([1, 2, 3, 4, 5, 6])
+     *     <P>Example Input:
+     *     <br>    se3mat = np.array([[ 0, -3,  2, 4],
+     *     <br>                       [ 3,  0, -1, 5],
+     *     <br>                       [-2,  1,  0, 6],
+     *     <br>                       [ 0,  0,  0, 0]])
+     *     <P>Output:
+     *        <br> np.array([1, 2, 3, 4, 5, 6])
      * @param se3mat A 4x4 matrix in se3
      * @return The spatial velocity 6-vector corresponding to se3mat
      */
@@ -210,18 +209,18 @@ public class Motion {
 
     /**
      * Computes the adjoint representation of a homogeneous transformation matrix
-     *     Example Input:
-     *         T = np.array([[1, 0,  0, 0],
-     *                       [0, 0, -1, 0],
-     *                       [0, 1,  0, 3],
-     *                       [0, 0,  0, 1]])
-     *     Output:
-     *         np.array([[1, 0,  0, 0, 0,  0],
-     *                   [0, 0, -1, 0, 0,  0],
-     *                   [0, 1,  0, 0, 0,  0],
-     *                   [0, 0,  3, 1, 0,  0],
-     *                   [3, 0,  0, 0, 0, -1],
-     *                   [0, 0,  0, 0, 1,  0]]
+     *     <P>Example Input:
+     *        <br> T = np.array([[1, 0,  0, 0],
+     *            <br>           [0, 0, -1, 0],
+     *                <br>       [0, 1,  0, 3],
+     *                    <br>   [0, 0,  0, 1]])
+     *     <P>Output:
+     *         <br>np.array([[1, 0,  0, 0, 0,  0],
+     *             <br>      [0, 0, -1, 0, 0,  0],
+     *                 <br>  [0, 1,  0, 0, 0,  0],
+     *                   <br>[0, 0,  3, 1, 0,  0],
+     *                   <br>[3, 0,  0, 0, 0, -1],
+     *                   <br>[0, 0,  0, 0, 1,  0]]
      * @param T A homogeneous transformation matrix
      * @return The 6x6 adjoint representation [AdT] of T
      */
@@ -302,6 +301,70 @@ public class Motion {
         result.setItem(5, v.getItem(5));
         result.setItem(6, theta);
         LOGGER.debug("AxisAng6toS has finished" );
+        return result;
+    }
+
+    /**
+     * Computes the matrix exponential of an se3 representation of exponential coordinates
+     *     <P>Example Input:
+     *         <br>se3mat = <br>[0,          0,           0,          0],
+     *                  <br>[0,          0, -1.57079632, 2.35619449],
+     *                  <br>[0, 1.57079632,           0, 2.35619449],
+     *                  <br>[0,          0,           0,          0]
+     *     <P>Output:
+     *        <br>[1.0, 0.0,  0.0, 0.0],
+     *        <br>[0.0, 0.0, -1.0, 0.0],
+     *        <br>[0.0, 1.0,  0.0, 3.0],
+     *        <br>[  0,   0,    0,   1]
+     * @param se3mat A matrix of exponential coordinates
+     * @return The matrix(size 4) exponential of se3mat
+     */
+    public static RMatrix MatrixExp6(RMatrix se3mat){
+        LOGGER.debug("MatrixExp6 has started" );
+        var R = TransToR(se3mat);
+        LOGGER.debug("MatrixExp6 R \n'{}'", R.getData());
+        var P = TransToP(se3mat);
+        LOGGER.debug("MatrixExp6 P '{}'", P.getData());
+        var so3mat = new SkewSymmetricMatrix(R);
+        var omgtheta = so3ToVec(so3mat);
+        LOGGER.debug("MatrixExp6 omgtheta '{}'", omgtheta.getData());
+        var result = new RMatrix(4);
+        if (nearZero(normOfVector(omgtheta)) < 0.00001) {
+            result.setData(getIdentityMatrix(3), YES,0,0);
+            result.setItem(P.getItem(0), 0,3);
+            result.setItem(P.getItem(1), 1,3);
+            result.setItem(P.getItem(2), 2,3);
+            result.setItem(ONE, 3,3);
+        } else {
+            var me3 = MatrixExp3(so3mat);
+            var theta = AxisAng3(omgtheta).getItem(3);
+            var omgMat = divide(so3mat.getData(), theta);
+            var p1 = getIdentityMatrix(3).mult(theta);
+            var OneMinusCosTheta = ONE.subtract(sin(theta));
+            var p2 = mult(omgMat, OneMinusCosTheta);
+            var thetaMunusSinTheta = theta.subtract(sin(theta));
+            var omghatPow2 = mult(omgMat, omgMat);
+            var p3 = mult(omghatPow2, thetaMunusSinTheta);
+            var p1PlusP2 = p1.plus(p2);
+            var p1PlusP2PlusP3 = p1PlusP2.plus(p3);
+            var p4 = mult(p1PlusP2PlusP3, P.getData());
+            /**
+             * np.dot(
+             *      np.eye(3) * theta +
+             *      (1 - np.cos(theta)) * omgmat +
+             *      (theta - np.sin(theta)) * np.dot(omgmat,omgmat),
+             *      se3mat[0: 3, 3])
+             * / theta
+             */
+            var xxx = divide(p4, theta);
+            var GthetaV = new Vector3(xxx);
+            result.setItem(GthetaV.getItem(0), 0,3);
+            result.setItem(GthetaV.getItem(1), 1,3);
+            result.setItem(GthetaV.getItem(2), 2,3);
+            result.setData(me3, YES, 0,0);
+            result.setItem(ONE, 3,3);
+        }
+        LOGGER.debug("MatrixExp6 has finished" );
         return result;
     }
 

@@ -1,6 +1,4 @@
-package ru.robot.Model.CoordinateSystem.Cartesian.Utils;
-
-import ru.robot.Environment.Global;
+package ru.robot.Model.Utils;
 
 import java.math.BigDecimal;
 import static ru.robot.Environment.Global.*;
@@ -14,7 +12,7 @@ public class Utils {
      * @return negative valuew of x
      */
     public static BigDecimal minus(BigDecimal x){
-        return x.multiply(Global.minusONE, MC6);
+        return x.multiply(new BigDecimal("-1.00000"), MC6);
     }
 
 

@@ -1,6 +1,6 @@
-package ru.robot.Model.DataStructure;
+package ru.robot.Model.DS;
 
-import ru.robot.Model.DataStructure.Base.RVector;
+import ru.robot.Model.DS.Base.RVector;
 
 import java.math.BigDecimal;
 
@@ -100,6 +100,22 @@ public class Vector3 {
         var result = new Vector3();
         for(int i = 0; i <= 2; i++){
             result.setItem(i, v.getItem(i).multiply(h));
+        }
+        return result;
+    }
+
+    public static Vector3 mult(Vector3 m, Vector3 n){
+        var result = new Vector3();
+        for(int i = 0; i <= 2; i++){
+            result.setItem(i, m.getItem(i).multiply(n.getItem(i)));
+        }
+        return result;
+    }
+
+    public static Vector3 divide(Vector3 v, BigDecimal h){
+        var result = new Vector3();
+        for(int i = 0; i <= 2; i++){
+            result.setItem(i, v.getItem(i).divide(h,MC6));
         }
         return result;
     }

@@ -1,8 +1,8 @@
-package ru.robot.Model.CoordinateSystem.Cartesian.coordinates;
+package ru.robot.Model.CS.Cartesian.coordinates;
 
 import ru.robot.Model.Rigid.BodyRotation;
 import ru.robot.Model.Rigid.BodyPosition;
-import ru.robot.Model.DataStructure.Base.RMatrix;
+import ru.robot.Model.DS.Base.RMatrix;
 
 import java.math.BigDecimal;
 

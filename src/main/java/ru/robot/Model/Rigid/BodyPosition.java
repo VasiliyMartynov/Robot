@@ -1,7 +1,7 @@
 package ru.robot.Model.Rigid;
 
 import org.ujmp.core.DenseMatrix2D;
-import ru.robot.Model.CoordinateSystem.Cartesian.coordinates.Coordinates;
+import ru.robot.Model.CS.Cartesian.coordinates.Coordinates;
 
 import java.math.BigDecimal;
 

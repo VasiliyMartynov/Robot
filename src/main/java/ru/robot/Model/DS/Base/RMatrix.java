@@ -1,13 +1,14 @@
-package ru.robot.Model.DataStructure.Base;
+package ru.robot.Model.DS.Base;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ujmp.core.Matrix;
 import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
-import ru.robot.Model.CoordinateSystem.Cartesian.Utils.YESNO;
+import ru.robot.Model.Utils.YESNO;
+
 import java.math.BigDecimal;
 import java.util.List;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
+import static ru.robot.Model.Utils.Utils.nearZero;
 import static ru.robot.Environment.Global.*;
 
 public class RMatrix {
@@ -103,12 +104,12 @@ public class RMatrix {
     }
 
     public void setData(RMatrix inputMatrix, YESNO needToBeRounded, int coordinateX, int coordinateY){
-        LOGGER.debug("SetData has started");
-        LOGGER.debug("Input Matrix '{}'\n", inputMatrix);
-        LOGGER.debug("Input Matrix size '{}'\n", inputMatrix.getSize());
-        LOGGER.debug("this Matrix size '{}'\n", this.getSize());
-        LOGGER.debug("Input coordinateX '{}'\n", coordinateX);
-        LOGGER.debug("Input coordinateY '{}'\n", coordinateY);
+        LOGGER.info("SetData has started");
+//        LOGGER.debug("Input Matrix '{}'\n", inputMatrix);
+//        LOGGER.debug("Input Matrix size '{}'\n", inputMatrix.getSize());
+//        LOGGER.debug("this Matrix size '{}'\n", this.getSize());
+//        LOGGER.debug("Input coordinateX '{}'\n", coordinateX);
+//        LOGGER.debug("Input coordinateY '{}'\n", coordinateY);
         var X = inputMatrix;
         var A = this;
         int startI;
@@ -162,7 +163,7 @@ public class RMatrix {
             }
             coordinateX++;
         }
-        LOGGER.debug("setData this.data\n'{}'", this.data);
+        LOGGER.info("SetData has finished");
 
     }
 
@@ -207,11 +208,11 @@ public class RMatrix {
     }
 
     public void setItem(BigDecimal value, long... coordinates){
-        LOGGER.debug("SetItem has started");
-        LOGGER.debug("SetItem input value '{}'", value);
-        LOGGER.debug("SetItem input coordinates '{}'", coordinates);
+//        LOGGER.debug("SetItem has started");
+//        LOGGER.debug("SetItem input value '{}'", value);
+//        LOGGER.debug("SetItem input coordinates '{}'", coordinates);
         this.data.setAsBigDecimal(value, coordinates);
-        LOGGER.debug("SetItem has finished");
+//        LOGGER.debug("SetItem has finished");
     }
 
     public static RMatrix roundValuesOfRMatrix(RMatrix m){
@@ -252,6 +253,10 @@ public class RMatrix {
         return new RMatrix(m.data.mtimes(n.data));
     }
 
+    public static RMatrix mult(RMatrix m, BigDecimal scalar) {
+        return new RMatrix(m.data.times(scalar.doubleValue()));
+    }
+
     public RMatrix mult(BigDecimal scalar) {
         return new RMatrix(this.data.times(scalar.doubleValue()));
     }
@@ -270,6 +275,10 @@ public class RMatrix {
 
     public static RMatrix divide(RMatrix m, RMatrix n) {
         return new RMatrix(m.data.divide(n.data));
+    }
+
+    public static RMatrix divide(RMatrix m, BigDecimal n) {
+        return new RMatrix(m.data.divide(n.doubleValue()));
     }
 
     public static BigDecimal trace(RMatrix m) {

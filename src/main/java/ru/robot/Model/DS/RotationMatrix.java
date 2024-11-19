@@ -1,14 +1,14 @@
-package ru.robot.Model.DataStructure;
+package ru.robot.Model.DS;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ujmp.core.Matrix;
-import ru.robot.Model.DataStructure.Base.RMatrix;
+import ru.robot.Model.DS.Base.RMatrix;
 import java.math.BigDecimal;
 import static ru.robot.Environment.Global.MC6;
 import static ru.robot.Environment.Global.ONE;
-import static ru.robot.Model.CoordinateSystem.Cartesian.Utils.Utils.nearZero;
-import static ru.robot.Model.DataStructure.Base.RMatrix.*;
+import static ru.robot.Model.Utils.Utils.nearZero;
+import static ru.robot.Model.DS.Base.RMatrix.*;
 
 public class RotationMatrix {
 

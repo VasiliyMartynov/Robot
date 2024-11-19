@@ -1,4 +1,4 @@
-package ru.robot.Model.CoordinateSystem.Cartesian.coordinates;
+package ru.robot.Model.CS.Cartesian.coordinates;
 
 import ru.robot.Model.Rigid.BodyRotation;
 import ru.robot.Model.Rigid.BodyPosition;
