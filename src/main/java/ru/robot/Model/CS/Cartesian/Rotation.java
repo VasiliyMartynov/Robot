@@ -218,22 +218,24 @@ public class Rotation {
      *               <br> [-1.20919958,  1.20919958,           0]])
      *
      * @param rotationMatrixData R: A 3x3 rotation matrix
-     * @return The matrix logarithm of R
+     * @return SkewSymmetricMatrix omgMat The logarithm of Rotation matrix
      */
     public static SkewSymmetricMatrix MatrixLog3(RotationMatrix rotationMatrixData){
+        LOGGER.info("==================");
         LOGGER.info("MatrixLog3 started");
-        Vector4 axisAngle = null;
+        SkewSymmetricMatrix omgMat = null;
         var i = getIdentityMatrix(3);
         var trace = RMatrix.trace(rotationMatrixData.getData());
-        LOGGER.debug("Trace is: `{}`" , trace);
-
-
+        LOGGER.debug("MatrixLog3 Trace is: `{}`" , trace);
         if (RMatrix.equalsContent(rotationMatrixData.getData(),i))
         {
-            LOGGER.debug("Case A matrix is Identity");
-            LOGGER.debug("vectorAxisOmega is `{}`", axisAngle);
-
-            return new SkewSymmetricMatrix(RMatrix.getZerosMatrix(3));
+            LOGGER.debug("MatrixLog3 Case A matrix is Identity");
+            //LOGGER.debug("MatrixLog3 vectorAxisOmega is `{}`", axisAngle);
+            omgMat = new SkewSymmetricMatrix(RMatrix.getZerosMatrix(3));
+            LOGGER.debug("MatrixLog3 omgMat: `{}`" , omgMat.getData());
+            LOGGER.info("MatrixLog3 has finished");
+            LOGGER.info("==================");
+            return omgMat;
         }
 
         else if (trace.compareTo(minus(ONE)) == 0)
@@ -249,7 +251,11 @@ public class Rotation {
             var w1 = p1.multiply(r13, MC6);
             var w2 = p1.multiply(r23, MC6);
             var w3 = p1.multiply(onePlusR33, MC6);
-            return VecToso3(new Vector3(w1,w2,w3));
+            omgMat = VecToso3(new Vector3(w1,w2,w3));
+            LOGGER.debug("MatrixLog3 omgMat: `{}`" , omgMat.getData());
+            LOGGER.info("MatrixLog3 has finished");
+            LOGGER.info("==================");
+            return omgMat;
         }
         else
         {
@@ -294,7 +300,12 @@ public class Rotation {
             LOGGER.debug("w3 '{}'", w3);
             var fourVector = new Vector4(w1,w2,w3,angle);
             LOGGER.debug("fourVector '{}'", fourVector.getData());
-            return VecToso3(AngleAxisToVec3(fourVector));
+            omgMat = VecToso3(AngleAxisToVec3(fourVector));
+            LOGGER.debug("MatrixLog3 omgMat: `{}`" , omgMat.getData());
+            LOGGER.info("MatrixLog3 has finished");
+            LOGGER.info("==================");
+            return omgMat;
         }
+
     }
 }

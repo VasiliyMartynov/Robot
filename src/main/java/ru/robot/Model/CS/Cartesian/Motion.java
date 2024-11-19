@@ -8,6 +8,8 @@ import ru.robot.Model.DS.Base.RVector;
 
 import java.math.BigDecimal;
 
+import static ch.obermuhlner.math.big.BigDecimalMath.acos;
+import static ch.obermuhlner.math.big.BigDecimalMath.tan;
 import static ch.obermuhlner.math.big.DefaultBigDecimalMath.cos;
 import static ch.obermuhlner.math.big.DefaultBigDecimalMath.sin;
 import static ru.robot.Environment.Global.*;
@@ -339,24 +341,24 @@ public class Motion {
             var me3 = MatrixExp3(so3mat);
             LOGGER.debug("MatrixExp6 me3 '{}'", me3.getData());
             var theta = AxisAng3(omgtheta).getItem(3);
-//            LOGGER.debug("MatrixExp6 theta '{}'", theta);
+            LOGGER.debug("MatrixExp6 theta '{}'", theta);
             var omgMat = divide(so3mat.getData(), theta);
-//            LOGGER.debug("MatrixExp6 omgMat '{}'", omgMat);
+            LOGGER.debug("MatrixExp6 omgMat '{}'", omgMat);
             var p1 = getIdentityMatrix(3).mult(theta);
-//            LOGGER.debug("MatrixExp6 p1(getIdentityMatrix(3).mult(theta);) '{}'", p1);
+            LOGGER.debug("MatrixExp6 p1(getIdentityMatrix(3).mult(theta);) '{}'", p1);
             var OneMinusCosTheta = ONE.subtract(cos(theta));
             var p2 = mult(omgMat, OneMinusCosTheta);
-//            LOGGER.debug("MatrixExp6 p2(mult(omgMat, OneMinusCosTheta)) '{}'", p2);
+            LOGGER.debug("MatrixExp6 p2(mult(omgMat, OneMinusCosTheta)) '{}'", p2);
             var thetaMunusSinTheta = theta.subtract(sin(theta));
             var omgMatPow2 = mult(omgMat, omgMat);
-//            LOGGER.debug("MatrixExp6 omghatPow2 '{}'", omgMatPow2);
+            LOGGER.debug("MatrixExp6 omghatPow2 '{}'", omgMatPow2);
             var p3 = mult(omgMatPow2, thetaMunusSinTheta);
-//            LOGGER.debug("MatrixExp6 p3(mult(omghatPow2, thetaMunusSinTheta)) '{}'", p3);
+            LOGGER.debug("MatrixExp6 p3(mult(omghatPow2, thetaMunusSinTheta)) '{}'", p3);
             var p1PlusP2 = p1.plus(p2);
-//            LOGGER.debug("MatrixExp6 p1PlusP2 '{}'", p1PlusP2);
+            LOGGER.debug("MatrixExp6 p1PlusP2 '{}'", p1PlusP2);
             var p1PlusP2PlusP3 = p1PlusP2.plus(p3);
-//            LOGGER.debug("MatrixExp6 p1PlusP2PlusP3 '{}'", p1PlusP2PlusP3);
-//            LOGGER.debug("MatrixExp6 P '{}'", P.getData());
+            LOGGER.debug("MatrixExp6 p1PlusP2PlusP3 '{}'", p1PlusP2PlusP3);
+            LOGGER.debug("MatrixExp6 P '{}'", P.getData());
             var p4 = mult(p1PlusP2PlusP3, P.getData());
 
 //            LOGGER.debug("MatrixExp6 p4(mult(p1PlusP2PlusP3, P.getData());) '{}'", p4);
@@ -399,11 +401,76 @@ public class Motion {
         var R = TransToR(T);
         var P = TransToP(T);
         var omgMat = MatrixLog3(new RotationMatrix(R));
-        if
-
-
-
         var result = getIdentityMatrix(4);
+        var zeroMatrix = getZerosMatrix(3);
+        if (equalsContent(omgMat.getData(), zeroMatrix)) {
+            LOGGER.info("MatrixLog6 has equalsContent(omgMat.getData(), zeroMatrix) it TRUE" );
+            LOGGER.info("CASE A" );
+            result.setData(zeroMatrix, YES, 0,0);
+            result.setItem(T.get(0,3), 0,3);
+            result.setItem(T.get(1,3), 1,3);
+            result.setItem(T.get(2,3), 2,3);
+            result.setItem(ZERO,3,0);
+            result.setItem(ZERO,3,1);
+            result.setItem(ZERO,3,2);
+            result.setItem(ZERO,3,3);
+        } else {
+            LOGGER.info("MatrixLog6 has equalsContent(omgMat.getData(), zeroMatrix) it FALSE" );
+            LOGGER.info("CASE B" );
+            var Rtrace = BigDecimal.valueOf(R.getData().trace());
+            LOGGER.info("MatrixLog6 Rtrace '{}'", Rtrace );
+            var RtraceMinusOne = Rtrace.subtract(ONE, MC6);
+            LOGGER.info("MatrixLog6 RtraceMinusOne '{}'", RtraceMinusOne );
+            var RtraceMinusOneDivide2 = RtraceMinusOne.divide(TWO, MC6);
+            LOGGER.info("MatrixLog6 RtraceMinusOneDivide2 '{}'", RtraceMinusOneDivide2 );
+            var theta = acos(RtraceMinusOneDivide2, MC6);
+            LOGGER.info("MatrixLog6 theta '{}'", theta );
+            result.setData(omgMat.getData(), YES, 0, 0);
+            result.setItem(ZERO,3,0);
+            result.setItem(ZERO,3,1);
+            result.setItem(ZERO,3,2);
+            result.setItem(ZERO,3,3);
+            LOGGER.info("MatrixLog6 result \n'{}'", result.getData() );
+
+            //np.eye(3) - omgmat / 2.0
+            var omgMatDiv2 = omgMat.getData().divide(TWO);
+            var eye3 = getIdentityMatrix(3);
+            var p1 = substract(eye3, omgMatDiv2);
+            LOGGER.info("MatrixLog6 p1 \n'{}'", p1.getData() );
+
+            //1.0 / theta - 1.0 / np.tan(theta / 2.0) / 2
+            var oneDivTheta = ONE.divide(theta, MC6);
+            var thetaDiv2 = theta.divide(TWO, MC6);
+            var tanThetaDiv2 = tan(thetaDiv2, MC6);
+            var oneDivTanThetaDiv2 = ONE.divide(tanThetaDiv2, MC6);
+            var oneDivTanThetaDiv2andDiv2 = oneDivTanThetaDiv2.divide(TWO, MC6);
+            var p2 = oneDivTheta.subtract(oneDivTanThetaDiv2andDiv2);
+            LOGGER.info("MatrixLog6 p2 \n'{}'", p2 );
+
+            //np.dot(omgmat,omgmat) / theta,
+            var omgMatPow2 = mult(omgMat.getData(), omgMat.getData());
+            var p3 = omgMatPow2.divide(theta);
+            LOGGER.info("MatrixLog6 p3 \n'{}'", p3.getData() );
+
+
+            var p2multp3 = p3.mult(p2);
+            var p1Plusp2multp3 = p1.plus(p2multp3);
+
+            var p4 = new RVector(3);
+            p4.set(0, T.get(0,3));
+            p4.set(1, T.get(1,3));
+            p4.set(2, T.get(2,3));
+            LOGGER.info("MatrixLog6 p4 \n'{}'", p4.getData() );
+
+            var p5 = mult(p1Plusp2multp3, p4);
+            LOGGER.info("MatrixLog6 p5 \n'{}'", p5.getData() );
+
+            result.setItem(p5.get(0), 0,3);
+            result.setItem(p5.get(1), 1,3);
+            result.setItem(p5.get(2), 2,3);
+
+        }
+        LOGGER.info("MatrixLog6 result \n'{}'", result.getData() );
         LOGGER.info("MatrixLog6 has finished" );
         LOGGER.info("========================");
         return result;

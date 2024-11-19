@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ujmp.core.Matrix;
 import org.ujmp.core.bigdecimalmatrix.impl.DefaultDenseBigDecimalMatrix2D;
+import org.ujmp.core.util.R;
 import ru.robot.Model.Utils.YESNO;
 
 import java.math.BigDecimal;
@@ -277,6 +278,10 @@ public class RMatrix {
 
     public RMatrix plus(RMatrix m){
         return new RMatrix(this.data.plus(m.data));
+    }
+
+    public static RMatrix substract(RMatrix m, RMatrix n){
+        return new RMatrix(m.data.minus(n.data));
     }
 
     public static RMatrix divide(RMatrix m, RMatrix n) {

@@ -33,7 +33,7 @@ public class Utils {
      */
     public static int nearZero(BigDecimal z){
         var result = z.abs(MC6).compareTo(new BigDecimal("0.0000001"));
-        LOGGER.debug("nearZero is '{}'", result);
+        //LOGGER.debug("nearZero is '{}'", result);
         return result;
     }
 
