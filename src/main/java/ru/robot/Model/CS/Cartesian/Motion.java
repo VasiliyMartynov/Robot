@@ -42,7 +42,7 @@ public class Motion {
      *       Converts a rotation matrix and a position vector into homogeneous transformation matrix
 
      *      <p>example Input:
-     *       <br>R = np.array
+     *       <br>R = ma
      *       <br>[1, 0,  0],
      *       <br>[0, 0, -1],
      *       <br>[0, 1,  0]
@@ -154,9 +154,9 @@ public class Motion {
         var P = TransToP(T);
         var Rinv = RotInv(R);
         var RinvMultP = mult(Rinv, P.getData());
-        var munusRinvMultP = mult(RinvMultP, minus(ONE));
+        var minusRinvMultP = mult(RinvMultP, minus(ONE));
         LOGGER.debug("TransInv has finished");
-        return RpToTrans(Rinv, munusRinvMultP);
+        return RpToTrans(Rinv, minusRinvMultP);
     }
 
     /**
@@ -182,12 +182,12 @@ public class Motion {
         se3.setItem(V.getItem(5), 2,3);
         se3.setItem(ONE,3,3);
         LOGGER.debug("se3 \n '{}'", se3);
-        LOGGER.debug("VecTose3 has shinished");
+        LOGGER.debug("VecTose3 has finished");
         return se3;
     }
 
     /**
-     * Converts an se3 matrix into a spatial velocity vector
+     * Converts se3 matrix into a spatial velocity vector
      *     <P>Example Input:
      *     <br>    se3mat = np.array(<br>[ 0, -3,  2, 4],
      *     <br>                       [ 3,  0, -1, 5],
@@ -307,7 +307,7 @@ public class Motion {
     }
 
     /**
-     * Computes the matrix exponential of an se3 representation of exponential coordinates
+     * Computes the matrix exponential of se3 representation of exponential coordinates
      *     <P>Example Input:
      *         <br>se3mat = <br>[0,          0,           0,          0],
      *                  <br>[0,          0, -1.57079632, 2.35619449],
@@ -329,10 +329,10 @@ public class Motion {
         var P = TransToP(se3mat);
         LOGGER.debug("MatrixExp6 P '{}'", P.getData());
         var so3mat = new SkewSymmetricMatrix(R);
-        var omgtheta = so3ToVec(so3mat);
-        LOGGER.debug("MatrixExp6 omgtheta '{}'", omgtheta.getData());
+        var omgTheta = so3ToVec(so3mat);
+        LOGGER.debug("MatrixExp6 omgTheta '{}'", omgTheta.getData());
         var res = new RMatrix(4);
-        if (nearZero(normOfVector(omgtheta)) < 0.00001) {
+        if (nearZero(normOfVector(omgTheta)) < 0.00001) {
             res.setData(getIdentityMatrix(3), YES,0,0);
             res.setItem(P.getItem(0), 0,3);
             res.setItem(P.getItem(1), 1,3);
@@ -341,7 +341,7 @@ public class Motion {
         } else {
             var me3 = MatrixExp3(so3mat);
             LOGGER.debug("MatrixExp6 me3 '{}'", me3.getData());
-            var theta = AxisAng3(omgtheta).getItem(3);
+            var theta = AxisAng3(omgTheta).getItem(3);
             LOGGER.debug("MatrixExp6 theta '{}'", theta);
             var omgMat = divide(so3mat.getData(), theta);
             LOGGER.debug("MatrixExp6 omgMat '{}'", omgMat);
@@ -350,11 +350,11 @@ public class Motion {
             var OneMinusCosTheta = ONE.subtract(cos(theta));
             var p2 = mult(omgMat, OneMinusCosTheta);
             LOGGER.debug("MatrixExp6 p2(mult(omgMat, OneMinusCosTheta)) '{}'", p2);
-            var thetaMunusSinTheta = theta.subtract(sin(theta));
+            var thetaMinusSinTheta = theta.subtract(sin(theta));
             var omgMatPow2 = mult(omgMat, omgMat);
-            LOGGER.debug("MatrixExp6 omghatPow2 '{}'", omgMatPow2);
-            var p3 = mult(omgMatPow2, thetaMunusSinTheta);
-            LOGGER.debug("MatrixExp6 p3(mult(omghatPow2, thetaMunusSinTheta)) '{}'", p3);
+            LOGGER.debug("MatrixExp6 omgHatPow2 '{}'", omgMatPow2);
+            var p3 = mult(omgMatPow2, thetaMinusSinTheta);
+            LOGGER.debug("MatrixExp6 p3(mult(omgHatPow2, thetaMinusSinTheta)) '{}'", p3);
             var p1PlusP2 = p1.plus(p2);
             LOGGER.debug("MatrixExp6 p1PlusP2 '{}'", p1PlusP2);
             var p1PlusP2PlusP3 = p1PlusP2.plus(p3);
@@ -400,7 +400,7 @@ public class Motion {
         LOGGER.info("========================");
         LOGGER.info("MatrixLog6 has started" );
         var R = TransToR(T);
-        var P = TransToP(T);
+        //var P = TransToP(T);
         var omgMat = MatrixLog3(new RotationMatrix(R));
         var result = getIdentityMatrix(4);
         var zeroMatrix = getZerosMatrix(3);
@@ -433,7 +433,7 @@ public class Motion {
             result.setItem(ZERO,3,3);
             LOGGER.info("MatrixLog6 result \n'{}'", result.getData() );
 
-            //np.eye(3) - omgmat / 2.0
+            //np.eye(3) - omgMat / 2.0
             var omgMatDiv2 = omgMat.getData().divide(TWO);
             var eye3 = getIdentityMatrix(3);
             var p1 = substract(eye3, omgMatDiv2);
@@ -448,14 +448,14 @@ public class Motion {
             var p2 = oneDivTheta.subtract(oneDivTanThetaDiv2andDiv2);
             LOGGER.info("MatrixLog6 p2 \n'{}'", p2 );
 
-            //np.dot(omgmat,omgmat) / theta,
+            //np.dot(omgMat,omgMat) / theta,
             var omgMatPow2 = mult(omgMat.getData(), omgMat.getData());
             var p3 = omgMatPow2.divide(theta);
             LOGGER.info("MatrixLog6 p3 \n'{}'", p3.getData() );
 
 
-            var p2multp3 = p3.mult(p2);
-            var p1Plusp2multp3 = p1.plus(p2multp3);
+            var p2multP3 = p3.mult(p2);
+            var p1PlusP2multP3 = p1.plus(p2multP3);
 
             var p4 = new RVector(3);
             p4.set(0, T.get(0,3));
@@ -463,7 +463,7 @@ public class Motion {
             p4.set(2, T.get(2,3));
             LOGGER.info("MatrixLog6 p4 \n'{}'", p4.getData() );
 
-            var p5 = mult(p1Plusp2multp3, p4);
+            var p5 = mult(p1PlusP2multP3, p4);
             LOGGER.info("MatrixLog6 p5 \n'{}'", p5.getData() );
 
             result.setItem(p5.get(0), 0,3);

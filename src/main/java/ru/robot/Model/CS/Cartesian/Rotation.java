@@ -64,7 +64,7 @@ public class Rotation {
     }
 
     /**
-     *Converts a 3-vector to an so(3) representation
+     *Converts a 3-vector to so(3) representation
      *      Example Input:
      *      <br> omg = np.array([1, 2, 3])
      *      <br>Output:
@@ -93,7 +93,7 @@ public class Rotation {
 
 
     /**
-     * Converts an so(3) representation to a 3-vector
+     * Converts  so(3) representation to a 3-vector
      *      <P>Example Input so3mat:
      *      <br>[ 0, -3,  2],
      *      <br>[ 3,  0, -1],
@@ -128,8 +128,8 @@ public class Rotation {
      * @return The corresponding rotation angle
      */
     public static Vector4 AxisAng3(Vector3 expc3){
-        Vector3 omghat = normaliseVector(expc3);
-        return new Vector4(omghat.getData().get(0), omghat.getData().get(1),omghat.getData().get(2) , normOfVector(expc3));
+        Vector3 omgHat = normaliseVector(expc3);
+        return new Vector4(omgHat.getData().get(0), omgHat.getData().get(1),omgHat.getData().get(2) , normOfVector(expc3));
     }
 
     /**
@@ -165,7 +165,7 @@ public class Rotation {
      *     <P> Example Input:
      *      <br>[ 0, -3,  2],
      *      <br>[ 3,  0, -1],
-     *      <br>[-2,  1,  0]])
+     *      <br>[-2,  1,  0]
      *     <P> Output:
      *      <br>[-0.69492056,  0.71352099,  0.08929286],
      *      <br>[-0.19200697, -0.30378504,  0.93319235],
@@ -177,26 +177,26 @@ public class Rotation {
         LOGGER.info("========================");
         LOGGER.info("MatrixExp3 has started");
         LOGGER.debug("MatrixExp3 input  \n '{}'", so3mat.getData());
-        var omgtheta = so3ToVec(so3mat);
-        var theta = AxisAng3(omgtheta).getData().get(3);
-        var omghat = so3mat.getData().divide(theta);
+        var omgTheta = so3ToVec(so3mat);
+        var theta = AxisAng3(omgTheta).getData().get(3);
+        var omgHat = so3mat.getData().divide(theta);
 
-        if(nearZero(normOfVector(omgtheta)) < 0){
+        if(nearZero(normOfVector(omgTheta)) < 0){
             return getIdentityMatrix(3);
         } else {
             var I = getIdentityMatrix(3);
             var c = cos(theta, MC6);
             var oneMinusCos = ONE.subtract(c);
             var s = sin(theta, MC6);
-            var cMultOmghat = omghat.mult(s);
-            LOGGER.debug("MatrixExp3 cMultOmghat  \n '{}'", cMultOmghat.getData());
-            var omghatPow2 = omghat.mult(omghat);
+            var cMultOmghat = omgHat.mult(s);
+            LOGGER.debug("MatrixExp3 cMultOmgHat  \n '{}'", cMultOmghat.getData());
+            var omghatPow2 = omgHat.mult(omgHat);
             LOGGER.debug("MatrixExp3 omghatPow2  \n '{}'", omghatPow2.getData());
             var oneMunusCosMultOmghatPow2 = omghatPow2.mult(oneMinusCos);
             LOGGER.debug("MatrixExp3 oneMunusCosMultOmghatPow2  \n '{}'", oneMunusCosMultOmghatPow2.getData());
-            var IplusCmultOmghat = I.plus(cMultOmghat);
-            LOGGER.debug("MatrixExp3 IplusCmultOmghat  \n '{}'", IplusCmultOmghat.getData());
-            var res = IplusCmultOmghat.plus(oneMunusCosMultOmghatPow2);
+            var IplusCmultOmgHat = I.plus(cMultOmghat);
+            LOGGER.debug("MatrixExp3 IplusCmultOmghat  \n '{}'", IplusCmultOmgHat.getData());
+            var res = IplusCmultOmgHat.plus(oneMunusCosMultOmghatPow2);
             LOGGER.debug("MatrixExp3 res  \n '{}'", res.getData());
             var result = roundValuesOfRMatrix(res);
             LOGGER.debug("MatrixExp3 result  \n '{}'", result.getData());
@@ -215,7 +215,7 @@ public class Rotation {
      *           <P> Output:
      *               <br> [          0, -1.20919958,  1.20919958],
      *               <br> [ 1.20919958,           0, -1.20919958],
-     *               <br> [-1.20919958,  1.20919958,           0]])
+     *               <br> [-1.20919958,  1.20919958,           0]
      *
      * @param rotationMatrixData R: A 3x3 rotation matrix
      * @return SkewSymmetricMatrix omgMat The logarithm of Rotation matrix
