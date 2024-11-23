@@ -1,4 +1,4 @@
-package ru.robot.Model.CS.Cartesian;
+package ru.robot.Model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;
-import static ru.robot.Model.CS.Cartesian.Motion.*;
+import static ru.robot.Model.Motion.*;
 import static ru.robot.Model.Utils.Utils.minus;
 
 

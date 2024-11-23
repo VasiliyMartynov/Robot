@@ -1,4 +1,4 @@
-package ru.robot.Model.CS.Cartesian;
+package ru.robot.Model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +13,7 @@ import static ch.obermuhlner.math.big.BigDecimalMath.tan;
 import static ch.obermuhlner.math.big.DefaultBigDecimalMath.cos;
 import static ch.obermuhlner.math.big.DefaultBigDecimalMath.sin;
 import static ru.robot.Environment.Global.*;
-import static ru.robot.Model.CS.Cartesian.Rotation.*;
+import static ru.robot.Model.Rotation.*;
 import static ru.robot.Model.Utils.Utils.minus;
 import static ru.robot.Model.Utils.Utils.nearZero;
 import static ru.robot.Model.DS.Base.RMatrix.*;
@@ -476,6 +476,9 @@ public class Motion {
         LOGGER.info("========================");
         return result;
     }
+
+
+
 
 
 }

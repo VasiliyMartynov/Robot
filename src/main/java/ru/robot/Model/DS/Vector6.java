@@ -53,4 +53,13 @@ public class Vector6 {
         }
         return result;
     }
+
+    public static Vector6 mult(Vector6 v, BigDecimal n){
+        var result = new Vector6();
+        var max = v.getSize() - 1;
+        for(int i = 0; i <= max; i++){
+            result.setItem(i, v.getItem(i).divide(n, MC6));
+        }
+        return result;
+    }
 }

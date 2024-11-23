@@ -2,10 +2,7 @@ package ru.robot.Model.Utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.math.BigDecimal;
-import java.util.Objects;
-
 import static ru.robot.Environment.Global.*;
 
 public class Utils {

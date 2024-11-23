@@ -1,4 +1,4 @@
-package ru.robot.Model.CS.Cartesian;
+package ru.robot.Model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,11 +10,12 @@ import ru.robot.Model.DS.RotationMatrix;
 import ru.robot.Model.DS.Vector3;
 import ru.robot.Model.DS.Vector4;
 import ru.robot.Model.DS.SkewSymmetricMatrix;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;
-import static ru.robot.Model.CS.Cartesian.Rotation.*;
+import static ru.robot.Model.Rotation.*;
 import static ru.robot.Model.Utils.Utils.minus;
 import static ru.robot.Model.DS.Base.RMatrix.getIdentityMatrix;
 
