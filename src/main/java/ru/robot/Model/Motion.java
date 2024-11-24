@@ -94,12 +94,12 @@ public class Motion {
      */
     //Test OK
     public static RMatrix TransToR(RMatrix T) {
-        LOGGER.info("TransToR has started" );
+       // LOGGER.info("TransToR has started" );
 //        LOGGER.debug("TransToR input T  \n'{}'", T );
         var R = new RMatrix(3);
         R.setData(T, YES, 0,0);
 //        LOGGER.debug("TransToR result \n'{}' ", R.getData());
-        LOGGER.info("TransToR has finished");
+        //LOGGER.info("TransToR has finished");
         return R;
     }
 
@@ -119,14 +119,14 @@ public class Motion {
      */
     //test OK
     public static Vector3 TransToP(RMatrix T) {
-        LOGGER.debug("TransToP has STARTED");
-        LOGGER.debug("INPUT Motion T '{}'", T);
+       // LOGGER.debug("TransToP has STARTED");
+       // LOGGER.debug("INPUT Motion T '{}'", T);
         var P = new Vector3();
         for (int z = 0; z <= 2; z++) {
             P.setItem(z, T.get(z, 3));
         }
-        LOGGER.debug("P '{}", P.getData());
-        LOGGER.debug("TransToP has finished");
+        //LOGGER.debug("P '{}", P.getData());
+        //LOGGER.debug("TransToP has finished");
         return P;
     }
 
@@ -161,19 +161,21 @@ public class Motion {
 
     /**
      * Converts a spatial velocity vector into a 4x4 matrix in se3
-     *    <p> Example Input:
+     * @param V A 6-vector representing a spatial velocity
+     * @return The 4x4 se3 representation of V
+     <p> Example Input:
      *         <br>V = np.array([1, 2, 3, 4, 5, 6])
      *     <p>Output:
      *         <br>[ 0, -3,  2, 4]
      *         <br>[ 3,  0, -1, 5]
      *         <br>[-2,  1,  0, 6]
      *         <br>[ 0,  0,  0, 0]
-     * @param V A 6-vector representing a spatial velocity
-     * @return The 4x4 se3 representation of V
+     *
      */
     //testOK
     public static RMatrix VecTose3(Vector6 V){
-        LOGGER.debug("VecTose3 has started" );
+        //LOGGER.debug("VecTose3 has started" );
+        LOGGER.debug("VecTose3 input \n '{}'", V.getData());
         var so3 = VecToso3(new Vector3(V.getItem(0), V.getItem(1), V.getItem(2)));
         var se3 = new RMatrix(4);
         se3.setData(so3.getData(), YES,0,0);
@@ -181,8 +183,8 @@ public class Motion {
         se3.setItem(V.getItem(4), 1,3);
         se3.setItem(V.getItem(5), 2,3);
         se3.setItem(ONE,3,3);
-        LOGGER.debug("se3 \n '{}'", se3);
-        LOGGER.debug("VecTose3 has finished");
+        LOGGER.debug("VecTose3 result \n '{}'", se3);
+        //LOGGER.debug("VecTose3 has finished");
         return se3;
     }
 
@@ -322,15 +324,15 @@ public class Motion {
      * @return The matrix(size 4) exponential of se3mat
      */
     public static RMatrix MatrixExp6(RMatrix se3mat){
-        LOGGER.info("========================");
-        LOGGER.info("MatrixExp6 has started" );
+       // LOGGER.info("========================");
+        //LOGGER.info("MatrixExp6 has started" );
         var R = TransToR(se3mat);
-        LOGGER.debug("MatrixExp6 R \n'{}'", R.getData());
+        //LOGGER.debug("MatrixExp6 R \n'{}'", R.getData());
         var P = TransToP(se3mat);
-        LOGGER.debug("MatrixExp6 P '{}'", P.getData());
+        //LOGGER.debug("MatrixExp6 P '{}'", P.getData());
         var so3mat = new SkewSymmetricMatrix(R);
         var omgTheta = so3ToVec(so3mat);
-        LOGGER.debug("MatrixExp6 omgTheta '{}'", omgTheta.getData());
+        //LOGGER.debug("MatrixExp6 omgTheta '{}'", omgTheta.getData());
         var res = new RMatrix(4);
         if (nearZero(normOfVector(omgTheta)) < 0.00001) {
             res.setData(getIdentityMatrix(3), YES,0,0);
@@ -340,33 +342,33 @@ public class Motion {
             res.setItem(ONE, 3,3);
         } else {
             var me3 = MatrixExp3(so3mat);
-            LOGGER.debug("MatrixExp6 me3 '{}'", me3.getData());
+            //LOGGER.debug("MatrixExp6 me3 '{}'", me3.getData());
             var theta = AxisAng3(omgTheta).getItem(3);
-            LOGGER.debug("MatrixExp6 theta '{}'", theta);
+            //LOGGER.debug("MatrixExp6 theta '{}'", theta);
             var omgMat = divide(so3mat.getData(), theta);
-            LOGGER.debug("MatrixExp6 omgMat '{}'", omgMat);
+            //LOGGER.debug("MatrixExp6 omgMat '{}'", omgMat);
             var p1 = getIdentityMatrix(3).mult(theta);
-            LOGGER.debug("MatrixExp6 p1(getIdentityMatrix(3).mult(theta);) '{}'", p1);
+            //LOGGER.debug("MatrixExp6 p1(getIdentityMatrix(3).mult(theta);) '{}'", p1);
             var OneMinusCosTheta = ONE.subtract(cos(theta));
             var p2 = mult(omgMat, OneMinusCosTheta);
-            LOGGER.debug("MatrixExp6 p2(mult(omgMat, OneMinusCosTheta)) '{}'", p2);
+            //LOGGER.debug("MatrixExp6 p2(mult(omgMat, OneMinusCosTheta)) '{}'", p2);
             var thetaMinusSinTheta = theta.subtract(sin(theta));
             var omgMatPow2 = mult(omgMat, omgMat);
-            LOGGER.debug("MatrixExp6 omgHatPow2 '{}'", omgMatPow2);
+            //LOGGER.debug("MatrixExp6 omgHatPow2 '{}'", omgMatPow2);
             var p3 = mult(omgMatPow2, thetaMinusSinTheta);
-            LOGGER.debug("MatrixExp6 p3(mult(omgHatPow2, thetaMinusSinTheta)) '{}'", p3);
+            //LOGGER.debug("MatrixExp6 p3(mult(omgHatPow2, thetaMinusSinTheta)) '{}'", p3);
             var p1PlusP2 = p1.plus(p2);
-            LOGGER.debug("MatrixExp6 p1PlusP2 '{}'", p1PlusP2);
+            //LOGGER.debug("MatrixExp6 p1PlusP2 '{}'", p1PlusP2);
             var p1PlusP2PlusP3 = p1PlusP2.plus(p3);
-            LOGGER.debug("MatrixExp6 p1PlusP2PlusP3 '{}'", p1PlusP2PlusP3);
-            LOGGER.debug("MatrixExp6 P '{}'", P.getData());
+            //LOGGER.debug("MatrixExp6 p1PlusP2PlusP3 '{}'", p1PlusP2PlusP3);
+            //LOGGER.debug("MatrixExp6 P '{}'", P.getData());
             var p4 = mult(p1PlusP2PlusP3, P.getData());
 
 //            LOGGER.debug("MatrixExp6 p4(mult(p1PlusP2PlusP3, P.getData());) '{}'", p4);
             var p5 = divide(p4, theta);
 //            LOGGER.debug("MatrixExp6 p5(divide(p4, theta)) '{}'", p5);
             var GthetaV = new Vector3(p5);
-            LOGGER.debug("MatrixExp6 GthetaV '{}'", GthetaV.getData());
+            //LOGGER.debug("MatrixExp6 GthetaV '{}'", GthetaV.getData());
             res.setItem(GthetaV.getItem(0), 0,3);
             res.setItem(GthetaV.getItem(1), 1,3);
             res.setItem(GthetaV.getItem(2), 2,3);
@@ -374,9 +376,9 @@ public class Motion {
             res.setItem(ONE, 3,3);
         }
         var result = roundValuesOfRMatrix(res);
-        LOGGER.debug("MatrixExp6 result '{}'", result.getData());
-        LOGGER.info("MatrixExp6 has finished" );
-        LOGGER.info("========================");
+        LOGGER.debug("MatrixExp6 result \n'{}'", result.getData());
+        //LOGGER.info("MatrixExp6 has finished" );
+       // LOGGER.info("========================");
         return result;
     }
 

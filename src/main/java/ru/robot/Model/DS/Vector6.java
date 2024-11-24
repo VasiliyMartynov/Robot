@@ -58,7 +58,7 @@ public class Vector6 {
         var result = new Vector6();
         var max = v.getSize() - 1;
         for(int i = 0; i <= max; i++){
-            result.setItem(i, v.getItem(i).divide(n, MC6));
+            result.setItem(i, v.getItem(i).multiply(n, MC6));
         }
         return result;
     }

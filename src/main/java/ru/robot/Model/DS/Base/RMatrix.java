@@ -107,8 +107,8 @@ public class RMatrix {
     }
 
     public void setData(RMatrix inputMatrix, YESNO needToBeRounded, int coordinateX, int coordinateY){
-        LOGGER.info("========================");
-        LOGGER.info("SetData has started");
+        //LOGGER.info("========================");
+        //LOGGER.info("SetData has started");
 //        LOGGER.debug("Input Matrix '{}'\n", inputMatrix);
 //        LOGGER.debug("Input Matrix size '{}'\n", inputMatrix.getSize());
 //        LOGGER.debug("this Matrix size '{}'\n", this.getSize());
@@ -167,8 +167,8 @@ public class RMatrix {
             }
             coordinateX++;
         }
-        LOGGER.info("SetData has finished");
-        LOGGER.info("========================");
+        //LOGGER.info("SetData has finished");
+       // LOGGER.info("========================");
 
     }
 

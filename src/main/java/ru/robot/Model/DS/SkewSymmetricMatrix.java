@@ -22,7 +22,7 @@ public class SkewSymmetricMatrix {
      * @param R RMatrix
      */
     public SkewSymmetricMatrix(RMatrix R){
-        LOGGER.debug("SkewSymmetricMatrix constructor has started");
+        //LOGGER.debug("SkewSymmetricMatrix constructor has started");
         if (checkIsLittleSO3(R.getData())) {
             this.data = R;
             this.size = (int) R.getRowCount();
@@ -38,7 +38,7 @@ public class SkewSymmetricMatrix {
     }
 
     private Boolean checkIsLittleSO3(Matrix R){
-        LOGGER.info("checkIsLittleSO3 started");
+        //LOGGER.info("checkIsLittleSO3 started");
 //        LOGGER.debug("Checking Matrix \n`{}`", R);
         boolean ruleOne = R.trace() == 0;
 //        LOGGER.debug("checkIsLittleSO3 rule 1 - trace is ZERO: `{}`", ruleOne);
@@ -50,7 +50,7 @@ public class SkewSymmetricMatrix {
         boolean ruleThree = haveSize(R);
 //        LOGGER.debug("checkIsLittleSO3 rule 3 - input matrix has same size as compared: `{}`", ruleThree);
 //        LOGGER.debug("checkIsLittleSO3 finished with result:`{}`", ruleOne & ruleTwo & ruleThree );
-        LOGGER.info("checkIsLittleSO3 has finished");
+       // LOGGER.info("checkIsLittleSO3 has finished");
         return ruleOne & ruleTwo & ruleThree;
     }
 

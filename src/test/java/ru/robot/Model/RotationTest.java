@@ -210,8 +210,9 @@ public class RotationTest {
                 new BigDecimal("0.631349"),
                 new BigDecimal("0.348107")
         ));
+        LOGGER.debug("expected \n`{}`", expected.getData());
         var actual = Rotation.MatrixExp3(skewSymmetricMatrix);
-        LOGGER.debug("actual matrix `{}`\n", actual.getData());
+        LOGGER.debug("actual matrix \n`{}`", actual.getData());
         for(int i = 0; i < actual.getSize(); i++){
             for(int j = 0; j < actual.getSize(); j++){
                 assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));

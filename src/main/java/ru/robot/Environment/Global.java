@@ -15,5 +15,5 @@ public class Global {
     public static final BigDecimal FOUR = new BigDecimal("4.00000");
     public static final BigDecimal FIVE = new BigDecimal("5.00000");
     public static final BigDecimal SIX = new BigDecimal("6.00000");
-    public static final BigDecimal PI = new BigDecimal(Math.PI);
+    public static final BigDecimal PI = new BigDecimal(Math.PI).round(MC6);
 }

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.robot.Environment.Global.*;
 import static ru.robot.Model.ForwardKinematics.FKinBody;
+import static ru.robot.Model.ForwardKinematics.FKinSpace;
 import static ru.robot.Model.Utils.Utils.minus;
 
 public class ForwardKinematicsTest {
@@ -26,14 +27,12 @@ public class ForwardKinematicsTest {
 
     /**
      * Computes forward kinematics in the body frame for an open chain robot
-     * M The home configuration (position and orientation) of the end-
-     *               effector
+     * M The home configuration (position and orientation) of the end effector
      * Blist The joint screw axes in the end-effector frame when the
      *                   manipulator is at the home position, in the format of a
      *                   matrix with axes as the columns
      * thetalist A list of joint coordinates
-     * A homogeneous transformation matrix representing the end-
-     *              effector frame when the joints are at the specified coordinates
+     * A homogeneous transformation matrix representing the end effector frame when the joints are at the specified coordinates
      *              (i.t.o Body Frame)
 
      * <p>Example Input <br>M:
@@ -62,7 +61,7 @@ public class ForwardKinematicsTest {
 
         var link1 = new Vector6(ZERO,ZERO,minus(ONE), TWO, ZERO, ZERO);
         var link2 = new Vector6(ZERO,ZERO,ZERO, ZERO, ONE, ZERO);
-        var link3 = new Vector6(ZERO,ZERO,ONE, ZERO, ZERO, ONE);
+        var link3 = new Vector6(ZERO,ZERO,ONE, ZERO, ZERO, new BigDecimal("0.1"));
         var Blist = Arrays.asList(link1, link2, link3);
 
         var thetalist = Arrays.asList(PI.divide(TWO, MC6), THREE, PI);
@@ -81,6 +80,54 @@ public class ForwardKinematicsTest {
                 assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
             }
         }
+    }
 
+
+    /**
+     * Computes forward kinematics in the space frame for an open chain robot
+     * <p>Example Input <br>M:
+     *         <br>[-1, 0,  0, 0],
+     *         <br>[ 0, 1,  0, 6],
+     *         <br>[ 0, 0, -1, 2],
+     *         <br>[ 0, 0,  0, 1]
+     *         Blist = np.array([[0, 0,  1,  4, 0,    0],
+     *                           [0, 0,  0,  0, 1,    0],
+     *                           [0, 0, -1, -6, 0, -0.1]]).T
+     *         <br>pi / 2.0, 3, pi
+     * <p>Output:
+     *         np.array([[0, 1,  0,         -5],
+     *                   [1, 0,  0,          4],
+     *                   [0, 0, -1, 1.68584073],
+     *                   [0, 0,  0,          1]])
+     */
+    @Test
+    public void FKinSpaceTest(){
+        var M = new RMatrix(Arrays.asList(
+                minus(ONE), ZERO,ZERO,ZERO,
+                ZERO, ONE, ZERO,SIX,
+                ZERO,ZERO,minus(ONE),TWO,
+                ZERO,ZERO,ZERO,ONE));
+
+        var link1 = new Vector6(ZERO,ZERO,ONE, FOUR, ZERO, ZERO);
+        var link2 = new Vector6(ZERO,ZERO,ZERO, ZERO, ONE, ZERO);
+        var link3 = new Vector6(ZERO,ZERO,minus(ONE), minus(SIX), ZERO, minus(new BigDecimal("0.1")));
+        var Slist = Arrays.asList(link1, link2, link3);
+
+        var thetalist = Arrays.asList(PI.divide(TWO, MC6), THREE, PI);
+
+        var expected = new RMatrix(Arrays.asList(
+                ZERO, ONE,ZERO,minus(FIVE),
+                ONE, ZERO, ZERO,FOUR,
+                ZERO,ZERO,minus(ONE),new BigDecimal("1.685840"),
+                ZERO,ZERO,ZERO,ONE));
+        var actual  = FKinSpace(M, Slist, thetalist);
+
+        LOGGER.debug("FKinSpaceTest actual \n'{}", actual.getData());
+        LOGGER.debug("FKinSpaceTest expected \n'{}", expected.getData());
+        for(int i = 0; i < actual.getRowCount(); i++){
+            for(int j = 0; j < actual.getColumnCount(); j++){
+                assertEquals(expected.getDouble(i,j), actual.getDouble(i,j));
+            }
+        }
     }
 }

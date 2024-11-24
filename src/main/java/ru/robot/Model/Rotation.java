@@ -76,18 +76,15 @@ public class Rotation {
      * @return The skew symmetric representation of omg
      */
     public static SkewSymmetricMatrix VecToso3(Vector3 omg){
-        LOGGER.debug("VecToso3 has STARTED");
-        var v1 = omg.getData().get(0);
-        LOGGER.debug("v1 '{}'", v1);
-        var v2 = omg.getData().get(1);
-        LOGGER.debug("v2 '{}'", v2);
-        var v3 = omg.getData().get(2);
-        LOGGER.debug("v3 '{}'", v3);
-        List<BigDecimal> items = Arrays.asList(ZERO, minus(v3), v2,v3,ZERO,minus(v1),minus(v2),v1, ZERO);
-        LOGGER.debug("List<BigDecimal> items '{}'", items);
+        LOGGER.debug("VecToso3 input \n'{}'", omg.getData());
+        List<BigDecimal> items = Arrays.asList(
+                ZERO, minus(omg.getItem(2)), omg.getItem(1),
+                omg.getItem(2),ZERO,minus(omg.getItem(0)),
+                minus(omg.getItem(1)    ),omg.getItem(0), ZERO);
+       // LOGGER.debug("List<BigDecimal> items '{}'", items);
         var result = new SkewSymmetricMatrix(new RMatrix(items));
-        LOGGER.debug("result \n'{}'", result.getData());
-        LOGGER.debug("VecToso3 FINISHED");
+        LOGGER.debug("VecToso3 result \n'{}'", result.getData());
+        //LOGGER.debug("VecToso3 FINISHED");
         return result;
     }
 
@@ -104,14 +101,14 @@ public class Rotation {
      * @return The 3-vector corresponding to so3mat
      */
     public static Vector3 so3ToVec(SkewSymmetricMatrix so3mat){
-        LOGGER.debug("so3ToVec STARTED");
+        //LOGGER.debug("so3ToVec STARTED");
         var m1 = so3mat.getData().get(2,1);
-        LOGGER.debug("m1 '{}'", m1);
+       // LOGGER.debug("m1 '{}'", m1);
         var m2 = so3mat.getData().get(0,2);
-        LOGGER.debug("m2 '{}'", m2);
+        //LOGGER.debug("m2 '{}'", m2);
         var m3 = so3mat.getData().get(1,0);
-        LOGGER.debug("m3 '{}'", m3);
-        LOGGER.debug("so3ToVec FINISHED");
+        //LOGGER.debug("m3 '{}'", m3);
+        //LOGGER.debug("so3ToVec FINISHED");
         return  new Vector3(m1, m2, m3);
     }
 
@@ -174,9 +171,9 @@ public class Rotation {
      * @return The matrix exponential of so3mat
      */
     public static RMatrix MatrixExp3(SkewSymmetricMatrix so3mat){
-        LOGGER.info("========================");
-        LOGGER.info("MatrixExp3 has started");
-        LOGGER.debug("MatrixExp3 input  \n '{}'", so3mat.getData());
+        //LOGGER.info("========================");
+        //LOGGER.info("MatrixExp3 has started");
+        //LOGGER.debug("MatrixExp3 input  \n '{}'", so3mat.getData());
         var omgTheta = so3ToVec(so3mat);
         var theta = AxisAng3(omgTheta).getData().get(3);
         var omgHat = so3mat.getData().divide(theta);
@@ -189,19 +186,19 @@ public class Rotation {
             var oneMinusCos = ONE.subtract(c);
             var s = sin(theta, MC6);
             var cMultOmghat = omgHat.mult(s);
-            LOGGER.debug("MatrixExp3 cMultOmgHat  \n '{}'", cMultOmghat.getData());
+            //LOGGER.debug("MatrixExp3 cMultOmgHat  \n '{}'", cMultOmghat.getData());
             var omghatPow2 = omgHat.mult(omgHat);
-            LOGGER.debug("MatrixExp3 omghatPow2  \n '{}'", omghatPow2.getData());
+           // LOGGER.debug("MatrixExp3 omghatPow2  \n '{}'", omghatPow2.getData());
             var oneMunusCosMultOmghatPow2 = omghatPow2.mult(oneMinusCos);
-            LOGGER.debug("MatrixExp3 oneMunusCosMultOmghatPow2  \n '{}'", oneMunusCosMultOmghatPow2.getData());
+           // LOGGER.debug("MatrixExp3 oneMunusCosMultOmghatPow2  \n '{}'", oneMunusCosMultOmghatPow2.getData());
             var IplusCmultOmgHat = I.plus(cMultOmghat);
-            LOGGER.debug("MatrixExp3 IplusCmultOmghat  \n '{}'", IplusCmultOmgHat.getData());
+           // LOGGER.debug("MatrixExp3 IplusCmultOmghat  \n '{}'", IplusCmultOmgHat.getData());
             var res = IplusCmultOmgHat.plus(oneMunusCosMultOmghatPow2);
-            LOGGER.debug("MatrixExp3 res  \n '{}'", res.getData());
+           // LOGGER.debug("MatrixExp3 res  \n '{}'", res.getData());
             var result = roundValuesOfRMatrix(res);
-            LOGGER.debug("MatrixExp3 result  \n '{}'", result.getData());
-            LOGGER.info("MatrixExp3 has finished");
-            LOGGER.info("========================");
+            //LOGGER.debug("MatrixExp3 result  \n '{}'", result.getData());
+            //LOGGER.info("MatrixExp3 has finished");
+            //LOGGER.info("========================");
             return result;
         }
     }
